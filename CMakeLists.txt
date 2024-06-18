@@ -7,10 +7,18 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 
 set(SourceFiles
     src/main.cpp
-    src/gameboy.cpp)
+    src/gameboy.cpp
+    src/cpu.cpp
+    src/ppu.cpp
+    src/ram.cpp)
 
 set(HeaderFiles
-    include/gameboy.h)
+    include/gameboy.h
+    include/cpu.h
+    include/ppu.h
+    include/ram.h
+    )
+
 
 add_executable(${PROJECT_NAME} ${SourceFiles} ${HeaderFiles}) 
 
