@@ -1,8 +1,19 @@
 #ifndef GAMEBOY_H
 #define GAMEBOY_H
 
-class GameBoy {
+#include "cpu.h"
+#include "ppu.h"
+#include "ram.h"
+#include "sound.h"
 
+class GameBoy {
+    public:
+        void run();
+    private:
+        RAM ram_;        
+        PPU ppu_;
+        Sound sound_;
+        CPU cpu_;
 };
 
 #endif
