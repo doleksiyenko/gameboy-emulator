@@ -5,7 +5,7 @@ The GameBoy has a 16-bit address bus, used to address the various hardware compo
 the system.
 
 Constructor: take pointers to hardware components created in the Gameboy class, and link
-            them to the private members.
+            them to the private members. 
 */
 
 #ifndef BUS_H
@@ -19,7 +19,7 @@ Constructor: take pointers to hardware components created in the Gameboy class, 
 class Bus {
     public:
         Bus(CPU* cpu, RAM* ram, PPU* ppu);
-        void write(uint16_t address);
+        void write(uint16_t address, uint8_t value);
         uint8_t read(uint16_t address);
     private:
         CPU* cpu_; 
