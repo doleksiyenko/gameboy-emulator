@@ -6,7 +6,7 @@
 
 class PPU {
     public:
-        std::array<uint8_t, 1024 * 8> vram_;
+        std::array<uint8_t, 1024 * 8> vram_; // starting address of VRAM is 0x8000
 
     public:
         PPU();
