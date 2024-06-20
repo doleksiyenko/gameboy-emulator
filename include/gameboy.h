@@ -5,6 +5,7 @@
 #include "ppu.h"
 #include "ram.h"
 #include "sound.h"
+#include "Bus.h"
 
 class GameBoy {
     public:
@@ -14,6 +15,7 @@ class GameBoy {
         PPU ppu_;
         Sound sound_;
         CPU cpu_;
+        Bus bus_ {&cpu_, &ram_, &ppu_}; 
 };
 
 #endif
