@@ -10,13 +10,19 @@ set(SourceFiles
     src/gameboy.cpp
     src/cpu.cpp
     src/ppu.cpp
-    src/ram.cpp)
+    src/ram.cpp
+    src/cartridge.cpp
+    src/bus.cpp
+    )
 
 set(HeaderFiles
     include/gameboy.h
     include/cpu.h
     include/ppu.h
     include/ram.h
+    include/sound.h
+    include/cartridge.h
+    include/bus.h
     )
 
 

@@ -5,7 +5,7 @@
 #include "ppu.h"
 #include "ram.h"
 #include "sound.h"
-#include "Bus.h"
+#include "bus.h"
 
 class GameBoy {
     public:
