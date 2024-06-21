@@ -1,8 +1,45 @@
+#include <SDL2/SDL.h>
+#include <SDL_error.h>
+#include <SDL_pixels.h>
+#include <SDL_render.h>
+#include <SDL_video.h>
+#include <iostream>
+
 #include "ppu.h"
 
 PPU::PPU() 
 {
-    // initialize renderer
+    // initialize SDL 
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+        std::cout << "Error: " << SDL_GetError();
+        exit(-1);
+    }
+
+    // create a window, renderer and texture
+    window_ = SDL_CreateWindow("GameBoy 1989", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    if (!window_) {
+        std::cout << "Failed to create window: " << SDL_GetError();
+        exit(-1);
+    }
+
+    renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED);
+    if (!renderer_) {
+        std::cout << "Failed to create renderer: " << SDL_GetError();
+        exit(-1);
+    }
+
+    texture_ = SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH, SCREEN_HEIGHT);
+    if (!texture_) {
+        std::cout << "Failed to create texture: " << SDL_GetError();
+    }
+}
+
+PPU::~PPU() {
+    // destructor - exit out of SDL, and destroy all allocated resources
+    SDL_DestroyTexture(texture_);
+    SDL_DestroyRenderer(renderer_);
+    SDL_DestroyWindow(window_);
+    SDL_Quit();
 }
 
 uint8_t PPU::read(uint16_t address)
