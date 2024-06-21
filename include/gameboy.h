@@ -10,7 +10,13 @@
 class GameBoy {
     public:
         void run();
+        ~GameBoy();
     private:
+        void poll_events();
+    private:
+        // state
+        bool running_ = true; // start the system as automatically running
+        // hardware components
         RAM ram_;        
         PPU ppu_;
         Sound sound_;

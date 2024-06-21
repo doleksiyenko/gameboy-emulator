@@ -26,6 +26,8 @@ uint8_t Bus::read(uint16_t address)
         // read from work RAM
         return ram_->read(address);
     }
+
+    return 0x0;
 }
 
 void Bus::write(uint16_t address, uint8_t value) 

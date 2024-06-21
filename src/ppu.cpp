@@ -1,8 +1,10 @@
 #include <SDL2/SDL.h>
 #include <SDL_error.h>
+#include <SDL_hints.h>
 #include <SDL_pixels.h>
 #include <SDL_render.h>
 #include <SDL_video.h>
+#include <cstddef>
 #include <iostream>
 
 #include "ppu.h"
@@ -22,6 +24,7 @@ PPU::PPU()
         exit(-1);
     }
 
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
     renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED);
     if (!renderer_) {
         std::cout << "Failed to create renderer: " << SDL_GetError();
@@ -39,7 +42,19 @@ PPU::~PPU() {
     SDL_DestroyTexture(texture_);
     SDL_DestroyRenderer(renderer_);
     SDL_DestroyWindow(window_);
-    SDL_Quit();
+}
+
+
+void PPU::clear_screen() {
+    // set the screen to black
+    SDL_SetRenderDrawColor(renderer_, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_RenderClear(renderer_);
+}
+
+void PPU::render() {
+    // copy the texture to the screen, then update the window
+    SDL_RenderCopy(renderer_, texture_, NULL, NULL);
+    SDL_RenderPresent(renderer_);
 }
 
 uint8_t PPU::read(uint16_t address)
