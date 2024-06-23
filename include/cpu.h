@@ -20,6 +20,10 @@ class CPU {
         uint8_t nop(); uint8_t ldrr(); uint8_t ldrn(); uint8_t ldrhl();
         uint8_t ldr(); uint8_t ldhlr(); uint8_t ldhln(); uint8_t ldabc();
         uint8_t ldade(); uint8_t ldbca(); uint8_t lddea(); uint8_t ldann();
+        uint8_t ldnna(); uint8_t ldhac(); uint8_t ldhca(); uint8_t ldhan();
+        uint8_t ldhna(); uint8_t ldahl_m(); uint8_t ldhla_m(); uint8_t ldahl_p();
+        uint8_t ldhla_p(); uint8_t ldrrnn(); uint8_t ldnnsp(); uint8_t ldsphl();
+        uint8_t pushrr(); uint8_t poprr(); uint8_t ldhlsp_e(); 
 };
 
 #endif
