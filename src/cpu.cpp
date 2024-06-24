@@ -343,7 +343,6 @@ uint8_t CPU::RST_0() {}
 uint8_t CPU::RET_Z() {}
 uint8_t CPU::RET() {}
 uint8_t CPU::JP_Z_a16() {}
-uint8_t CPU::INVALID() {}
 uint8_t CPU::CALL_Z_a16() {}
 uint8_t CPU::CALL_a16() {}
 uint8_t CPU::ADC_A_d8() {}
@@ -351,7 +350,6 @@ uint8_t CPU::RST_1() {}
 uint8_t CPU::RET_NC() {}
 uint8_t CPU::POP_DE() {}
 uint8_t CPU::JP_NC_a16() {}
-uint8_t CPU::INVALID() {}
 uint8_t CPU::CALL_NC_a16() {}
 uint8_t CPU::PUSH_DE() {}
 uint8_t CPU::SUB_d8() {}
@@ -359,32 +357,24 @@ uint8_t CPU::RST_2() {}
 uint8_t CPU::RET_C() {}
 uint8_t CPU::RETI() {}
 uint8_t CPU::JP_C_a16() {}
-uint8_t CPU::INVALID() {}
 uint8_t CPU::CALL_C_a16() {}
-uint8_t CPU::INVALID() {}
 uint8_t CPU::SBC_A_d8() {}
 uint8_t CPU::RST_3() {}
 uint8_t CPU::LD_a8_m_A() {}
 uint8_t CPU::POP_HL() {}
 uint8_t CPU::LD_C_m_A() {}
-uint8_t CPU::INVALID() {}
-uint8_t CPU::INVALID() {}
 uint8_t CPU::PUSH_HL() {}
 uint8_t CPU::AND_d8() {}
 uint8_t CPU::RST_4() {}
 uint8_t CPU::ADD_SP_s8() {}
 uint8_t CPU::JP_HL() {}
 uint8_t CPU::LD_a16_m_A() {}
-uint8_t CPU::INVALID() {}
-uint8_t CPU::INVALID() {}
-uint8_t CPU::INVALID() {}
 uint8_t CPU::XOR_d8() {}
 uint8_t CPU::RST_5() {}
 uint8_t CPU::LD_A_a8_m() {}
 uint8_t CPU::POP_AF() {}
 uint8_t CPU::LD_A_C_m() {}
 uint8_t CPU::DI() {}
-uint8_t CPU::INVALID() {}
 uint8_t CPU::PUSH_AF() {}
 uint8_t CPU::OR_d8() {}
 uint8_t CPU::RST_6() {}
@@ -392,8 +382,6 @@ uint8_t CPU::LD_HL_SP_s8() {}
 uint8_t CPU::LD_SP_HL() {}
 uint8_t CPU::LD_A_a16_m() {}
 uint8_t CPU::EI() {}
-uint8_t CPU::INVALID() {}
-uint8_t CPU::INVALID() {}
 uint8_t CPU::CP_d8() {}
 uint8_t CPU::RST_7(){}
 
@@ -653,3 +641,5 @@ uint8_t CPU::SET_7_H() {}
 uint8_t CPU::SET_7_L() {}
 uint8_t CPU::SET_7_HL_m() {}
 uint8_t CPU::SET_7_A() {}
+
+uint8_t CPU::INVALID() {}
