@@ -38,6 +38,7 @@ class CPU {
         //              ------------------ opcode functions ------------------
         // these are written in the order of instructions (i.e. instruction 0x0, 0x1, 0x2...)
         // helpful interactive reference: https://meganesu.github.io/generate-gb-opcodes/
+        // 8 bit instructions
         uint8_t NOP();          uint8_t LD_BC_d16();    uint8_t LD_BC_m_A();    uint8_t INC_BC();
         uint8_t INC_B();        uint8_t DEC_B();        uint8_t LD_B_d8();      uint8_t RLCA();
         uint8_t LD_a16_m_SP();  uint8_t ADD_HL_BC();    uint8_t LD_A_BC_m();    uint8_t DEC_BC();
@@ -107,6 +108,71 @@ class CPU {
         /* invalid */;          /* invalid */           uint8_t CP_d8();        uint8_t RST_7();
 
 
+        // 16 bit instructions
+        uint8_t RLC_B();        uint8_t RLC_C();        uint8_t RLC_D();        uint8_t RLC_E();
+        uint8_t RLC_H();        uint8_t RLC_L();        uint8_t RLC_HL_m();     uint8_t RLC_A();
+        uint8_t RRC_B();        uint8_t RRC_C();        uint8_t RRC_D();        uint8_t RRC_E();
+        uint8_t RRC_H();        uint8_t RRC_L();        uint8_t RRC_HL_m();     uint8_t RRC_A();
+        uint8_t RL_B();         uint8_t RL_C();         uint8_t RL_D();         uint8_t RL_E();
+        uint8_t RL_H();         uint8_t RL_L();         uint8_t RL_HL_m();      uint8_t RL_A();
+        uint8_t RR_B();         uint8_t RR_C();         uint8_t RR_D();         uint8_t RR_E();
+        uint8_t RR_H();         uint8_t RR_L();         uint8_t RR_HL_m();      uint8_t RR_A();
+        uint8_t SLA_B();        uint8_t SLA_C();        uint8_t SLA_D();        uint8_t SLA_E();
+        uint8_t SLA_H();        uint8_t SLA_L();        uint8_t SLA_HL_m();     uint8_t SLA_A();
+        uint8_t SRC_B();        uint8_t SRC_C();        uint8_t SRC_D();        uint8_t SRC_E();
+        uint8_t SRC_H();        uint8_t SRC_L();        uint8_t SRC_HL_m();     uint8_t SRC_A();
+        uint8_t SWAP_B();       uint8_t SWAP_C();       uint8_t SWAP_D();       uint8_t SWAP_E();
+        uint8_t SWAP_H();       uint8_t SWAP_L();       uint8_t SWAP_HL_m();    uint8_t SWAP_A();
+        uint8_t SRL_B();        uint8_t SRL_C();        uint8_t SRL_D();        uint8_t SRL_E();
+        uint8_t SRL_H();        uint8_t SRL_L();        uint8_t SRL_HL_m();     uint8_t SRL_A();
+        uint8_t BIT_0_B();      uint8_t BIT_0_C();      uint8_t BIT_0_D();      uint8_t BIT_0_E();
+        uint8_t BIT_0_H();      uint8_t BIT_0_L();      uint8_t BIT_0_HL_m();   uint8_t BIT_0_A();         
+        uint8_t BIT_1_B();      uint8_t BIT_1_C();      uint8_t BIT_1_D();      uint8_t BIT_1_E();
+        uint8_t BIT_1_H();      uint8_t BIT_1_L();      uint8_t BIT_1_HL_m();   uint8_t BIT_1_A();         
+        uint8_t BIT_2_B();      uint8_t BIT_2_C();      uint8_t BIT_2_D();      uint8_t BIT_2_E();
+        uint8_t BIT_2_H();      uint8_t BIT_2_L();      uint8_t BIT_2_HL_m();   uint8_t BIT_2_A();         
+        uint8_t BIT_3_B();      uint8_t BIT_3_C();      uint8_t BIT_3_D();      uint8_t BIT_3_E();
+        uint8_t BIT_3_H();      uint8_t BIT_3_L();      uint8_t BIT_3_HL_m();   uint8_t BIT_3_A();         
+        uint8_t BIT_4_B();      uint8_t BIT_4_C();      uint8_t BIT_4_D();      uint8_t BIT_4_E();
+        uint8_t BIT_4_H();      uint8_t BIT_4_L();      uint8_t BIT_4_HL_m();   uint8_t BIT_4_A();         
+        uint8_t BIT_5_B();      uint8_t BIT_5_C();      uint8_t BIT_5_D();      uint8_t BIT_5_E();
+        uint8_t BIT_5_H();      uint8_t BIT_5_L();      uint8_t BIT_5_HL_m();   uint8_t BIT_5_A();         
+        uint8_t BIT_6_B();      uint8_t BIT_6_C();      uint8_t BIT_6_D();      uint8_t BIT_6_E();
+        uint8_t BIT_6_H();      uint8_t BIT_6_L();      uint8_t BIT_6_HL_m();   uint8_t BIT_6_A();         
+        uint8_t BIT_7_B();      uint8_t BIT_7_C();      uint8_t BIT_7_D();      uint8_t BIT_7_E();
+        uint8_t BIT_7_H();      uint8_t BIT_7_L();      uint8_t BIT_7_HL_m();   uint8_t BIT_7_A();         
+        uint8_t RES_0_B();      uint8_t RES_0_C();      uint8_t RES_0_D();      uint8_t RES_0_E();
+        uint8_t RES_0_H();      uint8_t RES_0_L();      uint8_t RES_0_HL_m();   uint8_t RES_0_A();         
+        uint8_t RES_1_B();      uint8_t RES_1_C();      uint8_t RES_1_D();      uint8_t RES_1_E();
+        uint8_t RES_1_H();      uint8_t RES_1_L();      uint8_t RES_1_HL_m();   uint8_t RES_1_A();         
+        uint8_t RES_2_B();      uint8_t RES_2_C();      uint8_t RES_2_D();      uint8_t RES_2_E();
+        uint8_t RES_2_H();      uint8_t RES_2_L();      uint8_t RES_2_HL_m();   uint8_t RES_2_A();         
+        uint8_t RES_3_B();      uint8_t RES_3_C();      uint8_t RES_3_D();      uint8_t RES_3_E();
+        uint8_t RES_3_H();      uint8_t RES_3_L();      uint8_t RES_3_HL_m();   uint8_t RES_3_A();         
+        uint8_t RES_4_B();      uint8_t RES_4_C();      uint8_t RES_4_D();      uint8_t RES_4_E();
+        uint8_t RES_4_H();      uint8_t RES_4_L();      uint8_t RES_4_HL_m();   uint8_t RES_4_A();         
+        uint8_t RES_5_B();      uint8_t RES_5_C();      uint8_t RES_5_D();      uint8_t RES_5_E();
+        uint8_t RES_5_H();      uint8_t RES_5_L();      uint8_t RES_5_HL_m();   uint8_t RES_5_A();         
+        uint8_t RES_6_B();      uint8_t RES_6_C();      uint8_t RES_6_D();      uint8_t RES_6_E();
+        uint8_t RES_6_H();      uint8_t RES_6_L();      uint8_t RES_6_HL_m();   uint8_t RES_6_A();         
+        uint8_t RES_7_B();      uint8_t RES_7_C();      uint8_t RES_7_D();      uint8_t RES_7_E();
+        uint8_t RES_7_H();      uint8_t RES_7_L();      uint8_t RES_7_HL_m();   uint8_t RES_7_A();         
+        uint8_t SET_0_B();      uint8_t SET_0_C();      uint8_t SET_0_D();      uint8_t SET_0_E();
+        uint8_t SET_0_H();      uint8_t SET_0_L();      uint8_t SET_0_HL_m();   uint8_t SET_0_A();         
+        uint8_t SET_1_B();      uint8_t SET_1_C();      uint8_t SET_1_D();      uint8_t SET_1_E();
+        uint8_t SET_1_H();      uint8_t SET_1_L();      uint8_t SET_1_HL_m();   uint8_t SET_1_A();         
+        uint8_t SET_2_B();      uint8_t SET_2_C();      uint8_t SET_2_D();      uint8_t SET_2_E();
+        uint8_t SET_2_H();      uint8_t SET_2_L();      uint8_t SET_2_HL_m();   uint8_t SET_2_A();         
+        uint8_t SET_3_B();      uint8_t SET_3_C();      uint8_t SET_3_D();      uint8_t SET_3_E();
+        uint8_t SET_3_H();      uint8_t SET_3_L();      uint8_t SET_3_HL_m();   uint8_t SET_3_A();         
+        uint8_t SET_4_B();      uint8_t SET_4_C();      uint8_t SET_4_D();      uint8_t SET_4_E();
+        uint8_t SET_4_H();      uint8_t SET_4_L();      uint8_t SET_4_HL_m();   uint8_t SET_4_A();         
+        uint8_t SET_5_B();      uint8_t SET_5_C();      uint8_t SET_5_D();      uint8_t SET_5_E();
+        uint8_t SET_5_H();      uint8_t SET_5_L();      uint8_t SET_5_HL_m();   uint8_t SET_5_A();         
+        uint8_t SET_6_B();      uint8_t SET_6_C();      uint8_t SET_6_D();      uint8_t SET_6_E();
+        uint8_t SET_6_H();      uint8_t SET_6_L();      uint8_t SET_6_HL_m();   uint8_t SET_6_A();         
+        uint8_t SET_7_B();      uint8_t SET_7_C();      uint8_t SET_7_D();      uint8_t SET_7_E();
+        uint8_t SET_7_H();      uint8_t SET_7_L();      uint8_t SET_7_HL_m();   uint8_t SET_7_A();         
 
         uint8_t INVALID(); // opcode for any undefined behaviour
 
