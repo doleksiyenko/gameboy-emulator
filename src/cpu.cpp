@@ -139,3 +139,9 @@ CPU::CPU() {
         &CPU::SET_7_H,      &CPU::SET_7_L,      &CPU::SET_7_HL_m,   &CPU::SET_7_A         
     };
 }
+
+
+
+
+
+// instruction implementations
