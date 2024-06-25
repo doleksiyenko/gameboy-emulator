@@ -1,15 +1,15 @@
 #ifndef CPU_H
 #define CPU_H
 
-#include <array>
+#include <vector>
 #include <cstdint>
 
 
 class CPU {
     public:
         CPU();
-        void fetch();
-        void decode();
+        void cycle();
+        void decode(uint8_t instruction);
 
     private:
         // 16 bit registers
@@ -19,6 +19,7 @@ class CPU {
         uint16_t bc_; uint16_t de_; uint16_t hl_; // general-purpose registers (8 bit halves)
         uint8_t ir_; // instruction register
         uint8_t ie_; // interrupt enable
+
 
         // -- flags -- 
         // the lower 8 bits of the AF register holds flags that can be influenced by an instruction
@@ -32,8 +33,15 @@ class CPU {
 
         typedef uint8_t(CPU::*opcode_function)();
 
-        std::array<opcode_function, 16 * 16> opcode_lookup;
-        std::array<opcode_function, 16 * 16> cb_opcode_lookup;
+        struct Instruction {
+            opcode_function instruction = nullptr; // function pointer to the atomic implementation of the instruction behaviour
+            uint8_t t_cycles = 0; // each instruction takes a number of cycles to complete
+        };
+
+        std::vector<Instruction> opcode_lookup;
+        std::vector<Instruction> cb_opcode_lookup;
+
+        uint8_t t_cycles_delay; // the number of system clock ticks that an instruction requires to complete
 
         //              ------------------ opcode functions ------------------
         // these are written in the order of instructions (i.e. instruction 0x0, 0x1, 0x2...)
