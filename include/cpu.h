@@ -183,6 +183,7 @@ class CPU {
         uint8_t SET_7_H();      uint8_t SET_7_L();      uint8_t SET_7_HL_m();   uint8_t SET_7_A();         
 
         uint8_t INVALID(); // opcode for any undefined behaviour
+        uint8_t CB_PREFIX();
 
 };
 
