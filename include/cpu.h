@@ -5,13 +5,12 @@
 #include <cstdint>
 
 
-class Bus;
+class Bus; // forward declaration
 
 class CPU {
     public:
         CPU();
         void cycle();
-        void decode(uint8_t instruction);
         void connect_bus(Bus* bus);
     private:
         // 16 bit registers
@@ -36,10 +35,8 @@ class CPU {
             C = (1 << 4) // Carry flag
         };
 
-        typedef uint8_t(CPU::*opcode_function)();
-
         struct Instruction {
-            opcode_function instruction = nullptr; // function pointer to the atomic implementation of the instruction behaviour
+            uint8_t (CPU::*opcode_function)(void) = nullptr; // function pointer to the atomic implementation of the instruction behaviour
             uint8_t t_cycles = 0; // each instruction takes a number of cycles to complete
         };
 

@@ -153,7 +153,35 @@ void CPU::connect_bus(Bus* bus)
 
 void CPU::cycle()
 {
-    
+    // perform a cycle if we have the ability to (if we have the ability to - the last instruction has completed)
+    if (t_cycles_delay == 0) {
+        uint8_t instruction_code = read(pc_);
+        pc_++; // immediately increment the pc after reading the instruction
+
+        Instruction instruction;
+        if (instruction_code == 0xcb) {
+            // 16 bit instruction code, therefore we have to read another byte and then find the instruction in the 16 bit instruction table
+            instruction = cb_opcode_lookup[read(pc_)];
+            pc_++; // again increment the pc after reading another byte
+        }
+        else {
+            instruction = opcode_lookup[instruction_code];
+        }
+
+        // get the number of cycles required to complete an instruction, and add it to the total number of cycles
+        t_cycles_delay += instruction.t_cycles;
+
+        // perform the instruction. if this is an instruction such as a CALL or RET or JP that requires extra cycles based on execuction, return this value
+        uint8_t additional_cycles = (this->*instruction.opcode_function)();
+
+        // get the final amount of cycles required to perform this instruction by getting the base cycles + additional cycles
+        t_cycles_delay += additional_cycles;
+
+        // one t cycle has passed, should never reach below zero since a new instruction should always provide more cycles, however make an explcit check
+        if (t_cycles_delay > 0) {
+            t_cycles_delay--;
+        }
+    }
 }
 
 uint8_t CPU::read(uint16_t address) 
@@ -676,3 +704,4 @@ uint8_t CPU::SET_7_HL_m() {}
 uint8_t CPU::SET_7_A() {}
 
 uint8_t CPU::INVALID() {}
+uint8_t CPU::CB_PREFIX() {}
