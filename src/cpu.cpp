@@ -172,6 +172,7 @@ void CPU::cycle()
         t_cycles_delay += instruction.t_cycles;
 
         // perform the instruction. if this is an instruction such as a CALL or RET or JP that requires extra cycles based on execuction, return this value
+        // a member function must be called on an instance of the class, so we must explicitly say that we run the opcode_function based on this class
         uint8_t additional_cycles = (this->*instruction.opcode_function)();
 
         // get the final amount of cycles required to perform this instruction by getting the base cycles + additional cycles
