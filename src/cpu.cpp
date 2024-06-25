@@ -1,4 +1,5 @@
 #include <cpu.h>
+#include <bus.h>
 
 CPU::CPU() 
 {
@@ -145,15 +146,30 @@ CPU::CPU()
 }
 
 
+void CPU::connect_bus(Bus* bus)
+{
+    bus_ = bus;
+}
 
 void CPU::cycle()
 {
+    
+}
+
+uint8_t CPU::read(uint16_t address) 
+{
+    return bus_->read(address);
+}
+
+void CPU::write(uint16_t address, uint8_t value) 
+{
+    bus_->write(address, value);
 }
 
 
-
 // instruction implementations
-uint8_t CPU::NOP() {
+uint8_t CPU::NOP() 
+{
     pc_++;
     return 0;
 }

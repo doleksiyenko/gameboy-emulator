@@ -5,12 +5,14 @@
 #include <cstdint>
 
 
+class Bus;
+
 class CPU {
     public:
         CPU();
         void cycle();
         void decode(uint8_t instruction);
-
+        void connect_bus(Bus* bus);
     private:
         // 16 bit registers
         uint16_t pc_; // program counter
@@ -20,6 +22,9 @@ class CPU {
         uint8_t ir_; // instruction register
         uint8_t ie_; // interrupt enable
 
+        Bus* bus_; // create a reference to the bus connecting all the hardware components together
+        uint8_t read(uint16_t address);
+        void write(uint16_t address, uint8_t value); 
 
         // -- flags -- 
         // the lower 8 bits of the AF register holds flags that can be influenced by an instruction

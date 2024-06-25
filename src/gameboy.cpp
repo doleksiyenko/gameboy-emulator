@@ -2,6 +2,11 @@
 #include <SDL2/SDL.h>
 #include <SDL_events.h>
 
+GameBoy::GameBoy() {
+    // link hardware components
+    cpu_.connect_bus(&bus_);
+}
+
 void GameBoy::run() {
     // TODO: load in the cartridge
 

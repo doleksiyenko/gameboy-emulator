@@ -9,6 +9,7 @@
 
 class GameBoy {
     public:
+        GameBoy();
         void run();
         ~GameBoy();
     private:
