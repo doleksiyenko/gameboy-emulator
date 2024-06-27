@@ -209,7 +209,7 @@ uint8_t CPU::LD_BC_d16() {
     // read the next two bytes to get the immediate value
     uint8_t byte1 = read(pc_);
     uint8_t byte2 = read(++pc_);
-    bc_ = (byte1 << 4) + byte2;
+    bc_ = (byte2 << 4) + byte1;
 }
 uint8_t CPU::LD_BC_m_A() {}
 uint8_t CPU::INC_BC() {}
