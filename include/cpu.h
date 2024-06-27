@@ -35,6 +35,8 @@ class CPU {
             C = (1 << 4) // Carry flag
         };
 
+        void set_flag(flags flag, bool val);
+
         struct Instruction {
             uint8_t (CPU::*opcode_function)(void) = nullptr; // function pointer to the atomic implementation of the instruction behaviour
             uint8_t t_cycles = 0; // each instruction takes a number of cycles to complete

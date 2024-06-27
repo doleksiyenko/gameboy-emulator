@@ -185,6 +185,8 @@ void CPU::cycle()
     }
 }
 
+
+// -------------- UTILITY ----------------
 uint8_t CPU::read(uint16_t address) 
 {
     return bus_->read(address);
@@ -195,8 +197,20 @@ void CPU::write(uint16_t address, uint8_t value)
     bus_->write(address, value);
 }
 
+void CPU::set_flag(CPU::flags flag, bool val)
+{
+    if (val) {
+        af_ |= flag; // set the <flag> bit to 1 in the flags register
+    }
+    else {
+        af_ &= ~flag; // set the <flag> bit to 0 in the flags register
+    }
+}
 
-// instruction implementations -- return value other than 0 if additional cycles required
+
+// --------------- INSTRUCTION IMPLEMENTATIONS --------------------------
+
+// return value other than 0 if additional cycles required
 // based on instruction behaviour
 uint8_t CPU::NOP() 
 {
