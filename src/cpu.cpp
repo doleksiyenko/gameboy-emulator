@@ -204,14 +204,25 @@ uint8_t CPU::NOP()
     return 0;
 }
 
-uint8_t CPU::LD_BC_d16() {
+uint8_t CPU::LD_BC_d16() 
+{
     /* set the register BC to the immediate value d16*/
     // read the next two bytes to get the immediate value
     uint8_t byte1 = read(pc_);
     uint8_t byte2 = read(++pc_);
-    bc_ = (byte2 << 4) + byte1;
+    bc_ = (byte2 << 8) + byte1;
+
+    return 0;
 }
-uint8_t CPU::LD_BC_m_A() {}
+
+uint8_t CPU::LD_BC_m_A() 
+{
+    /* store the contents of A in the memory address specified by BC */
+    write(bc_, (af_ & 0xff00) >> 8);
+
+    return 0;
+}
+
 uint8_t CPU::INC_BC() {}
 uint8_t CPU::INC_B() {}
 uint8_t CPU::DEC_B() {}
