@@ -223,65 +223,75 @@ uint8_t CPU::LD_BC_m_A()
     return 0;
 }
 
-uint8_t CPU::INC_BC() {}
+// increment / decrement 16 bit value
+
+uint8_t CPU::INC_BC() { bc_++; return 0; }
+uint8_t CPU::INC_DE() { de_++; return 0; }
+uint8_t CPU::INC_HL() { hl_++; return 0; }
+uint8_t CPU::INC_SP() { sp_++; return 0; }
+uint8_t CPU::DEC_DE() { de_--; return 0; }
+uint8_t CPU::DEC_BC() { bc_--; return 0; }
+uint8_t CPU::DEC_HL() { hl_--; return 0; }
+uint8_t CPU::DEC_SP() { sp_--; return 0; }
+
+// increment / decrement 8 bit value
 uint8_t CPU::INC_B() {}
+uint8_t CPU::INC_C() {}
+uint8_t CPU::INC_D() {}
+uint8_t CPU::INC_E() {}
+uint8_t CPU::INC_H() {}
+uint8_t CPU::INC_L() {}
+uint8_t CPU::INC_HL_m() {}
+uint8_t CPU::INC_A() {}
+uint8_t CPU::DEC_H() {}
+uint8_t CPU::DEC_D() {}
+uint8_t CPU::DEC_E() {}
 uint8_t CPU::DEC_B() {}
+uint8_t CPU::DEC_C() {}
+uint8_t CPU::DEC_L() {}
+uint8_t CPU::DEC_HL_m() {}
+uint8_t CPU::DEC_A() {}
+
+
+
+
+
+
 uint8_t CPU::LD_B_d8() {}
 uint8_t CPU::RLCA() {}
 uint8_t CPU::LD_a16_m_SP() {}
 uint8_t CPU::ADD_HL_BC() {}
 uint8_t CPU::LD_A_BC_m() {}
-uint8_t CPU::DEC_BC() {}
-uint8_t CPU::INC_C() {}
-uint8_t CPU::DEC_C() {}
 uint8_t CPU::LD_C_d8() {}
 uint8_t CPU::RRCA() {}
 uint8_t CPU::STOP_0() {}
 uint8_t CPU::LD_DE_d16() {}
 uint8_t CPU::LD_DE_m_A() {}
-uint8_t CPU::INC_DE() {}
-uint8_t CPU::INC_D() {}
-uint8_t CPU::DEC_D() {}
 uint8_t CPU::LD_D_d8() {}
 uint8_t CPU::RLA() {}
 uint8_t CPU::JR_s8() {}
 uint8_t CPU::ADD_HL_DE() {}
 uint8_t CPU::LD_A_DE_m() {}
-uint8_t CPU::DEC_DE() {}
-uint8_t CPU::INC_E() {}
-uint8_t CPU::DEC_E() {}
 uint8_t CPU::LD_E_d8() {}
 uint8_t CPU::RRA() {}
 uint8_t CPU::JR_NZ_s8() {}
 uint8_t CPU::LD_HL_d16() {}
 uint8_t CPU::LD_HLp_m_A() {}
-uint8_t CPU::INC_HL() {}
-uint8_t CPU::INC_H() {}
-uint8_t CPU::DEC_H() {}
 uint8_t CPU::LD_H_d8() {}
 uint8_t CPU::DAA() {}
 uint8_t CPU::JR_Z_s8() {}
 uint8_t CPU::ADD_HL_HL() {}
 uint8_t CPU::LD_A_HLp_m() {}
-uint8_t CPU::DEC_HL() {}
-uint8_t CPU::INC_L() {}
-uint8_t CPU::DEC_L() {}
 uint8_t CPU::LD_L_d8() {}
 uint8_t CPU::CPL() {}
 uint8_t CPU::JR_NC_s8() {}
 uint8_t CPU::LD_SP_d16() {}
 uint8_t CPU::LD_HLm_m_A() {}
-uint8_t CPU::INC_SP() {}
-uint8_t CPU::INC_HL_m() {}
-uint8_t CPU::DEC_HL_m() {}
 uint8_t CPU::LD_HL_m_d8() {}
 uint8_t CPU::SCF() {}
 uint8_t CPU::JR_C_s8() {}
 uint8_t CPU::ADD_HL_SP() {}
 uint8_t CPU::LD_A_HLm_m() {}
-uint8_t CPU::DEC_SP() {}
-uint8_t CPU::INC_A() {}
-uint8_t CPU::DEC_A() {}
 uint8_t CPU::LD_A_d8() {}
 uint8_t CPU::CCF() {}
 uint8_t CPU::LD_B_B() {}
