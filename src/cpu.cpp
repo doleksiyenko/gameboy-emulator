@@ -196,14 +196,21 @@ void CPU::write(uint16_t address, uint8_t value)
 }
 
 
-// instruction implementations
+// instruction implementations -- return value other than 0 if additional cycles required
+// based on instruction behaviour
 uint8_t CPU::NOP() 
 {
-    pc_++;
+    // the pc has already been incremented
     return 0;
 }
 
-uint8_t CPU::LD_BC_d16() {}
+uint8_t CPU::LD_BC_d16() {
+    /* set the register BC to the immediate value d16*/
+    // read the next two bytes to get the immediate value
+    uint8_t byte1 = read(pc_);
+    uint8_t byte2 = read(++pc_);
+    bc_ = (byte1 << 4) + byte2;
+}
 uint8_t CPU::LD_BC_m_A() {}
 uint8_t CPU::INC_BC() {}
 uint8_t CPU::INC_B() {}
