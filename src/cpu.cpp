@@ -248,8 +248,21 @@ uint8_t CPU::DEC_BC() { bc_--; return 0; }
 uint8_t CPU::DEC_HL() { hl_--; return 0; }
 uint8_t CPU::DEC_SP() { sp_--; return 0; }
 
-// increment / decrement 8 bit value
-uint8_t CPU::INC_B() {}
+// increment / decrement 8 bit value registers
+uint8_t CPU::INC_B() 
+{
+    uint8_t b_inc = ((bc_ & 0xff00) >> 8) + 1; // hold a temp variable with the incremented value - used for checking if flags need to be set
+    
+    // set flags
+    ((b_inc) == 0) ? set_flag(CPU::flags::Z, 1) : set_flag(CPU::flags::Z, 0); // set Z if equal to 0
+    set_flag(CPU::flags::N, 0); // set N
+    (((bc_ & 0x0f00) + 1) > 0x0f00) ? set_flag(CPU::flags::H, 1) : set_flag(CPU::flags::H, 0); // if the lower 4 bits of B  causes carry, set H
+
+    // set reg B to val of b_inc
+    bc_ = (bc_ & 0xff) | (b_inc << 8); // clear the bc register to 0, then set register B to value of b_inc 
+
+    return 0;
+}
 uint8_t CPU::INC_C() {}
 uint8_t CPU::INC_D() {}
 uint8_t CPU::INC_E() {}
