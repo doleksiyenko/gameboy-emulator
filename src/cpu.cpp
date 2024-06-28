@@ -257,41 +257,28 @@ void CPU::INC_DEC_8BIT(uint16_t* reg, bool upper, bool inc)
         // the register is the top 8 bits of the 16 bit register combo
         if (inc) {
             reg_modified = ((*reg & 0xff00) >> 8) + 1; 
+            ((((*reg & 0x0f00) >> 8) + 1) > 0x0f00) ? set_flag(CPU::flags::H, 1) : set_flag(CPU::flags::H, 0); // if the lower 4 bits of B  causes carry, set H
         }
         else {
             reg_modified = ((*reg & 0xff00) >> 8) - 1; 
+            ((((*reg & 0x0f00) >> 8) - 1) < 0x0000) ? set_flag(CPU::flags::H, 1) : set_flag(CPU::flags::H, 0); // if the lower 4 bits of B  causes carry, set H
         }  
     }
     else {
         // the register is the lower 8 bits of the 16 bit register combo
         if (inc) {
             reg_modified = (*reg & 0xff) + 1;
-        }
-        else {
-            reg_modified = (*reg & 0xff) - 1;
-        }
-    }
-
-    // set flags
-    ((reg_modified) == 0) ? set_flag(CPU::flags::Z, 1) : set_flag(CPU::flags::Z, 0); // set Z if result is 0 
-    inc ? set_flag(CPU::flags::N, 0) : set_flag(CPU::flags::N, 1); // set N = 0 if incrementing, N = 1 if decrementing 
-
-    if (upper) {
-        if (inc) {
-            ((((*reg & 0x0f00) >> 8) + 1) > 0x0f00) ? set_flag(CPU::flags::H, 1) : set_flag(CPU::flags::H, 0); // if the lower 4 bits of B  causes carry, set H
-        }
-        else {
-            ((((*reg & 0x0f00) >> 8) - 1) < 0x0000) ? set_flag(CPU::flags::H, 1) : set_flag(CPU::flags::H, 0); // if the lower 4 bits of B  causes carry, set H
-        }
-    }
-    else {
-        if (inc) {
             (((*reg & 0x000f) + 1) > 0x000f) ? set_flag(CPU::flags::H, 1) : set_flag(CPU::flags::H, 0); // if the lower 4 bits of B  causes carry, set H
         }
         else {
+            reg_modified = (*reg & 0xff) - 1;
             (((*reg & 0x000f) - 1) < 0x0000) ? set_flag(CPU::flags::H, 1) : set_flag(CPU::flags::H, 0); // if the lower 4 bits of B  causes carry, set H
         }
     }
+
+    // set flags that are invariant on INC / DEC + if lower or upper register
+    ((reg_modified) == 0) ? set_flag(CPU::flags::Z, 1) : set_flag(CPU::flags::Z, 0); // set Z if result is 0 
+    inc ? set_flag(CPU::flags::N, 0) : set_flag(CPU::flags::N, 1); // set N = 0 if incrementing, N = 1 if decrementing 
 
     // finally, update the register to the updated value
     if (upper) {
@@ -303,21 +290,22 @@ void CPU::INC_DEC_8BIT(uint16_t* reg, bool upper, bool inc)
 }
 
 uint8_t CPU::INC_B() { CPU::INC_DEC_8BIT(&bc_, true, true); return 0; } 
-uint8_t CPU::INC_C() {}
-uint8_t CPU::INC_D() {}
-uint8_t CPU::INC_E() {}
-uint8_t CPU::INC_H() {}
-uint8_t CPU::INC_L() {}
-uint8_t CPU::INC_HL_m() {}
-uint8_t CPU::INC_A() {}
-uint8_t CPU::DEC_H() {}
-uint8_t CPU::DEC_D() {}
-uint8_t CPU::DEC_E() {}
-uint8_t CPU::DEC_B() {}
-uint8_t CPU::DEC_C() {}
-uint8_t CPU::DEC_L() {}
+uint8_t CPU::INC_C() { CPU::INC_DEC_8BIT(&bc_, false, true); return 0; }
+uint8_t CPU::INC_D() { CPU::INC_DEC_8BIT(&de_, true, true); return 0; }
+uint8_t CPU::INC_E() { CPU::INC_DEC_8BIT(&de_, false, true); return 0; }
+uint8_t CPU::INC_H() { CPU::INC_DEC_8BIT(&hl_, true, true); return 0; }
+uint8_t CPU::INC_L() { CPU::INC_DEC_8BIT(&hl_, false, true); return 0; }
+uint8_t CPU::INC_HL_m() { }
+uint8_t CPU::INC_A() { CPU::INC_DEC_8BIT(&af_, true, true); return 0; }
+
+uint8_t CPU::DEC_H() { CPU::INC_DEC_8BIT(&hl_, true, false); return 0; }
+uint8_t CPU::DEC_L() { CPU::INC_DEC_8BIT(&hl_, false, false); return 0; }
+uint8_t CPU::DEC_D() { CPU::INC_DEC_8BIT(&de_, true, false); return 0; }
+uint8_t CPU::DEC_E() { CPU::INC_DEC_8BIT(&de_, false, false); return 0; }
+uint8_t CPU::DEC_B() { CPU::INC_DEC_8BIT(&bc_, true, false); return 0; }
+uint8_t CPU::DEC_C() { CPU::INC_DEC_8BIT(&bc_, false, false); return 0; }
 uint8_t CPU::DEC_HL_m() {}
-uint8_t CPU::DEC_A() {}
+uint8_t CPU::DEC_A() { CPU::INC_DEC_8BIT(&af_, true, false); return 0; }
 
 
 
