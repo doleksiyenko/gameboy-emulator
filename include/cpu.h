@@ -37,6 +37,8 @@ class CPU {
 
         void set_flag(flags flag, bool val);
 
+        void INC_DEC_8BIT(uint16_t* reg, bool upper, bool inc); // helper function for all of the 8 bit register inc / dec operations on registers within 16 bit register combos
+
         struct Instruction {
             uint8_t (CPU::*opcode_function)(void) = nullptr; // function pointer to the atomic implementation of the instruction behaviour
             uint8_t t_cycles = 0; // each instruction takes a number of cycles to complete
