@@ -1,5 +1,6 @@
 #include <cpu.h>
 #include <bus.h>
+#include <cstdint>
 
 CPU::CPU() 
 {
@@ -295,8 +296,16 @@ uint8_t CPU::INC_D() { CPU::INC_DEC_8BIT(&de_, true, true); return 0; }
 uint8_t CPU::INC_E() { CPU::INC_DEC_8BIT(&de_, false, true); return 0; }
 uint8_t CPU::INC_H() { CPU::INC_DEC_8BIT(&hl_, true, true); return 0; }
 uint8_t CPU::INC_L() { CPU::INC_DEC_8BIT(&hl_, false, true); return 0; }
-uint8_t CPU::INC_HL_m() { }
 uint8_t CPU::INC_A() { CPU::INC_DEC_8BIT(&af_, true, true); return 0; }
+uint8_t CPU::INC_HL_m()
+{
+    // retrieve the 8 bit value from memory, but treat it as a 16 bit value to pass into the INC_DEC method
+    uint16_t mem_val = static_cast<uint16_t>(read(hl_));
+    CPU::INC_DEC_8BIT(&mem_val, false, true); // treat as lower, since there are only 8 bits in value
+    write(hl_, static_cast<uint8_t>(mem_val));
+
+    return 0;
+}
 
 uint8_t CPU::DEC_H() { CPU::INC_DEC_8BIT(&hl_, true, false); return 0; }
 uint8_t CPU::DEC_L() { CPU::INC_DEC_8BIT(&hl_, false, false); return 0; }
@@ -304,9 +313,16 @@ uint8_t CPU::DEC_D() { CPU::INC_DEC_8BIT(&de_, true, false); return 0; }
 uint8_t CPU::DEC_E() { CPU::INC_DEC_8BIT(&de_, false, false); return 0; }
 uint8_t CPU::DEC_B() { CPU::INC_DEC_8BIT(&bc_, true, false); return 0; }
 uint8_t CPU::DEC_C() { CPU::INC_DEC_8BIT(&bc_, false, false); return 0; }
-uint8_t CPU::DEC_HL_m() {}
-uint8_t CPU::DEC_A() { CPU::INC_DEC_8BIT(&af_, true, false); return 0; }
 
+uint8_t CPU::DEC_HL_m() 
+{
+    uint16_t mem_val = static_cast<uint16_t>(read(hl_));
+    CPU::INC_DEC_8BIT(&mem_val, false, false);
+    write(hl_, static_cast<uint8_t>(mem_val));
+
+    return 0;
+}
+uint8_t CPU::DEC_A() { CPU::INC_DEC_8BIT(&af_, true, false); return 0; }
 
 
 
