@@ -223,10 +223,37 @@ uint8_t CPU::LD_BC_d16()
 {
     /* set the register BC to the immediate value d16*/
     // read the next two bytes to get the immediate value
-    uint8_t byte1 = read(pc_);
-    uint8_t byte2 = read(++pc_);
+    uint8_t byte1 = read(++pc_);
+    uint16_t byte2 = read(++pc_);
     bc_ = (byte2 << 8) + byte1;
 
+    return 0;
+}
+
+uint8_t CPU::LD_DE_d16() 
+{
+    uint8_t byte1 = read(++pc_);
+    uint16_t byte2 = read(++pc_);
+    de_ = (byte2 << 8) + byte1;
+    
+    return 0;
+}
+
+uint8_t CPU::LD_HL_d16() 
+{
+    uint8_t byte1 = read(++pc_);
+    uint16_t byte2 = read(++pc_);
+    hl_ = (byte2 << 8) + byte1;
+    
+    return 0;
+}
+
+uint8_t CPU::LD_SP_d16() 
+{
+    uint8_t byte1 = read(++pc_);
+    uint16_t byte2 = read(++pc_);
+    sp_ = (byte2 << 8) + byte1;
+    
     return 0;
 }
 
@@ -390,13 +417,13 @@ uint8_t CPU::LD_A_d8()
     return 0;
 }
 
+
 uint8_t CPU::RLCA() {}
 uint8_t CPU::LD_a16_m_SP() {}
 uint8_t CPU::ADD_HL_BC() {}
 uint8_t CPU::LD_A_BC_m() {}
 uint8_t CPU::RRCA() {}
 uint8_t CPU::STOP_0() {}
-uint8_t CPU::LD_DE_d16() {}
 uint8_t CPU::LD_DE_m_A() {}
 uint8_t CPU::RLA() {}
 uint8_t CPU::JR_s8() {}
@@ -404,7 +431,6 @@ uint8_t CPU::ADD_HL_DE() {}
 uint8_t CPU::LD_A_DE_m() {}
 uint8_t CPU::RRA() {}
 uint8_t CPU::JR_NZ_s8() {}
-uint8_t CPU::LD_HL_d16() {}
 uint8_t CPU::LD_HLp_m_A() {}
 uint8_t CPU::DAA() {}
 uint8_t CPU::JR_Z_s8() {}
@@ -412,7 +438,6 @@ uint8_t CPU::ADD_HL_HL() {}
 uint8_t CPU::LD_A_HLp_m() {}
 uint8_t CPU::CPL() {}
 uint8_t CPU::JR_NC_s8() {}
-uint8_t CPU::LD_SP_d16() {}
 uint8_t CPU::LD_HLm_m_A() {}
 uint8_t CPU::SCF() {}
 uint8_t CPU::JR_C_s8() {}
