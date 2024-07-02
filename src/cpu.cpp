@@ -325,45 +325,99 @@ uint8_t CPU::DEC_HL_m()
 uint8_t CPU::DEC_A() { CPU::INC_DEC_8BIT(&af_, true, false); return 0; }
 
 
+// load 8 bit immediate value
+uint8_t CPU::LD_B_d8() 
+{
+    uint16_t immediate = read(++pc_); // read 8 bit value into 16 bit
+    bc_ &= 0xff; // set b register to 0
+    bc_ |= (immediate << 8); // set b register
+    return 0;
+}
 
+uint8_t CPU::LD_C_d8() 
+{
+    uint8_t immediate = read(++pc_); // read 8 bit value into 16 bit
+    bc_ &= 0xff00; // set c register to 0
+    bc_ |= (immediate); // set c register
+    return 0;
+}
 
+uint8_t CPU::LD_D_d8() 
+{
+    uint16_t immediate = read(++pc_); // read 8 bit value into 16 bit
+    de_ &= 0xff; // set d register to 0
+    de_ |= (immediate << 8); // set d register
+    return 0;
+}
 
-uint8_t CPU::LD_B_d8() {}
+uint8_t CPU::LD_E_d8() 
+{
+    uint8_t immediate = read(++pc_); // read 8 bit value into 16 bit
+    de_ &= 0xff00; // set e register to 0
+    de_ |= (immediate); // set e register
+    return 0;
+}
+
+uint8_t CPU::LD_H_d8() 
+{
+    uint16_t immediate = read(++pc_); // read 8 bit value into 16 bit
+    hl_ &= 0xff; // set h register to 0
+    hl_ |= (immediate << 8); // set h register
+    return 0;
+}
+
+uint8_t CPU::LD_L_d8() 
+{
+    uint8_t immediate = read(++pc_); // read 8 bit value into 16 bit
+    hl_ &= 0xff00; // set l register to 0
+    hl_ |= (immediate); // set l register
+    return 0;
+}
+
+uint8_t CPU::LD_HL_m_d8() 
+{
+    // write the 8 bit immediate value to the memory address specified by hl
+    uint8_t immediate = read(++pc_);
+    write(hl_, immediate);
+    return 0;
+}
+
+uint8_t CPU::LD_A_d8() 
+{
+    uint16_t immediate = read(++pc_); // read 8 bit value into 16 bit
+    af_ &= 0xff; // set h register to 0
+    af_ |= (immediate << 8); // set h register
+    return 0;
+}
+
 uint8_t CPU::RLCA() {}
 uint8_t CPU::LD_a16_m_SP() {}
 uint8_t CPU::ADD_HL_BC() {}
 uint8_t CPU::LD_A_BC_m() {}
-uint8_t CPU::LD_C_d8() {}
 uint8_t CPU::RRCA() {}
 uint8_t CPU::STOP_0() {}
 uint8_t CPU::LD_DE_d16() {}
 uint8_t CPU::LD_DE_m_A() {}
-uint8_t CPU::LD_D_d8() {}
 uint8_t CPU::RLA() {}
 uint8_t CPU::JR_s8() {}
 uint8_t CPU::ADD_HL_DE() {}
 uint8_t CPU::LD_A_DE_m() {}
-uint8_t CPU::LD_E_d8() {}
 uint8_t CPU::RRA() {}
 uint8_t CPU::JR_NZ_s8() {}
 uint8_t CPU::LD_HL_d16() {}
 uint8_t CPU::LD_HLp_m_A() {}
-uint8_t CPU::LD_H_d8() {}
 uint8_t CPU::DAA() {}
 uint8_t CPU::JR_Z_s8() {}
 uint8_t CPU::ADD_HL_HL() {}
 uint8_t CPU::LD_A_HLp_m() {}
-uint8_t CPU::LD_L_d8() {}
 uint8_t CPU::CPL() {}
 uint8_t CPU::JR_NC_s8() {}
 uint8_t CPU::LD_SP_d16() {}
 uint8_t CPU::LD_HLm_m_A() {}
-uint8_t CPU::LD_HL_m_d8() {}
 uint8_t CPU::SCF() {}
 uint8_t CPU::JR_C_s8() {}
 uint8_t CPU::ADD_HL_SP() {}
 uint8_t CPU::LD_A_HLm_m() {}
-uint8_t CPU::LD_A_d8() {}
 uint8_t CPU::CCF() {}
 uint8_t CPU::LD_B_B() {}
 uint8_t CPU::LD_B_C() {}
