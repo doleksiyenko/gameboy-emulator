@@ -445,29 +445,41 @@ uint8_t CPU::LD_A_d8()
 }
 
 
-
+// rotate register contents
 uint8_t CPU::RLCA() {}
-uint8_t CPU::LD_a16_m_SP() {}
-uint8_t CPU::ADD_HL_BC() {}
 uint8_t CPU::RRCA() {}
-uint8_t CPU::STOP_0() {}
 uint8_t CPU::RLA() {}
-uint8_t CPU::JR_s8() {}
-uint8_t CPU::ADD_HL_DE() {}
-uint8_t CPU::LD_A_DE_m() {}
 uint8_t CPU::RRA() {}
+
+
+// jump instructions
 uint8_t CPU::JR_NZ_s8() {}
-uint8_t CPU::DAA() {}
-uint8_t CPU::JR_Z_s8() {}
-uint8_t CPU::ADD_HL_HL() {}
-uint8_t CPU::LD_A_HLp_m() {}
-uint8_t CPU::CPL() {}
+uint8_t CPU::JR_s8() {}
 uint8_t CPU::JR_NC_s8() {}
-uint8_t CPU::SCF() {}
+uint8_t CPU::JR_Z_s8() {}
 uint8_t CPU::JR_C_s8() {}
-uint8_t CPU::ADD_HL_SP() {}
-uint8_t CPU::LD_A_HLm_m() {}
+
+// register flag manipulation
+uint8_t CPU::STOP_0() {}
+uint8_t CPU::DAA() {}
+uint8_t CPU::SCF() {}
+uint8_t CPU::CPL() {}
 uint8_t CPU::CCF() {}
+
+// add registers
+uint8_t CPU::ADD_HL_BC() {}
+uint8_t CPU::ADD_HL_DE() {}
+uint8_t CPU::ADD_HL_HL() {}
+uint8_t CPU::ADD_HL_SP() {}
+
+
+// load at memory locations
+uint8_t CPU::LD_a16_m_SP() {}
+uint8_t CPU::LD_A_DE_m() {}
+uint8_t CPU::LD_A_HLp_m() {}
+uint8_t CPU::LD_A_HLm_m() {}
+
+// one byte load instructions
 uint8_t CPU::LD_B_B() {}
 uint8_t CPU::LD_B_C() {}
 uint8_t CPU::LD_B_D() {}
