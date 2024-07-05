@@ -446,10 +446,51 @@ uint8_t CPU::LD_A_d8()
 
 
 // rotate register contents
-uint8_t CPU::RLCA() {}
-uint8_t CPU::RRCA() {}
-uint8_t CPU::RLA() {}
-uint8_t CPU::RRA() {}
+uint8_t CPU::RLCA() 
+{
+    // rotate contents of register A to the left
+    uint8_t a = (af_ & 0xff00);
+    uint8_t top_bit = (a >> 7); 
+
+    // rotate the register, then set 0 bit to bit rotated out
+    a <<= 1;
+    a |= top_bit; // set the last bit to the top bit
+    set_flag(CPU::flags::C, top_bit);
+
+    // finally, set the modified a to the a register
+    af_ &= 0xff; // clear the a register
+    af_ |= (a << 8); // set the a register
+
+    return 0;
+}
+
+uint8_t CPU::RRCA() 
+{
+    // rotate contents of register A to the right
+    uint8_t a = (af_ & 0xff00);
+    uint8_t bottom_bit = (a & 1); 
+
+    // rotate the register, then set 0 bit to bit rotated out
+    a >>= 1;
+    a |= (bottom_bit << 7); // set the top bit to the previous bottom bit
+    set_flag(CPU::flags::C, bottom_bit);
+
+    // finally, set the modified a to the a register
+    af_ &= 0xff; // clear the a register
+    af_ |= (a << 8); // set the a register
+
+    return 0;
+}
+
+uint8_t CPU::RLA() 
+{
+    // rotate the contents of register A to the left, through the carry flag
+}
+
+uint8_t CPU::RRA() 
+{
+    // rotate the contents of register A to the right, through the carry flag
+}
 
 
 // jump instructions
