@@ -601,7 +601,6 @@ uint8_t CPU::JR_C_s8()
 // register flag manipulation
 //TODO: 
 uint8_t CPU::STOP_0() {}
-
 uint8_t CPU::DAA() {}
 
 uint8_t CPU::SCF() 
@@ -638,11 +637,43 @@ uint8_t CPU::CCF()
 }
 
 // add registers
-uint8_t CPU::ADD_HL_BC() {}
-uint8_t CPU::ADD_HL_DE() {}
-uint8_t CPU::ADD_HL_HL() {}
-uint8_t CPU::ADD_HL_SP() {}
+// helper function for add instructions to register HL
+void CPU::ADD_REGISTERS_HL(uint16_t* reg1) 
+{
+    set_flag(CPU::flags::N, 0);
+    
+    // TODO:
+    if ((*reg1 + hl_)  ) {}
 
+} 
+
+uint8_t CPU::ADD_HL_BC() 
+{
+    // add bc to hl
+    ADD_REGISTERS_HL(&bc_); 
+    return 0;
+}
+
+uint8_t CPU::ADD_HL_DE() 
+{
+    // add de to hl
+    ADD_REGISTERS_HL(&de_); 
+    return 0;
+}
+
+uint8_t CPU::ADD_HL_HL() 
+{
+    // add hl to hl
+    ADD_REGISTERS_HL(&hl_); 
+    return 0;
+}
+
+uint8_t CPU::ADD_HL_SP() 
+{
+    // add sp to hl
+    ADD_REGISTERS_HL(&sp_); 
+    return 0;
+}
 
 // load at memory locations
 uint8_t CPU::LD_a16_m_SP() {}
