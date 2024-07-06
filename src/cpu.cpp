@@ -1,3 +1,4 @@
+#include <_types/_uint8_t.h>
 #include <cpu.h>
 #include <bus.h>
 #include <cstdint>
@@ -530,23 +531,6 @@ uint8_t CPU::RRA()
 }
 
 
-// TODO:
-// jump instructions
-uint8_t CPU::JR_NZ_s8() 
-{
-    uint8_t z = read_flag(CPU::flags::Z);
-    // read the next byte to get the 8 bit signed value which holds the jump amount
-
-
-    if (z == 0) {
-        // branch
-        return 4; // require 4 extra cycles
-    }
-    else {
-        // no branch
-        return 0;
-    }
-}
 uint8_t CPU::JR_s8() 
 {
     // jump relative instruction
@@ -554,28 +538,75 @@ uint8_t CPU::JR_s8()
     pc_ += immediate;
     return 0;
 }
-uint8_t CPU::JR_NC_s8() {}
-uint8_t CPU::JR_Z_s8() 
+uint8_t CPU::JR_NC_s8() 
 {
+    // jump if carry flag is not set 
+    uint8_t immediate = read(pc_++);
+    uint8_t c = read_flag(CPU::flags::C);
+
+    if (c == 0) {
+        pc_ += immediate;
+        return 4;
+    }
+    
+    // if c is not 0, do not branch
+    return 0;
+
+}
+
+// jump instructions
+uint8_t CPU::JR_NZ_s8() 
+{
+    // jump if Z is not set
     uint8_t immediate = read(pc_++);
     uint8_t z = read_flag(CPU::flags::Z);
 
     if (z == 0) {
+        // branch
+        return 4; // require 4 extra cycles
+    }
+    
+    return 0;
+}
+
+uint8_t CPU::JR_Z_s8() 
+{
+    // jump if Z flag is set
+    uint8_t immediate = read(pc_++);
+    uint8_t z = read_flag(CPU::flags::Z);
+
+    if (z == 1) {
         pc_ += immediate;
         return 4;
     }
-    else {
-        return 0;
-    }
+
+    return 0;
 }
 
-uint8_t CPU::JR_C_s8() {}
+uint8_t CPU::JR_C_s8() 
+{
+    // jump if carry flag is set 
+    uint8_t immediate = read(pc_++);
+    uint8_t c = read_flag(CPU::flags::C);
+
+    if (c == 1) {
+        pc_ += immediate;
+        return 4;
+    }
+    
+    // if c is not 0, do not branch
+    return 0;
+}
 
 // register flag manipulation
 uint8_t CPU::STOP_0() {}
 uint8_t CPU::DAA() {}
 uint8_t CPU::SCF() {}
-uint8_t CPU::CPL() {}
+uint8_t CPU::CPL() 
+{
+    // take the ones complement of register A
+}
+
 uint8_t CPU::CCF() {}
 
 // add registers
