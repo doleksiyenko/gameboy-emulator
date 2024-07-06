@@ -547,9 +547,28 @@ uint8_t CPU::JR_NZ_s8()
         return 0;
     }
 }
-uint8_t CPU::JR_s8() {}
+uint8_t CPU::JR_s8() 
+{
+    // jump relative instruction
+    uint8_t immediate = read(pc_++);
+    pc_ += immediate;
+    return 0;
+}
 uint8_t CPU::JR_NC_s8() {}
-uint8_t CPU::JR_Z_s8() {}
+uint8_t CPU::JR_Z_s8() 
+{
+    uint8_t immediate = read(pc_++);
+    uint8_t z = read_flag(CPU::flags::Z);
+
+    if (z == 0) {
+        pc_ += immediate;
+        return 4;
+    }
+    else {
+        return 0;
+    }
+}
+
 uint8_t CPU::JR_C_s8() {}
 
 // register flag manipulation
