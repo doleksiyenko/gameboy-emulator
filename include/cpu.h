@@ -36,6 +36,7 @@ class CPU {
         };
 
         void set_flag(flags flag, bool val);
+        uint8_t read_flag(flags flag);
 
         void INC_DEC_8BIT(uint16_t* reg, bool upper, bool inc); // helper function for all of the 8 bit register inc / dec operations on registers within 16 bit register combos
 

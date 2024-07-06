@@ -208,6 +208,23 @@ void CPU::set_flag(CPU::flags flag, bool val)
     }
 }
 
+uint8_t CPU::read_flag(CPU::flags flag) 
+{
+    switch (flag) {
+        case CPU::flags::C:
+            return (af_ & flag) >> 4;
+            break;
+        case CPU::flags::H:
+            return (af_ & flag) >> 5;
+            break;
+        case CPU::flags::N:
+            return (af_ & flag) >> 6;
+            break;
+        case CPU::flags::Z:
+            return (af_ & flag) >> 7;
+            break;
+    }
+}
 
 // --------------- INSTRUCTION IMPLEMENTATIONS --------------------------
 
@@ -485,11 +502,35 @@ uint8_t CPU::RRCA()
 uint8_t CPU::RLA() 
 {
     // rotate the contents of register A to the left, through the carry flag
+    uint8_t a = (af_ & 0xff00);
+
+    // rotate the register, then set 0 bit to bit rotated out
+    a <<= 1;
+
+    // set bit 0 to the carry bit
+    a |= read_flag(CPU::flags::C);
+
+    // finally, set the modified a to the a register
+    af_ &= 0xff; // clear the a register
+    af_ |= (a << 8); // set the a register
+
+    return 0;
 }
 
 uint8_t CPU::RRA() 
 {
     // rotate the contents of register A to the right, through the carry flag
+    uint8_t a = (af_ & 0xff00);
+
+    // rotate the register, then set 0 bit to bit rotated out
+    a >>= 1;
+    a |= (read_flag(CPU::flags::C) << 7); // set the top bit to the carry bit
+
+    // finally, set the modified a to the a register
+    af_ &= 0xff; // clear the a register
+    af_ |= (a << 8); // set the a register
+
+    return 0;
 }
 
 
