@@ -463,7 +463,7 @@ uint8_t CPU::LD_A_d8()
 uint8_t CPU::RLCA() 
 {
     // rotate contents of register A to the left
-    uint8_t a = (af_ & 0xff00);
+    uint8_t a = (af_ & 0xff00) >> 8;
     uint8_t top_bit = (a >> 7); 
 
     // rotate the register, then set 0 bit to bit rotated out
@@ -481,7 +481,7 @@ uint8_t CPU::RLCA()
 uint8_t CPU::RRCA() 
 {
     // rotate contents of register A to the right
-    uint8_t a = (af_ & 0xff00);
+    uint8_t a = (af_ & 0xff00) >> 8;
     uint8_t bottom_bit = (a & 1); 
 
     // rotate the register, then set 0 bit to bit rotated out
@@ -499,7 +499,7 @@ uint8_t CPU::RRCA()
 uint8_t CPU::RLA() 
 {
     // rotate the contents of register A to the left, through the carry flag
-    uint8_t a = (af_ & 0xff00);
+    uint8_t a = (af_ & 0xff00) >> 8;
 
     // rotate the register, then set 0 bit to bit rotated out
     a <<= 1;
@@ -517,7 +517,7 @@ uint8_t CPU::RLA()
 uint8_t CPU::RRA() 
 {
     // rotate the contents of register A to the right, through the carry flag
-    uint8_t a = (af_ & 0xff00);
+    uint8_t a = (af_ & 0xff00) >> 8;
 
     // rotate the register, then set 0 bit to bit rotated out
     a >>= 1;
@@ -599,15 +599,43 @@ uint8_t CPU::JR_C_s8()
 }
 
 // register flag manipulation
+//TODO: 
 uint8_t CPU::STOP_0() {}
+
 uint8_t CPU::DAA() {}
-uint8_t CPU::SCF() {}
+
+uint8_t CPU::SCF() 
+{
+    // set the carry flag 
+    set_flag(CPU::flags::C, 1);
+    set_flag(CPU::flags::N, 0);
+    set_flag(CPU::flags::H, 0);
+
+    return 0;
+}
+
 uint8_t CPU::CPL() 
 {
     // take the ones complement of register A
+    uint16_t a = (af_ & 0xff00) >> 8;
+    a = ~a;
+    // set register a
+    af_ &= 0xff;
+    af_ |= (a << 8);
+
+    set_flag(CPU::flags::N, 1);
+    set_flag(CPU::flags::H, 1);
+    return 0;
 }
 
-uint8_t CPU::CCF() {}
+uint8_t CPU::CCF() 
+{
+    // flip the carry flag
+    set_flag(CPU::flags::C, !read_flag(CPU::flags::C)); 
+    set_flag(CPU::flags::N, 0);
+    set_flag(CPU::flags::H, 0);
+    return 0;
+}
 
 // add registers
 uint8_t CPU::ADD_HL_BC() {}
