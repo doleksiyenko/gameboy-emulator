@@ -240,9 +240,8 @@ uint8_t CPU::LD_BC_d16()
 {
     /* set the register BC to the immediate value d16*/
     // read the next two bytes to get the immediate value
-    uint8_t byte1 = read(pc_);
-    uint16_t byte2 = read(++pc_);
-    pc_++;
+    uint8_t byte1 = read(pc_++);
+    uint16_t byte2 = read(pc_++);
     bc_ = (byte2 << 8) + byte1;
 
     return 0;
@@ -250,9 +249,8 @@ uint8_t CPU::LD_BC_d16()
 
 uint8_t CPU::LD_DE_d16() 
 {
-    uint8_t byte1 = read(pc_);
-    uint16_t byte2 = read(++pc_);
-    pc_++;
+    uint8_t byte1 = read(pc_++);
+    uint16_t byte2 = read(pc_++);
     de_ = (byte2 << 8) + byte1;
     
     return 0;
@@ -260,9 +258,8 @@ uint8_t CPU::LD_DE_d16()
 
 uint8_t CPU::LD_HL_d16() 
 {
-    uint8_t byte1 = read(pc_);
-    uint16_t byte2 = read(++pc_);
-    pc_++;
+    uint8_t byte1 = read(pc_++);
+    uint16_t byte2 = read(pc_++);
     hl_ = (byte2 << 8) + byte1;
     
     return 0;
@@ -270,9 +267,8 @@ uint8_t CPU::LD_HL_d16()
 
 uint8_t CPU::LD_SP_d16() 
 {
-    uint8_t byte1 = read(pc_);
-    uint16_t byte2 = read(++pc_);
-    pc_++;
+    uint8_t byte1 = read(pc_++);
+    uint16_t byte2 = read(pc_++);
     sp_ = (byte2 << 8) + byte1;
     
     return 0;
@@ -399,7 +395,7 @@ uint8_t CPU::DEC_A() { CPU::INC_DEC_8BIT(&af_, true, false); return 0; }
 // load 8 bit immediate value
 uint8_t CPU::LD_B_d8() 
 {
-    uint16_t immediate = read(++pc_); // read 8 bit value into 16 bit
+    uint16_t immediate = read(pc_++); // read 8 bit value into 16 bit
     bc_ &= 0xff; // set b register to 0
     bc_ |= (immediate << 8); // set b register
     return 0;
@@ -407,7 +403,7 @@ uint8_t CPU::LD_B_d8()
 
 uint8_t CPU::LD_C_d8() 
 {
-    uint8_t immediate = read(++pc_); // read 8 bit value into 16 bit
+    uint8_t immediate = read(pc_++); // read 8 bit value into 16 bit
     bc_ &= 0xff00; // set c register to 0
     bc_ |= (immediate); // set c register
     return 0;
@@ -415,7 +411,7 @@ uint8_t CPU::LD_C_d8()
 
 uint8_t CPU::LD_D_d8() 
 {
-    uint16_t immediate = read(++pc_); // read 8 bit value into 16 bit
+    uint16_t immediate = read(pc_++); // read 8 bit value into 16 bit
     de_ &= 0xff; // set d register to 0
     de_ |= (immediate << 8); // set d register
     return 0;
@@ -423,7 +419,7 @@ uint8_t CPU::LD_D_d8()
 
 uint8_t CPU::LD_E_d8() 
 {
-    uint8_t immediate = read(++pc_); // read 8 bit value into 16 bit
+    uint8_t immediate = read(pc_++); // read 8 bit value into 16 bit
     de_ &= 0xff00; // set e register to 0
     de_ |= (immediate); // set e register
     return 0;
@@ -431,7 +427,7 @@ uint8_t CPU::LD_E_d8()
 
 uint8_t CPU::LD_H_d8() 
 {
-    uint16_t immediate = read(++pc_); // read 8 bit value into 16 bit
+    uint16_t immediate = read(pc_++); // read 8 bit value into 16 bit
     hl_ &= 0xff; // set h register to 0
     hl_ |= (immediate << 8); // set h register
     return 0;
@@ -439,7 +435,7 @@ uint8_t CPU::LD_H_d8()
 
 uint8_t CPU::LD_L_d8() 
 {
-    uint8_t immediate = read(++pc_); // read 8 bit value into 16 bit
+    uint8_t immediate = read(pc_++); // read 8 bit value into 16 bit
     hl_ &= 0xff00; // set l register to 0
     hl_ |= (immediate); // set l register
     return 0;
@@ -448,14 +444,14 @@ uint8_t CPU::LD_L_d8()
 uint8_t CPU::LD_HL_m_d8() 
 {
     // write the 8 bit immediate value to the memory address specified by hl
-    uint8_t immediate = read(++pc_);
+    uint8_t immediate = read(pc_++);
     write(hl_, immediate);
     return 0;
 }
 
 uint8_t CPU::LD_A_d8() 
 {
-    uint16_t immediate = read(++pc_); // read 8 bit value into 16 bit
+    uint16_t immediate = read(pc_++); // read 8 bit value into 16 bit
     af_ &= 0xff; // set h register to 0
     af_ |= (immediate << 8); // set h register
     return 0;
@@ -534,8 +530,23 @@ uint8_t CPU::RRA()
 }
 
 
+// TODO:
 // jump instructions
-uint8_t CPU::JR_NZ_s8() {}
+uint8_t CPU::JR_NZ_s8() 
+{
+    uint8_t z = read_flag(CPU::flags::Z);
+    // read the next byte to get the 8 bit signed value which holds the jump amount
+
+
+    if (z == 0) {
+        // branch
+        return 4; // require 4 extra cycles
+    }
+    else {
+        // no branch
+        return 0;
+    }
+}
 uint8_t CPU::JR_s8() {}
 uint8_t CPU::JR_NC_s8() {}
 uint8_t CPU::JR_Z_s8() {}
