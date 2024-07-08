@@ -836,7 +836,7 @@ uint8_t CPU::LD_A_L() { LOAD_CONTENTS_INTO_REG(&af_, 1, (hl_ & 0xff)); return 0;
 uint8_t CPU::LD_A_HL_m() { LOAD_CONTENTS_INTO_REG(&af_, 1, read(hl_)); return 0; }
 uint8_t CPU::LD_A_A() { LOAD_CONTENTS_INTO_REG(&af_, 1, (af_ & 0xff00) >> 8); return 0; }
 
-// ADD REGISTERS
+// ADD
 uint8_t CPU::ADD_A_B() {}
 uint8_t CPU::ADD_A_C() {}
 uint8_t CPU::ADD_A_D() {}
@@ -845,6 +845,8 @@ uint8_t CPU::ADD_A_H() {}
 uint8_t CPU::ADD_A_L() {}
 uint8_t CPU::ADD_A_HL_m() {}
 uint8_t CPU::ADD_A_A() {}
+
+// ADD CARRY
 uint8_t CPU::ADC_A_B() {}
 uint8_t CPU::ADC_A_C() {}
 uint8_t CPU::ADC_A_D() {}
@@ -853,6 +855,8 @@ uint8_t CPU::ADC_A_H() {}
 uint8_t CPU::ADC_A_L() {}
 uint8_t CPU::ADC_A_HL_m() {}
 uint8_t CPU::ADC_A_A() {}
+
+// SUBTRACT
 uint8_t CPU::SUB_B() {}
 uint8_t CPU::SUB_C() {}
 uint8_t CPU::SUB_D() {}
@@ -861,6 +865,8 @@ uint8_t CPU::SUB_H() {}
 uint8_t CPU::SUB_L() {}
 uint8_t CPU::SUB_HL_m() {}
 uint8_t CPU::SUB_A() {}
+
+// SUBTRACT CARRY
 uint8_t CPU::SBC_A_B() {}
 uint8_t CPU::SBC_A_C() {}
 uint8_t CPU::SBC_A_D() {}
@@ -869,14 +875,70 @@ uint8_t CPU::SBC_A_H() {}
 uint8_t CPU::SBC_A_L() {}
 uint8_t CPU::SBC_A_HL_m() {}
 uint8_t CPU::SBC_A_A() {}
-uint8_t CPU::AND_B() {}
-uint8_t CPU::AND_C() {}
-uint8_t CPU::AND_D() {}
-uint8_t CPU::AND_E() {}
-uint8_t CPU::AND_H() {}
-uint8_t CPU::AND_L() {}
-uint8_t CPU::AND_HL_m() {}
-uint8_t CPU::AND_A() {}
+
+
+uint8_t CPU::AND_B() 
+{
+    // set register A to A and B
+    uint16_t result = ((af_ & 0xff00) >> 8) & ((bc_ & 0xff00) >> 8); 
+
+    if (result == 0) {
+        set_flag(CPU::flags::Z, 1);
+    }
+    else {
+        set_flag(CPU::flags::Z, 0);
+    }
+
+    set_flag(CPU::flags::N, 0);
+    set_flag(CPU::flags::H, 1);
+    set_flag(CPU::flags::C, 0);
+
+    af_ &= 0xff;
+    af_ |= result << 8;
+
+    return 0;
+}
+
+uint8_t CPU::AND_C() 
+{}
+
+uint8_t CPU::AND_D() 
+{
+
+    // set register A to A and D
+    uint16_t result = ((de_ & 0xff00) >> 8) & ((bc_ & 0xff00) >> 8); 
+
+    if (result == 0) {
+        set_flag(CPU::flags::Z, 1);
+    }
+    else {
+        set_flag(CPU::flags::Z, 0);
+    }
+
+    set_flag(CPU::flags::N, 0);
+    set_flag(CPU::flags::H, 1);
+    set_flag(CPU::flags::C, 0);
+
+    af_ &= 0xff;
+    af_ |= result << 8;
+
+    return 0;
+}
+
+uint8_t CPU::AND_E() 
+{}
+
+uint8_t CPU::AND_H() 
+{}
+
+uint8_t CPU::AND_L() 
+{}
+
+uint8_t CPU::AND_HL_m() 
+{}
+
+uint8_t CPU::AND_A() 
+{}
 uint8_t CPU::XOR_B() {}
 uint8_t CPU::XOR_C() {}
 uint8_t CPU::XOR_D() {}
