@@ -703,27 +703,54 @@ uint8_t CPU::LD_a16_m_SP()
     uint16_t a16 = (upper << 8) + lower;
     write(a16, sp_ & 0xff);
     write(a16 + 1, (sp_ & 0xff00) >> 8);
+
+    return 0;
 }
 
 // load data at register address into register A
 uint8_t CPU::LD_A_BC_m() 
 {
+    uint16_t mem_val = read(bc_) << 8;
+    
+    // write the value of mem_val into register A
+    af_ &= 0xff;
+    af_ |= mem_val;
 
+    return 0;
 }
 
 uint8_t CPU::LD_A_DE_m() 
 {
+    uint16_t mem_val = read(de_) << 8;
+
+    // write into register A
+    af_ &= 0xff;
+    af_ |= mem_val;
+
+    return 0;
 
 }
 
 uint8_t CPU::LD_A_HLp_m() 
 {
+    uint16_t mem_val = read(hl_++) << 8;
 
+    // write into register A
+    af_ &= 0xff;
+    af_ |= mem_val;
+
+    return 0;
 }
 
 uint8_t CPU::LD_A_HLm_m() 
 {
+    uint16_t mem_val = read(hl_--) << 8;
 
+    // write into register A
+    af_ &= 0xff;
+    af_ |= mem_val;
+
+    return 0;
 }
 
 // one byte load instructions
