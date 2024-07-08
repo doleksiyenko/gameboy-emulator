@@ -754,70 +754,80 @@ uint8_t CPU::LD_A_HLm_m()
 }
 
 // one byte load instructions
-uint8_t CPU::LD_B_B() {}
-uint8_t CPU::LD_B_C() {}
-uint8_t CPU::LD_B_D() {}
-uint8_t CPU::LD_B_E() {}
-uint8_t CPU::LD_B_H() {}
-uint8_t CPU::LD_B_L() {}
-uint8_t CPU::LD_B_HL_m() {}
-uint8_t CPU::LD_B_A() {}
-uint8_t CPU::LD_C_B() {}
-uint8_t CPU::LD_C_C() {}
-uint8_t CPU::LD_C_D() {}
-uint8_t CPU::LD_C_E() {}
-uint8_t CPU::LD_C_H() {}
-uint8_t CPU::LD_C_L() {}
-uint8_t CPU::LD_C_HL_m() {}
-uint8_t CPU::LD_C_A() {}
-uint8_t CPU::LD_D_B() {}
-uint8_t CPU::LD_D_C() {}
-uint8_t CPU::LD_D_D() {}
-uint8_t CPU::LD_D_E() {}
-uint8_t CPU::LD_D_H() {}
-uint8_t CPU::LD_D_L() {}
-uint8_t CPU::LD_D_HL_m() {}
-uint8_t CPU::LD_D_A() {}
-uint8_t CPU::LD_E_B() {}
-uint8_t CPU::LD_E_C() {}
-uint8_t CPU::LD_E_D() {}
-uint8_t CPU::LD_E_E() {}
-uint8_t CPU::LD_E_H() {}
-uint8_t CPU::LD_E_L() {}
-uint8_t CPU::LD_E_HL_m() {}
-uint8_t CPU::LD_E_A() {}
-uint8_t CPU::LD_H_B() {}
-uint8_t CPU::LD_H_C() {}
-uint8_t CPU::LD_H_D() {}
-uint8_t CPU::LD_H_E() {}
-uint8_t CPU::LD_H_H() {}
-uint8_t CPU::LD_H_L() {}
-uint8_t CPU::LD_H_HL_m() {}
-uint8_t CPU::LD_H_A() {}
-uint8_t CPU::LD_L_B() {}
-uint8_t CPU::LD_L_C() {}
-uint8_t CPU::LD_L_D() {}
-uint8_t CPU::LD_L_E() {}
-uint8_t CPU::LD_L_H() {}
-uint8_t CPU::LD_L_L() {}
-uint8_t CPU::LD_L_HL_m() {}
-uint8_t CPU::LD_L_A() {}
-uint8_t CPU::LD_HL_m_B() {}
-uint8_t CPU::LD_HL_m_C() {}
-uint8_t CPU::LD_HL_m_D() {}
-uint8_t CPU::LD_HL_m_E() {}
-uint8_t CPU::LD_HL_m_H() {}
-uint8_t CPU::LD_HL_m_L() {}
+// helper function:
+
+void LOAD_CONTENTS_INTO_REG(uint16_t* reg_pair, bool top, uint8_t reg2_contents) // helper function for the LD REG1, REG2 instructions
+{
+    // set register in reg_pair to reg2_contents. Top specifies which reigster in reg_pair is to be set
+}
+
+uint8_t CPU::LD_B_B() { LOAD_CONTENTS_INTO_REG(&bc_, 1, (bc_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_B_C() { LOAD_CONTENTS_INTO_REG(&bc_, 1, (bc_ & 0xff)); return 0; }
+uint8_t CPU::LD_B_D() { LOAD_CONTENTS_INTO_REG(&bc_, 1, (de_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_B_E() { LOAD_CONTENTS_INTO_REG(&bc_, 1, (de_ & 0xff)); return 0; }
+uint8_t CPU::LD_B_H() { LOAD_CONTENTS_INTO_REG(&bc_, 1, (hl_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_B_L() { LOAD_CONTENTS_INTO_REG(&bc_, 1, (hl_ & 0xff)); return 0; }
+uint8_t CPU::LD_B_HL_m() { LOAD_CONTENTS_INTO_REG(&bc_, 1, read(hl_)); return 0; }
+uint8_t CPU::LD_B_A() { LOAD_CONTENTS_INTO_REG(&bc_, 1, (af_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_C_B() { LOAD_CONTENTS_INTO_REG(&bc_, 0, (bc_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_C_C() { LOAD_CONTENTS_INTO_REG(&bc_, 0, (bc_ & 0xff)); return 0; }
+uint8_t CPU::LD_C_D() { LOAD_CONTENTS_INTO_REG(&bc_, 0, (de_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_C_E() { LOAD_CONTENTS_INTO_REG(&bc_, 0, (de_ & 0xff)); return 0; }
+uint8_t CPU::LD_C_H() { LOAD_CONTENTS_INTO_REG(&bc_, 0, (hl_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_C_L() { LOAD_CONTENTS_INTO_REG(&bc_, 0, (hl_ & 0xff)); return 0; }
+uint8_t CPU::LD_C_HL_m() { LOAD_CONTENTS_INTO_REG(&bc_, 0, read(hl_)); return 0; }
+uint8_t CPU::LD_C_A() { LOAD_CONTENTS_INTO_REG(&bc_, 0, (af_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_D_B() { LOAD_CONTENTS_INTO_REG(&de_, 1, (bc_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_D_C() { LOAD_CONTENTS_INTO_REG(&de_, 1, (bc_ & 0xff)); return 0; }
+uint8_t CPU::LD_D_D() { LOAD_CONTENTS_INTO_REG(&de_, 1, (de_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_D_E() { LOAD_CONTENTS_INTO_REG(&de_, 1, (de_ & 0xff)); return 0; }
+uint8_t CPU::LD_D_H() { LOAD_CONTENTS_INTO_REG(&de_, 1, (hl_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_D_L() { LOAD_CONTENTS_INTO_REG(&de_, 1, (hl_ & 0xff)); return 0; }
+uint8_t CPU::LD_D_HL_m() { LOAD_CONTENTS_INTO_REG(&de_, 1, read(hl_)); return 0; }
+uint8_t CPU::LD_D_A() { LOAD_CONTENTS_INTO_REG(&de_, 1, (af_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_E_B() { LOAD_CONTENTS_INTO_REG(&de_, 0, (bc_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_E_C() { LOAD_CONTENTS_INTO_REG(&de_, 0, (bc_ & 0xff)); return 0; }
+uint8_t CPU::LD_E_D() { LOAD_CONTENTS_INTO_REG(&de_, 0, (de_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_E_E() { LOAD_CONTENTS_INTO_REG(&de_, 0, (de_ & 0xff)); return 0; }
+uint8_t CPU::LD_E_H() { LOAD_CONTENTS_INTO_REG(&de_, 0, (hl_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_E_L() { LOAD_CONTENTS_INTO_REG(&de_, 0, (hl_ & 0xff)); return 0; }
+uint8_t CPU::LD_E_HL_m() { LOAD_CONTENTS_INTO_REG(&de_, 0, read(hl_)); return 0; }
+uint8_t CPU::LD_E_A() { LOAD_CONTENTS_INTO_REG(&hl_, 0, (af_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_H_B() { LOAD_CONTENTS_INTO_REG(&hl_, 1, (bc_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_H_C() { LOAD_CONTENTS_INTO_REG(&hl_, 1, (bc_ & 0xff)); return 0; }
+uint8_t CPU::LD_H_D() { LOAD_CONTENTS_INTO_REG(&hl_, 1, (de_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_H_E() { LOAD_CONTENTS_INTO_REG(&hl_, 1, (de_ & 0xff)); return 0; }
+uint8_t CPU::LD_H_H() { LOAD_CONTENTS_INTO_REG(&hl_, 1, (hl_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_H_L() { LOAD_CONTENTS_INTO_REG(&hl_, 1, (hl_ & 0xff)); return 0; }
+uint8_t CPU::LD_H_HL_m() { LOAD_CONTENTS_INTO_REG(&hl_, 1, read(hl_)); return 0; }
+uint8_t CPU::LD_H_A() { LOAD_CONTENTS_INTO_REG(&hl_, 1, (af_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_L_B() { LOAD_CONTENTS_INTO_REG(&hl_, 0, (bc_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_L_C() { LOAD_CONTENTS_INTO_REG(&hl_, 0, (bc_ & 0xff)); return 0; }
+uint8_t CPU::LD_L_D() { LOAD_CONTENTS_INTO_REG(&hl_, 0, (de_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_L_E() { LOAD_CONTENTS_INTO_REG(&hl_, 0, (de_ & 0xff)); return 0; }
+uint8_t CPU::LD_L_H() { LOAD_CONTENTS_INTO_REG(&hl_, 0, (hl_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_L_L() { LOAD_CONTENTS_INTO_REG(&hl_, 0, (hl_ & 0xff)); return 0; }
+uint8_t CPU::LD_L_HL_m() { LOAD_CONTENTS_INTO_REG(&hl_, 0, read(hl_)); return 0; }
+uint8_t CPU::LD_L_A() { LOAD_CONTENTS_INTO_REG(&hl_, 0, (af_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_HL_m_B() { write(hl_, (bc_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_HL_m_C() { write(hl_, (bc_ & 0xff)); return 0; }
+uint8_t CPU::LD_HL_m_D() { write(hl_, (de_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_HL_m_E() { write(hl_, (de_ & 0xff)); return 0; }
+uint8_t CPU::LD_HL_m_H() { write(hl_, (hl_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_HL_m_L() { write(hl_, (hl_ & 0xff)); return 0; }
+// TODO: halt intruction
 uint8_t CPU::HALT() {}
-uint8_t CPU::LD_HL_m_A() {}
-uint8_t CPU::LD_A_B() {}
-uint8_t CPU::LD_A_C() {}
-uint8_t CPU::LD_A_D() {}
-uint8_t CPU::LD_A_E() {}
-uint8_t CPU::LD_A_H() {}
-uint8_t CPU::LD_A_L() {}
-uint8_t CPU::LD_A_HL_m() {}
-uint8_t CPU::LD_A_A() {}
+uint8_t CPU::LD_HL_m_A() { write(hl_, (af_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_A_B() { LOAD_CONTENTS_INTO_REG(&af_, 1, (bc_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_A_C() { LOAD_CONTENTS_INTO_REG(&af_, 1, (bc_ & 0xff)); return 0; }
+uint8_t CPU::LD_A_D() { LOAD_CONTENTS_INTO_REG(&af_, 1, (de_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_A_E() { LOAD_CONTENTS_INTO_REG(&af_, 1, (de_ & 0xff)); return 0; }
+uint8_t CPU::LD_A_H() { LOAD_CONTENTS_INTO_REG(&af_, 1, (hl_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_A_L() { LOAD_CONTENTS_INTO_REG(&af_, 1, (hl_ & 0xff)); return 0; }
+uint8_t CPU::LD_A_HL_m() { LOAD_CONTENTS_INTO_REG(&af_, 1, read(hl_)); return 0; }
+uint8_t CPU::LD_A_A() { LOAD_CONTENTS_INTO_REG(&af_, 1, (af_ & 0xff00) >> 8); return 0; }
+
+// ADD REGISTERS
 uint8_t CPU::ADD_A_B() {}
 uint8_t CPU::ADD_A_C() {}
 uint8_t CPU::ADD_A_D() {}
