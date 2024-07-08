@@ -640,11 +640,28 @@ uint8_t CPU::CCF()
 // helper function for add instructions to register HL
 void CPU::ADD_REGISTERS_HL(uint16_t* reg1) 
 {
+    uint32_t addition = *reg1 + hl_;    
     set_flag(CPU::flags::N, 0);
-    
-    // TODO:
-    if ((*reg1 + hl_)  ) {}
 
+    // set the H and CY flags
+    if (addition > 0xffff) {
+        // the addition exceeds 16 bits and therefore needs carry
+        set_flag(CPU::flags::C, 1);
+    }
+    else {
+        set_flag(CPU::flags::C, 0);
+    }
+
+    if (((*reg1) & 0xfff) + (hl_ & 0xfff) > 0xfff) { 
+        // half carry flag is set when there is carry from bit 11 to 12
+        set_flag(CPU::flags::H, 1);
+    }
+    else {
+        set_flag(CPU::flags::H, 0);
+    }
+
+    // set the register HL to the value of the addition
+    hl_ = addition & 0xffff;
 } 
 
 uint8_t CPU::ADD_HL_BC() 
