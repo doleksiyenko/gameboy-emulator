@@ -754,11 +754,20 @@ uint8_t CPU::LD_A_HLm_m()
 }
 
 // one byte load instructions
-// helper function:
 
 void LOAD_CONTENTS_INTO_REG(uint16_t* reg_pair, bool top, uint8_t reg2_contents) // helper function for the LD REG1, REG2 instructions
 {
     // set register in reg_pair to reg2_contents. Top specifies which reigster in reg_pair is to be set
+    if (top) {
+        // clear the top register in reg_pair and then set it
+        *reg_pair &= 0xff;
+        *reg_pair |= (static_cast<uint16_t>(reg2_contents) << 8);
+    }
+    else {
+        // clear the bottom register in reg_pair and then set it
+        *reg_pair &= 0xff00;
+        *reg_pair |= reg2_contents;
+    }
 }
 
 uint8_t CPU::LD_B_B() { LOAD_CONTENTS_INTO_REG(&bc_, 1, (bc_ & 0xff00) >> 8); return 0; }
