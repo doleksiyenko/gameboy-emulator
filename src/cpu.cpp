@@ -692,11 +692,39 @@ uint8_t CPU::ADD_HL_SP()
     return 0;
 }
 
-// load at memory locations
-uint8_t CPU::LD_a16_m_SP() {}
-uint8_t CPU::LD_A_DE_m() {}
-uint8_t CPU::LD_A_HLp_m() {}
-uint8_t CPU::LD_A_HLm_m() {}
+uint8_t CPU::LD_a16_m_SP() 
+{
+    // store the SP into memory address specified by a16
+
+    // read 16 bit immediate value to get address to store SP
+    uint8_t lower = read(pc_++);
+    uint8_t upper = read(pc_++);
+
+    uint16_t a16 = (upper << 8) + lower;
+    write(a16, sp_ & 0xff);
+    write(a16 + 1, (sp_ & 0xff00) >> 8);
+}
+
+// load data at register address into register A
+uint8_t CPU::LD_A_BC_m() 
+{
+
+}
+
+uint8_t CPU::LD_A_DE_m() 
+{
+
+}
+
+uint8_t CPU::LD_A_HLp_m() 
+{
+
+}
+
+uint8_t CPU::LD_A_HLm_m() 
+{
+
+}
 
 // one byte load instructions
 uint8_t CPU::LD_B_B() {}
