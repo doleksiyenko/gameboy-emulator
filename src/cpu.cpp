@@ -837,6 +837,9 @@ uint8_t CPU::LD_A_HL_m() { LOAD_CONTENTS_INTO_REG(&af_, 1, read(hl_)); return 0;
 uint8_t CPU::LD_A_A() { LOAD_CONTENTS_INTO_REG(&af_, 1, (af_ & 0xff00) >> 8); return 0; }
 
 // ADD
+void CPU::ADD(uint8_t reg_contents) 
+{}
+
 uint8_t CPU::ADD_A_B() {}
 uint8_t CPU::ADD_A_C() {}
 uint8_t CPU::ADD_A_D() {}
@@ -847,6 +850,9 @@ uint8_t CPU::ADD_A_HL_m() {}
 uint8_t CPU::ADD_A_A() {}
 
 // ADD CARRY
+void CPU::ADC(uint8_t reg_contents)
+{}
+
 uint8_t CPU::ADC_A_B() {}
 uint8_t CPU::ADC_A_C() {}
 uint8_t CPU::ADC_A_D() {}
@@ -857,6 +863,9 @@ uint8_t CPU::ADC_A_HL_m() {}
 uint8_t CPU::ADC_A_A() {}
 
 // SUBTRACT
+void CPU::SUB(uint8_t reg_contents)
+{}
+
 uint8_t CPU::SUB_B() {}
 uint8_t CPU::SUB_C() {}
 uint8_t CPU::SUB_D() {}
@@ -867,6 +876,9 @@ uint8_t CPU::SUB_HL_m() {}
 uint8_t CPU::SUB_A() {}
 
 // SUBTRACT CARRY
+void CPU::SBC(uint8_t reg_contents)
+{}
+
 uint8_t CPU::SBC_A_B() {}
 uint8_t CPU::SBC_A_C() {}
 uint8_t CPU::SBC_A_D() {}
@@ -1312,5 +1324,5 @@ uint8_t CPU::SET_7_L() {}
 uint8_t CPU::SET_7_HL_m() {}
 uint8_t CPU::SET_7_A() {}
 
-uint8_t CPU::INVALID() {}
-uint8_t CPU::CB_PREFIX() {}
+uint8_t CPU::INVALID() { return 0; }
+uint8_t CPU::CB_PREFIX() { return 0; } // this function has no utility, since we simply read the next instruction if we see 0xcb in the cycle method

@@ -43,6 +43,10 @@ class CPU {
         void INC_DEC_8BIT(uint16_t* reg, bool upper, bool inc); // helper function for all of the 8 bit register inc / dec operations on registers within 16 bit register combos
         void ADD_REGISTERS_HL(uint16_t* reg1); // helper function for add instructions to register HL
         void LOAD_CONTENTS_INTO_REG(uint16_t* reg_pair, bool top, uint8_t reg2_contents); // helper function for the LD REG1, REG2 instructions
+        void ADD(uint8_t reg_content); // helper function for the ADD instructions
+        void ADC(uint8_t reg_content); // helper function for the ADC instructions
+        void SUB(uint8_t reg_content); // helper function for the SUB instructions
+        void SBC(uint8_t reg_content); // helper function for the SBC instructions
         void AND(uint8_t reg_content); // helper function for the AND instructions
         void XOR(uint8_t reg_content); // helper function for the XOR instructions
         void OR(uint8_t reg_content); // helper function for the OR instructions
