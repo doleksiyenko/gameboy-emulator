@@ -934,16 +934,36 @@ uint8_t CPU::XOR_L() { XOR((hl_ & 0xff)); return 0; }
 uint8_t CPU::XOR_HL_m() { XOR(read(hl_)); return 0; }
 uint8_t CPU::XOR_A() { XOR((af_ & 0xff00) >> 8); return 0; }
 
+void CPU::OR(uint8_t reg_content) 
+{
+    // main logic for taking OR between A and reg_content, then setting to A
+    uint16_t result = ((af_ & 0xff00) >> 8) | (reg_content);
+
+    if (result == 0) {
+        set_flag(CPU::flags::Z, 1);
+    }
+    else {
+        set_flag(CPU::flags::Z, 0);
+    }
+
+    set_flag(CPU::flags::N, 0);
+    set_flag(CPU::flags::H, 0);
+    set_flag(CPU::flags::C, 0);
+
+    af_ &= 0xff;
+    af_ |= result << 8;
+}
+
+uint8_t CPU::OR_B() { XOR((bc_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::OR_C() { XOR((bc_ & 0xff)); return 0; }
+uint8_t CPU::OR_D() { XOR((de_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::OR_E() { XOR((de_ & 0xff)); return 0; }
+uint8_t CPU::OR_H() { XOR((hl_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::OR_L() { XOR((hl_ & 0xff)); return 0; }
+uint8_t CPU::OR_HL_m() { XOR(read(hl_)); return 0; }
+uint8_t CPU::OR_A() { XOR((af_ & 0xff00) >> 8); return 0; }
 
 
-uint8_t CPU::OR_B() {}
-uint8_t CPU::OR_C() {}
-uint8_t CPU::OR_D() {}
-uint8_t CPU::OR_E() {}
-uint8_t CPU::OR_H() {}
-uint8_t CPU::OR_L() {}
-uint8_t CPU::OR_HL_m() {}
-uint8_t CPU::OR_A() {}
 uint8_t CPU::CP_B() {}
 uint8_t CPU::CP_C() {}
 uint8_t CPU::CP_D() {}
