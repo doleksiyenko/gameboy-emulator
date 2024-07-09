@@ -900,13 +900,31 @@ uint8_t CPU::AND_B()
 }
 
 uint8_t CPU::AND_C() 
-{}
+{
+    // set register A to A and D
+    uint16_t result = ((af_ & 0xff00) >> 8) & ((bc_ & 0xff)); 
+
+    if (result == 0) {
+        set_flag(CPU::flags::Z, 1);
+    }
+    else {
+        set_flag(CPU::flags::Z, 0);
+    }
+
+    set_flag(CPU::flags::N, 0);
+    set_flag(CPU::flags::H, 1);
+    set_flag(CPU::flags::C, 0);
+
+    af_ &= 0xff;
+    af_ |= result << 8;
+
+    return 0;
+}
 
 uint8_t CPU::AND_D() 
 {
-
     // set register A to A and D
-    uint16_t result = ((de_ & 0xff00) >> 8) & ((bc_ & 0xff00) >> 8); 
+    uint16_t result = ((af_ & 0xff00) >> 8) & ((de_ & 0xff00) >> 8); 
 
     if (result == 0) {
         set_flag(CPU::flags::Z, 1);
@@ -926,19 +944,114 @@ uint8_t CPU::AND_D()
 }
 
 uint8_t CPU::AND_E() 
-{}
+{
+    // set register A to A and E
+    uint16_t result = ((af_ & 0xff00) >> 8) & ((de_ & 0xff)); 
+
+    if (result == 0) {
+        set_flag(CPU::flags::Z, 1);
+    }
+    else {
+        set_flag(CPU::flags::Z, 0);
+    }
+
+    set_flag(CPU::flags::N, 0);
+    set_flag(CPU::flags::H, 1);
+    set_flag(CPU::flags::C, 0);
+
+    af_ &= 0xff;
+    af_ |= result << 8;
+
+    return 0;
+}
 
 uint8_t CPU::AND_H() 
-{}
+{
+    // set register A to A and H
+    uint16_t result = ((af_ & 0xff00) >> 8) & ((hl_ & 0xff00) >> 8); 
+
+    if (result == 0) {
+        set_flag(CPU::flags::Z, 1);
+    }
+    else {
+        set_flag(CPU::flags::Z, 0);
+    }
+
+    set_flag(CPU::flags::N, 0);
+    set_flag(CPU::flags::H, 1);
+    set_flag(CPU::flags::C, 0);
+
+    af_ &= 0xff;
+    af_ |= result << 8;
+
+    return 0;
+}
 
 uint8_t CPU::AND_L() 
-{}
+{
+    uint16_t result = ((af_ & 0xff00) >> 8) & ((hl_ & 0xff)); 
+
+    if (result == 0) {
+        set_flag(CPU::flags::Z, 1);
+    }
+    else {
+        set_flag(CPU::flags::Z, 0);
+    }
+
+    set_flag(CPU::flags::N, 0);
+    set_flag(CPU::flags::H, 1);
+    set_flag(CPU::flags::C, 0);
+
+    af_ &= 0xff;
+    af_ |= result << 8;
+
+    return 0;
+}
 
 uint8_t CPU::AND_HL_m() 
-{}
+{
+    // set register A to A and H
+    uint16_t result = ((af_ & 0xff00) >> 8) & (read(hl_)); 
+
+    if (result == 0) {
+        set_flag(CPU::flags::Z, 1);
+    }
+    else {
+        set_flag(CPU::flags::Z, 0);
+    }
+
+    set_flag(CPU::flags::N, 0);
+    set_flag(CPU::flags::H, 1);
+    set_flag(CPU::flags::C, 0);
+
+    af_ &= 0xff;
+    af_ |= result << 8;
+
+    return 0;
+}
 
 uint8_t CPU::AND_A() 
-{}
+{
+    // set register A to A and H
+    uint16_t result = ((af_ & 0xff00) >> 8) & ((af_ & 0xff00) >> 8); 
+
+    if (result == 0) {
+        set_flag(CPU::flags::Z, 1);
+    }
+    else {
+        set_flag(CPU::flags::Z, 0);
+    }
+
+    set_flag(CPU::flags::N, 0);
+    set_flag(CPU::flags::H, 1);
+    set_flag(CPU::flags::C, 0);
+
+    af_ &= 0xff;
+    af_ |= result << 8;
+
+    return 0;
+}
+
 uint8_t CPU::XOR_B() {}
 uint8_t CPU::XOR_C() {}
 uint8_t CPU::XOR_D() {}
