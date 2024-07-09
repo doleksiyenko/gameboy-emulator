@@ -876,11 +876,10 @@ uint8_t CPU::SBC_A_L() {}
 uint8_t CPU::SBC_A_HL_m() {}
 uint8_t CPU::SBC_A_A() {}
 
-
-uint8_t CPU::AND_B() 
+void CPU::AND(uint8_t reg_contents) 
 {
-    // set register A to A and B
-    uint16_t result = ((af_ & 0xff00) >> 8) & ((bc_ & 0xff00) >> 8); 
+    // main logic for taking the AND between A and reg_content, then setting to A
+    uint16_t result = ((af_ & 0xff00) >> 8) & (reg_contents); 
 
     if (result == 0) {
         set_flag(CPU::flags::Z, 1);
@@ -895,165 +894,20 @@ uint8_t CPU::AND_B()
 
     af_ &= 0xff;
     af_ |= result << 8;
-
-    return 0;
 }
 
-uint8_t CPU::AND_C() 
-{
-    // set register A to A and D
-    uint16_t result = ((af_ & 0xff00) >> 8) & ((bc_ & 0xff)); 
-
-    if (result == 0) {
-        set_flag(CPU::flags::Z, 1);
-    }
-    else {
-        set_flag(CPU::flags::Z, 0);
-    }
-
-    set_flag(CPU::flags::N, 0);
-    set_flag(CPU::flags::H, 1);
-    set_flag(CPU::flags::C, 0);
-
-    af_ &= 0xff;
-    af_ |= result << 8;
-
-    return 0;
-}
-
-uint8_t CPU::AND_D() 
-{
-    // set register A to A and D
-    uint16_t result = ((af_ & 0xff00) >> 8) & ((de_ & 0xff00) >> 8); 
-
-    if (result == 0) {
-        set_flag(CPU::flags::Z, 1);
-    }
-    else {
-        set_flag(CPU::flags::Z, 0);
-    }
-
-    set_flag(CPU::flags::N, 0);
-    set_flag(CPU::flags::H, 1);
-    set_flag(CPU::flags::C, 0);
-
-    af_ &= 0xff;
-    af_ |= result << 8;
-
-    return 0;
-}
-
-uint8_t CPU::AND_E() 
-{
-    // set register A to A and E
-    uint16_t result = ((af_ & 0xff00) >> 8) & ((de_ & 0xff)); 
-
-    if (result == 0) {
-        set_flag(CPU::flags::Z, 1);
-    }
-    else {
-        set_flag(CPU::flags::Z, 0);
-    }
-
-    set_flag(CPU::flags::N, 0);
-    set_flag(CPU::flags::H, 1);
-    set_flag(CPU::flags::C, 0);
-
-    af_ &= 0xff;
-    af_ |= result << 8;
-
-    return 0;
-}
-
-uint8_t CPU::AND_H() 
-{
-    // set register A to A and H
-    uint16_t result = ((af_ & 0xff00) >> 8) & ((hl_ & 0xff00) >> 8); 
-
-    if (result == 0) {
-        set_flag(CPU::flags::Z, 1);
-    }
-    else {
-        set_flag(CPU::flags::Z, 0);
-    }
-
-    set_flag(CPU::flags::N, 0);
-    set_flag(CPU::flags::H, 1);
-    set_flag(CPU::flags::C, 0);
-
-    af_ &= 0xff;
-    af_ |= result << 8;
-
-    return 0;
-}
-
-uint8_t CPU::AND_L() 
-{
-    uint16_t result = ((af_ & 0xff00) >> 8) & ((hl_ & 0xff)); 
-
-    if (result == 0) {
-        set_flag(CPU::flags::Z, 1);
-    }
-    else {
-        set_flag(CPU::flags::Z, 0);
-    }
-
-    set_flag(CPU::flags::N, 0);
-    set_flag(CPU::flags::H, 1);
-    set_flag(CPU::flags::C, 0);
-
-    af_ &= 0xff;
-    af_ |= result << 8;
-
-    return 0;
-}
-
-uint8_t CPU::AND_HL_m() 
-{
-    // set register A to A and H
-    uint16_t result = ((af_ & 0xff00) >> 8) & (read(hl_)); 
-
-    if (result == 0) {
-        set_flag(CPU::flags::Z, 1);
-    }
-    else {
-        set_flag(CPU::flags::Z, 0);
-    }
-
-    set_flag(CPU::flags::N, 0);
-    set_flag(CPU::flags::H, 1);
-    set_flag(CPU::flags::C, 0);
-
-    af_ &= 0xff;
-    af_ |= result << 8;
-
-    return 0;
-}
-
-uint8_t CPU::AND_A() 
-{
-    // set register A to A and H
-    uint16_t result = ((af_ & 0xff00) >> 8) & ((af_ & 0xff00) >> 8); 
-
-    if (result == 0) {
-        set_flag(CPU::flags::Z, 1);
-    }
-    else {
-        set_flag(CPU::flags::Z, 0);
-    }
-
-    set_flag(CPU::flags::N, 0);
-    set_flag(CPU::flags::H, 1);
-    set_flag(CPU::flags::C, 0);
-
-    af_ &= 0xff;
-    af_ |= result << 8;
-
-    return 0;
-}
+uint8_t CPU::AND_B() { CPU::AND((bc_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::AND_C() { CPU::AND((bc_ & 0xff)); return 0; }
+uint8_t CPU::AND_D() { CPU::AND((de_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::AND_E() { CPU::AND((de_ & 0xff)); return 0; }
+uint8_t CPU::AND_H() { CPU::AND((hl_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::AND_L() { CPU::AND((hl_ & 0xff)); return 0; }
+uint8_t CPU::AND_HL_m() { CPU::AND(read(hl_)); return 0; }
+uint8_t CPU::AND_A() { CPU::AND((af_ & 0xff00) >> 8); return 0; }
 
 void CPU::XOR(uint8_t reg_content)
 {
+    // main logic for taking XOR between A and reg_content, then setting to A
     uint16_t result = ((af_ & 0xff00) >> 8) ^ (reg_content);
 
     if (result == 0) {
