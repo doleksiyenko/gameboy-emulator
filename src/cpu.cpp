@@ -838,16 +838,45 @@ uint8_t CPU::LD_A_A() { LOAD_CONTENTS_INTO_REG(&af_, 1, (af_ & 0xff00) >> 8); re
 
 // ADD
 void CPU::ADD(uint8_t reg_contents) 
-{}
+{
+    uint16_t result = ((af_ & 0xff00) >> 8) + reg_contents;
 
-uint8_t CPU::ADD_A_B() {}
-uint8_t CPU::ADD_A_C() {}
-uint8_t CPU::ADD_A_D() {}
-uint8_t CPU::ADD_A_E() {}
-uint8_t CPU::ADD_A_H() {}
-uint8_t CPU::ADD_A_L() {}
-uint8_t CPU::ADD_A_HL_m() {}
-uint8_t CPU::ADD_A_A() {}
+    if (result > 0xff) {
+        set_flag(CPU::flags::C, 1);
+    }
+    else {
+        set_flag(CPU::flags::C, 0);
+    }
+
+    if ((result & 0xff) == 0) {
+        set_flag(CPU::flags::Z, 1);
+    }
+    else {
+        set_flag(CPU::flags::Z, 0);
+    }
+
+    if (((af_ & 0x0f00) >> 8) + (reg_contents & 0xf) > 0xf) {
+        set_flag(CPU::flags::H, 1);
+    }
+    else {
+        set_flag(CPU::flags::H, 0);
+    }
+
+    set_flag(CPU::flags::N, 0);
+
+
+    af_ &= 0xff; // clear register A
+    af_ |= ((result & 0xff) << 8); // set register A to result
+}
+
+uint8_t CPU::ADD_A_B() { CPU::ADD((bc_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::ADD_A_C() { CPU::ADD((bc_ & 0xff)); return 0; }
+uint8_t CPU::ADD_A_D() { CPU::ADD((de_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::ADD_A_E() { CPU::ADD((de_ & 0xff)); return 0; }
+uint8_t CPU::ADD_A_H() { CPU::ADD((hl_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::ADD_A_L() { CPU::ADD((hl_ & 0xff)); return 0; }
+uint8_t CPU::ADD_A_HL_m() { CPU::ADD(read(hl_)); return 0; }
+uint8_t CPU::ADD_A_A() { CPU::ADD((af_ & 0xff00) >> 8); return 0; }
 
 // ADD CARRY
 void CPU::ADC(uint8_t reg_contents)
