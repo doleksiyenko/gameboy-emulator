@@ -954,24 +954,54 @@ void CPU::OR(uint8_t reg_content)
     af_ |= result << 8;
 }
 
-uint8_t CPU::OR_B() { XOR((bc_ & 0xff00) >> 8); return 0; }
-uint8_t CPU::OR_C() { XOR((bc_ & 0xff)); return 0; }
-uint8_t CPU::OR_D() { XOR((de_ & 0xff00) >> 8); return 0; }
-uint8_t CPU::OR_E() { XOR((de_ & 0xff)); return 0; }
-uint8_t CPU::OR_H() { XOR((hl_ & 0xff00) >> 8); return 0; }
-uint8_t CPU::OR_L() { XOR((hl_ & 0xff)); return 0; }
-uint8_t CPU::OR_HL_m() { XOR(read(hl_)); return 0; }
-uint8_t CPU::OR_A() { XOR((af_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::OR_B() { OR((bc_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::OR_C() { OR((bc_ & 0xff)); return 0; }
+uint8_t CPU::OR_D() { OR((de_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::OR_E() { OR((de_ & 0xff)); return 0; }
+uint8_t CPU::OR_H() { OR((hl_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::OR_L() { OR((hl_ & 0xff)); return 0; }
+uint8_t CPU::OR_HL_m() { OR(read(hl_)); return 0; }
+uint8_t CPU::OR_A() { OR((af_ & 0xff00) >> 8); return 0; }
+
+void CPU::CP(uint8_t reg_contents) 
+{
+    uint8_t a = static_cast<uint8_t>((af_ & 0xff00) >> 8);
+    uint8_t diff = a - reg_contents;
+
+    if (diff == 0) {
+        set_flag(CPU::flags::Z, 1);
+    }
+    else {
+        set_flag(CPU::flags::Z, 0);
+    }
+
+    set_flag(CPU::flags::N, 1);
+
+    if ((a & 0xf) - (reg_contents & 0xf)) {
+        set_flag(CPU::flags::H, 1);
+    }
+    else {
+        set_flag(CPU::flags::H, 0);
+    }
+
+    if (diff < 0) {
+        set_flag(CPU::flags::C, 1);
+    }
+    else {
+        set_flag(CPU::flags::C, 0);
+    }
+}
+
+uint8_t CPU::CP_B() { CP((bc_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::CP_C() { CP((bc_ & 0xff)); return 0; }
+uint8_t CPU::CP_D() { CP((de_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::CP_E() { CP((de_ & 0xff)); return 0; }
+uint8_t CPU::CP_H() { CP((hl_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::CP_L() { CP((hl_ & 0xff)); return 0; }
+uint8_t CPU::CP_HL_m() { CP(read(hl_)); return 0; }
+uint8_t CPU::CP_A() { CP((af_ & 0xff00) >> 8); return 0; }
 
 
-uint8_t CPU::CP_B() {}
-uint8_t CPU::CP_C() {}
-uint8_t CPU::CP_D() {}
-uint8_t CPU::CP_E() {}
-uint8_t CPU::CP_H() {}
-uint8_t CPU::CP_L() {}
-uint8_t CPU::CP_HL_m() {}
-uint8_t CPU::CP_A() {}
 uint8_t CPU::RET_NZ() {}
 uint8_t CPU::POP_BC() {}
 uint8_t CPU::JP_NZ_a16() {}
