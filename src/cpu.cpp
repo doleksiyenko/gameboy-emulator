@@ -881,12 +881,12 @@ uint8_t CPU::ADD_A_A() { CPU::ADD((af_ & 0xff00) >> 8); return 0; }
 // ADD CARRY
 void CPU::ADC(uint8_t reg_contents)
 {
-    // add together reg_contents and the value stored inside the carry flag, and save the result to
+    // add together reg_contents and the value stored inside the carry flag to register A, and save the result to
     // register A
 
-    uint16_t result = read_flag(CPU::flags::C) + reg_contents;
+    uint16_t result = ((af_ & 0xff00) >> 8) + reg_contents + read_flag(CPU::flags::C) ;
 
-    if (read_flag(CPU::flags::C) + (reg_contents & 0xf) > 0xf) {
+    if (((af_ & 0xff00) >> 8) + reg_contents + read_flag(CPU::flags::C) > 0xf) {
         set_flag(CPU::flags::H, 1);
     }
     else {
@@ -907,9 +907,7 @@ void CPU::ADC(uint8_t reg_contents)
         set_flag(CPU::flags::Z, 0);
     }
 
-
     set_flag(CPU::flags::N, 0);
-
 
     af_ &= 0xff; // clear register A
     af_ |= ((result & 0xff) << 8); // set register A to result
@@ -970,7 +968,9 @@ uint8_t CPU::SUB_A() { CPU::SUB((af_ & 0xff00) >> 8); return 0; }
 
 // SUBTRACT CARRY
 void CPU::SBC(uint8_t reg_contents)
-{}
+{
+
+}
 
 uint8_t CPU::SBC_A_B() {}
 uint8_t CPU::SBC_A_C() {}
