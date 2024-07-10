@@ -886,7 +886,7 @@ void CPU::ADC(uint8_t reg_contents)
 
     uint16_t result = ((af_ & 0xff00) >> 8) + reg_contents + read_flag(CPU::flags::C) ;
 
-    if (((af_ & 0xff00) >> 8) + reg_contents + read_flag(CPU::flags::C) > 0xf) {
+    if (((af_ & 0x0f00) >> 8) + (reg_contents & 0xf) + read_flag(CPU::flags::C) > 0xf) {
         set_flag(CPU::flags::H, 1);
     }
     else {
@@ -969,17 +969,47 @@ uint8_t CPU::SUB_A() { CPU::SUB((af_ & 0xff00) >> 8); return 0; }
 // SUBTRACT CARRY
 void CPU::SBC(uint8_t reg_contents)
 {
+    // subtract reg_contents and the value stored inside the carry flag from register A, and save the result to
+    // register A
 
+    uint16_t result = ((af_ & 0xff00) >> 8) - reg_contents - read_flag(CPU::flags::C) ;
+
+    if (((af_ & 0x0f00) >> 8) - (reg_contents & 0xf) - read_flag(CPU::flags::C) < 0) {
+        set_flag(CPU::flags::H, 1);
+    }
+    else {
+        set_flag(CPU::flags::H, 0);
+    }
+
+    if (((af_ & 0xff00) >> 8) - reg_contents - read_flag(CPU::flags::C) < 0) {
+        set_flag(CPU::flags::C, 1);
+    }
+    else {
+        set_flag(CPU::flags::C, 0);
+    }
+
+    if ((result & 0xff) == 0) {
+        set_flag(CPU::flags::Z, 1);
+    }
+    else {
+        set_flag(CPU::flags::Z, 0);
+    }
+
+    set_flag(CPU::flags::N, 0);
+
+    af_ &= 0xff; // clear register A
+    af_ |= ((result & 0xff) << 8); // set register A to result
 }
 
-uint8_t CPU::SBC_A_B() {}
-uint8_t CPU::SBC_A_C() {}
-uint8_t CPU::SBC_A_D() {}
-uint8_t CPU::SBC_A_E() {}
-uint8_t CPU::SBC_A_H() {}
-uint8_t CPU::SBC_A_L() {}
-uint8_t CPU::SBC_A_HL_m() {}
-uint8_t CPU::SBC_A_A() {}
+uint8_t CPU::SBC_A_B() { CPU::SBC((bc_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::SBC_A_C() { CPU::SBC((bc_ & 0xff)); return 0; }
+uint8_t CPU::SBC_A_D() { CPU::SBC((de_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::SBC_A_E() { CPU::SBC((de_ & 0xff)); return 0; }
+uint8_t CPU::SBC_A_H() { CPU::SBC((hl_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::SBC_A_L() { CPU::SBC((hl_ & 0xff)); return 0; }
+uint8_t CPU::SBC_A_HL_m() { CPU::SBC(read(hl_)); return 0; }
+uint8_t CPU::SBC_A_A() { CPU::SBC((af_ & 0xff00) >> 8); return 0; }
+
 
 void CPU::AND(uint8_t reg_contents) 
 {
