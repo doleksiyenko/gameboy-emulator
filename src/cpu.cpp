@@ -949,7 +949,7 @@ void CPU::SUB(uint8_t reg_contents)
         set_flag(CPU::flags::H, 0);
     }
 
-    set_flag(CPU::flags::N, 0);
+    set_flag(CPU::flags::N, 1);
 
 
     af_ &= 0xff; // clear register A
@@ -995,7 +995,7 @@ void CPU::SBC(uint8_t reg_contents)
         set_flag(CPU::flags::Z, 0);
     }
 
-    set_flag(CPU::flags::N, 0);
+    set_flag(CPU::flags::N, 1);
 
     af_ &= 0xff; // clear register A
     af_ |= ((result & 0xff) << 8); // set register A to result
