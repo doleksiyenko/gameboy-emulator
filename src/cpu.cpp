@@ -928,17 +928,45 @@ uint8_t CPU::ADC_A_A() { CPU::ADC((af_ & 0xff00) >> 8); return 0; }
 // SUBTRACT
 void CPU::SUB(uint8_t reg_contents)
 {
+    uint8_t result = ((af_ & 0xff00) >> 8) - reg_contents;
 
+    if (result < 0xff) {
+        set_flag(CPU::flags::C, 1);
+    }
+    else {
+        set_flag(CPU::flags::C, 0);
+    }
+
+    if ((result & 0xff) == 0) {
+        set_flag(CPU::flags::Z, 1);
+    }
+    else {
+        set_flag(CPU::flags::Z, 0);
+    }
+
+    if (((af_ & 0x0f00) >> 8) - (reg_contents & 0xf) < 0) {
+        set_flag(CPU::flags::H, 1);
+    }
+    else {
+        set_flag(CPU::flags::H, 0);
+    }
+
+    set_flag(CPU::flags::N, 0);
+
+
+    af_ &= 0xff; // clear register A
+    af_ |= ((result & 0xff) << 8); // set register A to result
 }
 
-uint8_t CPU::SUB_B() {}
-uint8_t CPU::SUB_C() {}
-uint8_t CPU::SUB_D() {}
-uint8_t CPU::SUB_E() {}
-uint8_t CPU::SUB_H() {}
-uint8_t CPU::SUB_L() {}
-uint8_t CPU::SUB_HL_m() {}
-uint8_t CPU::SUB_A() {}
+uint8_t CPU::SUB_B() { CPU::SUB((bc_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::SUB_C() { CPU::SUB((bc_ & 0xff)); return 0; }
+uint8_t CPU::SUB_D() { CPU::SUB((de_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::SUB_E() { CPU::SUB((de_ & 0xff)); return 0; }
+uint8_t CPU::SUB_H() { CPU::SUB((hl_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::SUB_L() { CPU::SUB((hl_ & 0xff)); return 0; }
+uint8_t CPU::SUB_HL_m() { CPU::SUB(read(hl_)); return 0; }
+uint8_t CPU::SUB_A() { CPU::SUB((af_ & 0xff00) >> 8); return 0; }
+
 
 // SUBTRACT CARRY
 void CPU::SBC(uint8_t reg_contents)
