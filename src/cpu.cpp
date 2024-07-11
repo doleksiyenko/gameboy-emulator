@@ -1174,90 +1174,57 @@ uint8_t CPU::PUSH_AF() { PUSH(&af_); return 0; }
 
 // ADD, SUB, AND, OR, ADC, SBC, XOR, CP 8 bit immediate
 uint8_t CPU::ADD_A_d8() 
-{ }
+{
+    ADD(read(pc_++));
+    return 0;
+}
 
 uint8_t CPU::SUB_d8() 
-{ }
+{ 
+    SUB(read(pc_++));
+    return 0;
+}
 
 uint8_t CPU::ADC_A_d8() 
-{ }
+{ 
+    // add together reg_contents and the value stored inside the carry flag to register A, and save the result to
+    // register A
+    ADC(read(pc_++));
+    return 0;
+}
 
 uint8_t CPU::SBC_A_d8() 
 {
-
+    SBC(read(pc_++));
+    return 0;
 }
 
 uint8_t CPU::AND_d8() 
 {
     /* take the AND of register A and an immediate 8 bit value, then set register A to the outcome */
-    uint16_t result = ((af_ & 0xff00) >> 8) & read(pc_++); 
-
-    if (result == 0) {
-        set_flag(CPU::flags::Z, 1);
-    }
-    else {
-        set_flag(CPU::flags::Z, 0);
-    }
-
-    set_flag(CPU::flags::N, 0);
-    set_flag(CPU::flags::H, 1);
-    set_flag(CPU::flags::C, 0);
-
-    // set register A
-    af_ &= 0xff;
-    af_ |= result << 8;
-
+    AND(read(pc_++));
     return 0;
 }
 
 uint8_t CPU::XOR_d8() 
 { 
     /* take the AND of register A and an immediate 8 bit value, then set register A to the outcome */
-    uint16_t result = ((af_ & 0xff00) >> 8) ^ read(pc_++); 
-
-    if (result == 0) {
-        set_flag(CPU::flags::Z, 1);
-    }
-    else {
-        set_flag(CPU::flags::Z, 0);
-    }
-
-    set_flag(CPU::flags::N, 0);
-    set_flag(CPU::flags::H, 0);
-    set_flag(CPU::flags::C, 0);
-
-    // set register A
-    af_ &= 0xff;
-    af_ |= result << 8;
-
+    XOR(read(pc_++));
     return 0;
 }
 
 uint8_t CPU::OR_d8() 
 { 
     /* take the AND of register A and an immediate 8 bit value, then set register A to the outcome */
-    uint16_t result = ((af_ & 0xff00) >> 8) | read(pc_++); 
-
-    if (result == 0) {
-        set_flag(CPU::flags::Z, 1);
-    }
-    else {
-        set_flag(CPU::flags::Z, 0);
-    }
-
-    set_flag(CPU::flags::N, 0);
-    set_flag(CPU::flags::H, 0);
-    set_flag(CPU::flags::C, 0);
-
-    // set register A
-    af_ &= 0xff;
-    af_ |= result << 8;
-
+    OR(read(pc_++));
     return 0;
 }
 
 uint8_t CPU::CP_d8() 
-{ }
+{ 
+    CP(read(pc_++));
+    return 0;
+}
 
 
 // Return calls
