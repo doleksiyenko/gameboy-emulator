@@ -1194,6 +1194,10 @@ uint8_t CPU::RET_NZ()
 {
 
 }
+uint8_t CPU::RET_Z() {}
+
+uint8_t CPU::RET_NC() {}
+uint8_t CPU::RET_C() {}
 
 uint8_t CPU::JP_NZ_a16() 
 {
@@ -1221,10 +1225,40 @@ uint8_t CPU::JP_a16()
     return 0;
 }
 
+uint8_t CPU::JP_Z_a16() 
+{
+    // load 16 bit immediate value into the program counter if the Z flag is 1
+    if (read_flag(CPU::flags::Z) == 1) {
+        uint8_t lower = read(pc_++);
+        uint16_t upper = read(pc_++);
+        pc_ = (upper << 8) + lower;
+        return 4; // if we jump, require an additional M cycle
+    }
+    else {
+        // continue executing from the next instruction
+        return 0;
+    }
+}
+
 uint8_t CPU::JP_NC_a16() 
 {
-    // load 16 bit immediate value into the program counter if the Z flag is 0
+    // load 16 bit immediate value into the program counter if the C flag is 0
     if (read_flag(CPU::flags::C) == 0) {
+        uint8_t lower = read(pc_++);
+        uint16_t upper = read(pc_++);
+        pc_ = (upper << 8) + lower;
+        return 4; // if we jump, require an additional M cycle
+    }
+    else {
+        // continue executing from the next instruction
+        return 0;
+    }
+}
+
+uint8_t CPU::JP_C_a16() 
+{
+    // load 16 bit immediate value into the program counter if the C flag is 1
+    if (read_flag(CPU::flags::C) == 1) {
         uint8_t lower = read(pc_++);
         uint16_t upper = read(pc_++);
         pc_ = (upper << 8) + lower;
@@ -1246,16 +1280,11 @@ uint8_t CPU::RST_6() {}
 uint8_t CPU::RST_7(){}
 
 uint8_t CPU::CALL_NZ_a16() {}
-uint8_t CPU::RET_Z() {}
 uint8_t CPU::RET() {}
-uint8_t CPU::JP_Z_a16() {}
 uint8_t CPU::CALL_Z_a16() {}
 uint8_t CPU::CALL_a16() {}
-uint8_t CPU::RET_NC() {}
 uint8_t CPU::CALL_NC_a16() {}
-uint8_t CPU::RET_C() {}
 uint8_t CPU::RETI() {}
-uint8_t CPU::JP_C_a16() {}
 uint8_t CPU::CALL_C_a16() {}
 uint8_t CPU::LD_a8_m_A() {}
 uint8_t CPU::LD_C_m_A() {}
