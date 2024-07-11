@@ -1140,7 +1140,18 @@ uint8_t CPU::CP_A() { CP((af_ & 0xff00) >> 8); return 0; }
 uint8_t CPU::RET_NZ() {}
 uint8_t CPU::POP_BC() {}
 uint8_t CPU::JP_NZ_a16() {}
-uint8_t CPU::JP_a16() {}
+
+uint8_t CPU::JP_a16() 
+{
+    // load 16 bit immediate value into the program counter
+    uint8_t lower = read(pc_++);
+    uint16_t upper = read(pc_++);
+    
+    pc_ = (upper << 8) + lower;
+
+    return 0;
+}
+
 uint8_t CPU::CALL_NZ_a16() {}
 uint8_t CPU::PUSH_BC() {}
 uint8_t CPU::ADD_A_d8() {}
