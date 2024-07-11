@@ -51,6 +51,8 @@ class CPU {
         void XOR(uint8_t reg_content); // helper function for the XOR instructions
         void OR(uint8_t reg_content); // helper function for the OR instructions
         void CP(uint8_t reg_content); // helper function for the CP instructions
+        void PUSH(uint16_t* reg); // helper function for PUSH instructions
+        void POP(uint16_t* reg); // helper function for POP instructions
 
         struct Instruction {
             uint8_t (CPU::*opcode_function)(void) = nullptr; // function pointer to the atomic implementation of the instruction behaviour

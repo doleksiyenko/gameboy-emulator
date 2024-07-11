@@ -2,6 +2,7 @@
 #include <cpu.h>
 #include <bus.h>
 #include <cstdint>
+#include <sys/wait.h>
 
 CPU::CPU() 
 {
@@ -1136,9 +1137,37 @@ uint8_t CPU::CP_L() { CP((hl_ & 0xff)); return 0; }
 uint8_t CPU::CP_HL_m() { CP(read(hl_)); return 0; }
 uint8_t CPU::CP_A() { CP((af_ & 0xff00) >> 8); return 0; }
 
+// push and pop to the memory stack
+void CPU::POP(uint16_t* reg) 
+{
+    /* pop memory from stack, and store it inside register */
+
+    // clear the c register, then load the first byte into c
+    *reg &= 0xff00;
+    *reg |= read(sp_++);
+
+    // clear the b register, then load the next byte into b
+    *reg &= 0x00ff;
+    *reg |= static_cast<uint16_t>(read(sp_++)) << 8;
+}
+
+void CPU::PUSH(uint16_t* reg)
+{
+
+}
+
+uint8_t CPU::POP_BC() { POP(&bc_); return 0; }
+uint8_t CPU::POP_DE() { POP(&de_); return 0; }
+uint8_t CPU::POP_HL() { POP(&hl_); return 0; }
+uint8_t CPU::POP_AF() { POP(&af_); return 0; }
+uint8_t CPU::PUSH_BC() {}
+uint8_t CPU::PUSH_DE() {}
+uint8_t CPU::PUSH_HL() {}
+uint8_t CPU::PUSH_AF() {}
+
+
 
 uint8_t CPU::RET_NZ() {}
-uint8_t CPU::POP_BC() {}
 uint8_t CPU::JP_NZ_a16() {}
 
 uint8_t CPU::JP_a16() 
@@ -1153,7 +1182,6 @@ uint8_t CPU::JP_a16()
 }
 
 uint8_t CPU::CALL_NZ_a16() {}
-uint8_t CPU::PUSH_BC() {}
 uint8_t CPU::ADD_A_d8() {}
 uint8_t CPU::RST_0() {}
 uint8_t CPU::RET_Z() {}
@@ -1164,10 +1192,8 @@ uint8_t CPU::CALL_a16() {}
 uint8_t CPU::ADC_A_d8() {}
 uint8_t CPU::RST_1() {}
 uint8_t CPU::RET_NC() {}
-uint8_t CPU::POP_DE() {}
 uint8_t CPU::JP_NC_a16() {}
 uint8_t CPU::CALL_NC_a16() {}
-uint8_t CPU::PUSH_DE() {}
 uint8_t CPU::SUB_d8() {}
 uint8_t CPU::RST_2() {}
 uint8_t CPU::RET_C() {}
@@ -1177,9 +1203,7 @@ uint8_t CPU::CALL_C_a16() {}
 uint8_t CPU::SBC_A_d8() {}
 uint8_t CPU::RST_3() {}
 uint8_t CPU::LD_a8_m_A() {}
-uint8_t CPU::POP_HL() {}
 uint8_t CPU::LD_C_m_A() {}
-uint8_t CPU::PUSH_HL() {}
 uint8_t CPU::AND_d8() {}
 uint8_t CPU::RST_4() {}
 uint8_t CPU::ADD_SP_s8() {}
@@ -1188,10 +1212,8 @@ uint8_t CPU::LD_a16_m_A() {}
 uint8_t CPU::XOR_d8() {}
 uint8_t CPU::RST_5() {}
 uint8_t CPU::LD_A_a8_m() {}
-uint8_t CPU::POP_AF() {}
 uint8_t CPU::LD_A_C_m() {}
 uint8_t CPU::DI() {}
-uint8_t CPU::PUSH_AF() {}
 uint8_t CPU::OR_d8() {}
 uint8_t CPU::RST_6() {}
 uint8_t CPU::LD_HL_SP_s8() {}
