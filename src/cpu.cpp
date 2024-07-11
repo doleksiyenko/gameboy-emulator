@@ -1175,29 +1175,93 @@ uint8_t CPU::PUSH_AF() { PUSH(&af_); return 0; }
 // ADD, SUB, AND, OR, ADC, SBC, XOR, CP 8 bit immediate
 uint8_t CPU::ADD_A_d8() 
 { }
+
 uint8_t CPU::SUB_d8() 
 { }
+
 uint8_t CPU::ADC_A_d8() 
 { }
+
 uint8_t CPU::SBC_A_d8() 
 { }
+
 uint8_t CPU::XOR_d8() 
 { }
+
 uint8_t CPU::OR_d8() 
 { }
+
 uint8_t CPU::CP_d8() 
 { }
 
 
-// jumps and calls
+// Return calls
+uint8_t CPU::RET() 
+{
+    /* return from subroutine */
+    uint8_t lower = read(sp_++);
+    uint16_t upper = read(sp_++);
+
+    pc_ = (upper << 8) + lower;
+
+    return 0;
+}
+
 uint8_t CPU::RET_NZ() 
 {
-
+    /* return from subroutine if Z == 0 */
+    if (read_flag(CPU::flags::Z) == 0) {
+        uint8_t lower = read(sp_++); 
+        uint16_t upper = read(sp_++);
+        pc_ = (upper << 8) + lower;
+        return 12; // 3 additional M cycles required
+    }
+    else {
+        return 0; 
+    }
 }
-uint8_t CPU::RET_Z() {}
 
-uint8_t CPU::RET_NC() {}
-uint8_t CPU::RET_C() {}
+uint8_t CPU::RET_Z() 
+{
+    /* return from subroutine if Z == 1 */
+    if (read_flag(CPU::flags::Z) == 1) {
+        uint8_t lower = read(sp_++); 
+        uint16_t upper = read(sp_++);
+        pc_ = (upper << 8) + lower;
+        return 12; // 3 additional M cycles required
+    }
+    else {
+        return 0; 
+    }
+}
+
+uint8_t CPU::RET_NC() 
+{
+    /* return from subroutine if C == 0 */
+    if (read_flag(CPU::flags::C) == 0) {
+        uint8_t lower = read(sp_++); 
+        uint16_t upper = read(sp_++);
+        pc_ = (upper << 8) + lower;
+        return 12; // 3 additional M cycles required
+    }
+    else {
+        return 0; 
+    }
+}
+
+uint8_t CPU::RET_C() 
+{
+    /* return from subroutine if C == 1 */
+    if (read_flag(CPU::flags::C) == 1) {
+        uint8_t lower = read(sp_++); 
+        uint16_t upper = read(sp_++);
+        pc_ = (upper << 8) + lower;
+        return 12; // 3 additional M cycles required
+    }
+    else {
+        return 0; 
+    }
+}
 
 uint8_t CPU::JP_NZ_a16() 
 {
@@ -1280,7 +1344,6 @@ uint8_t CPU::RST_6() {}
 uint8_t CPU::RST_7(){}
 
 uint8_t CPU::CALL_NZ_a16() {}
-uint8_t CPU::RET() {}
 uint8_t CPU::CALL_Z_a16() {}
 uint8_t CPU::CALL_a16() {}
 uint8_t CPU::CALL_NC_a16() {}
@@ -1556,6 +1619,12 @@ uint8_t CPU::SET_7_H() {}
 uint8_t CPU::SET_7_L() {}
 uint8_t CPU::SET_7_HL_m() {}
 uint8_t CPU::SET_7_A() {}
+
+
+
+
+
+
 
 uint8_t CPU::INVALID() { return 0; }
 uint8_t CPU::CB_PREFIX() { return 0; } // this function has no utility, since we simply read the next instruction if we see 0xcb in the cycle method
