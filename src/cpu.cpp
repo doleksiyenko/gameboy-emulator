@@ -1183,13 +1183,78 @@ uint8_t CPU::ADC_A_d8()
 { }
 
 uint8_t CPU::SBC_A_d8() 
-{ }
+{
+
+}
+
+uint8_t CPU::AND_d8() 
+{
+    /* take the AND of register A and an immediate 8 bit value, then set register A to the outcome */
+    uint16_t result = ((af_ & 0xff00) >> 8) & read(pc_++); 
+
+    if (result == 0) {
+        set_flag(CPU::flags::Z, 1);
+    }
+    else {
+        set_flag(CPU::flags::Z, 0);
+    }
+
+    set_flag(CPU::flags::N, 0);
+    set_flag(CPU::flags::H, 1);
+    set_flag(CPU::flags::C, 0);
+
+    // set register A
+    af_ &= 0xff;
+    af_ |= result << 8;
+
+    return 0;
+}
 
 uint8_t CPU::XOR_d8() 
-{ }
+{ 
+    /* take the AND of register A and an immediate 8 bit value, then set register A to the outcome */
+    uint16_t result = ((af_ & 0xff00) >> 8) ^ read(pc_++); 
+
+    if (result == 0) {
+        set_flag(CPU::flags::Z, 1);
+    }
+    else {
+        set_flag(CPU::flags::Z, 0);
+    }
+
+    set_flag(CPU::flags::N, 0);
+    set_flag(CPU::flags::H, 0);
+    set_flag(CPU::flags::C, 0);
+
+    // set register A
+    af_ &= 0xff;
+    af_ |= result << 8;
+
+    return 0;
+}
 
 uint8_t CPU::OR_d8() 
-{ }
+{ 
+    /* take the AND of register A and an immediate 8 bit value, then set register A to the outcome */
+    uint16_t result = ((af_ & 0xff00) >> 8) | read(pc_++); 
+
+    if (result == 0) {
+        set_flag(CPU::flags::Z, 1);
+    }
+    else {
+        set_flag(CPU::flags::Z, 0);
+    }
+
+    set_flag(CPU::flags::N, 0);
+    set_flag(CPU::flags::H, 0);
+    set_flag(CPU::flags::C, 0);
+
+    // set register A
+    af_ &= 0xff;
+    af_ |= result << 8;
+
+    return 0;
+}
 
 uint8_t CPU::CP_d8() 
 { }
@@ -1334,14 +1399,23 @@ uint8_t CPU::JP_C_a16()
     }
 }
 
-uint8_t CPU::RST_0() {}
-uint8_t CPU::RST_1() {}
-uint8_t CPU::RST_2() {}
-uint8_t CPU::RST_3() {}
-uint8_t CPU::RST_4() {}
-uint8_t CPU::RST_5() {}
-uint8_t CPU::RST_6() {}
-uint8_t CPU::RST_7(){}
+
+uint8_t CPU::RST_0() 
+{}
+uint8_t CPU::RST_1() 
+{}
+uint8_t CPU::RST_2() 
+{}
+uint8_t CPU::RST_3() 
+{}
+uint8_t CPU::RST_4() 
+{}
+uint8_t CPU::RST_5() 
+{}
+uint8_t CPU::RST_6() 
+{}
+uint8_t CPU::RST_7()
+{}
 
 uint8_t CPU::CALL_NZ_a16() {}
 uint8_t CPU::CALL_Z_a16() {}
@@ -1351,7 +1425,6 @@ uint8_t CPU::RETI() {}
 uint8_t CPU::CALL_C_a16() {}
 uint8_t CPU::LD_a8_m_A() {}
 uint8_t CPU::LD_C_m_A() {}
-uint8_t CPU::AND_d8() {}
 uint8_t CPU::ADD_SP_s8() {}
 uint8_t CPU::JP_HL() {}
 uint8_t CPU::LD_a16_m_A() {}
