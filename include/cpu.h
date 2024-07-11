@@ -18,8 +18,11 @@ class CPU {
         uint16_t sp_; // stack pointer
         uint16_t af_; // accumulator + flags
         uint16_t bc_; uint16_t de_; uint16_t hl_; // general-purpose registers (8 bit halves)
+
+        // 8 bit registers
         uint8_t ir_; // instruction register
         uint8_t ie_; // interrupt enable
+
 
         Bus* bus_; // create a reference to the bus connecting all the hardware components together
         uint8_t read(uint16_t address);
@@ -38,6 +41,8 @@ class CPU {
         void set_flag(flags flag, bool val);
         uint8_t read_flag(flags flag);
 
+        bool ime_ = 0; // interrupt master enable flag (write only). Starts disabled when game begins
+        uint8_t if_; // interrupt flag
 
         // --- INSTRUCTION IMPLEMENTATION HELPERS ---
         void INC_DEC_8BIT(uint16_t* reg, bool upper, bool inc); // helper function for all of the 8 bit register inc / dec operations on registers within 16 bit register combos

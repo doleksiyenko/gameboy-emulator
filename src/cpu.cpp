@@ -454,8 +454,8 @@ uint8_t CPU::LD_HL_m_d8()
 uint8_t CPU::LD_A_d8() 
 {
     uint16_t immediate = read(pc_++); // read 8 bit value into 16 bit
-    af_ &= 0xff; // set h register to 0
-    af_ |= (immediate << 8); // set h register
+    af_ &= 0xff; // set a register to 0
+    af_ |= (immediate << 8); // set a register
     return 0;
 }
 
@@ -1295,6 +1295,19 @@ uint8_t CPU::RET_C()
     }
 }
 
+uint8_t CPU::RETI() 
+{
+    /* enables interrupts and then returns */
+    ime_ = true;
+
+    uint8_t lower = read(sp_++);
+    uint16_t upper = read(sp_++);
+
+    pc_ = (upper << 8) + lower;
+
+    return 0;
+}
+
 uint8_t CPU::JP_NZ_a16() 
 {
     // load 16 bit immediate value into the program counter if the Z flag is 0
@@ -1366,6 +1379,12 @@ uint8_t CPU::JP_C_a16()
     }
 }
 
+uint8_t CPU::JP_HL() 
+{
+    /* load the contents of hl into the program counter */
+    pc_ = hl_;
+    return 0;
+}
 
 uint8_t CPU::RST_0() 
 {}
@@ -1388,20 +1407,57 @@ uint8_t CPU::CALL_NZ_a16() {}
 uint8_t CPU::CALL_Z_a16() {}
 uint8_t CPU::CALL_a16() {}
 uint8_t CPU::CALL_NC_a16() {}
-uint8_t CPU::RETI() {}
 uint8_t CPU::CALL_C_a16() {}
+
 uint8_t CPU::LD_a8_m_A() {}
 uint8_t CPU::LD_C_m_A() {}
-uint8_t CPU::ADD_SP_s8() {}
-uint8_t CPU::JP_HL() {}
+
+uint8_t CPU::ADD_SP_s8() 
+{
+
+}
+
 uint8_t CPU::LD_a16_m_A() {}
 uint8_t CPU::LD_A_a8_m() {}
 uint8_t CPU::LD_A_C_m() {}
-uint8_t CPU::DI() {}
 uint8_t CPU::LD_HL_SP_s8() {}
-uint8_t CPU::LD_SP_HL() {}
-uint8_t CPU::LD_A_a16_m() {}
-uint8_t CPU::EI() {}
+
+uint8_t CPU::LD_SP_HL() 
+{
+    /* load contents of register HL into the stack pointer */
+    sp_ = hl_;
+    return 0;
+}
+
+uint8_t CPU::LD_A_a16_m() 
+{
+    /* load into register A the data stored at address a16 */
+    uint8_t lower = read(pc_++);
+    uint16_t upper = read(pc_++);
+
+    uint16_t a16 = (upper << 8) + lower;
+    uint16_t mem_val = read(a16);
+
+    // store mem_val into register A
+    af_ &= 0xff; // clear A register
+    af_ |= mem_val << 8; // store mem_val into register A
+
+    return 0;
+}
+
+uint8_t CPU::DI() 
+{
+    /* disable IME */
+    ime_ = false;
+    return 0;
+}
+
+uint8_t CPU::EI() 
+{
+    /* enable IME */
+    ime_ = true;
+    return 0;
+}
 
 uint8_t CPU::RLC_B() {}
 uint8_t CPU::RLC_C() {}
