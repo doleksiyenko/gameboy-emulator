@@ -1153,17 +1153,24 @@ void CPU::POP(uint16_t* reg)
 
 void CPU::PUSH(uint16_t* reg)
 {
+    /* push memory onto stack from register <reg> */
+    uint8_t upper = (*reg & 0xff00) >> 8;
+    uint8_t lower = (*reg * 0x00ff);
 
+    write(sp_ - 1, upper);
+    write(sp_ - 2, lower);
+    
+    sp_ -= 2;
 }
 
 uint8_t CPU::POP_BC() { POP(&bc_); return 0; }
 uint8_t CPU::POP_DE() { POP(&de_); return 0; }
 uint8_t CPU::POP_HL() { POP(&hl_); return 0; }
 uint8_t CPU::POP_AF() { POP(&af_); return 0; }
-uint8_t CPU::PUSH_BC() {}
-uint8_t CPU::PUSH_DE() {}
-uint8_t CPU::PUSH_HL() {}
-uint8_t CPU::PUSH_AF() {}
+uint8_t CPU::PUSH_BC() { PUSH(&bc_); return 0; }
+uint8_t CPU::PUSH_DE() { PUSH(&de_); return 0; }
+uint8_t CPU::PUSH_HL() { PUSH(&hl_); return 0; }
+uint8_t CPU::PUSH_AF() { PUSH(&af_); return 0; }
 
 
 
