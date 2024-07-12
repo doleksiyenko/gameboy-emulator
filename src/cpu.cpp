@@ -1387,27 +1387,126 @@ uint8_t CPU::JP_HL()
 }
 
 uint8_t CPU::RST_0() 
-{}
+{
+    /* save the current pc on the stack, and then reset the pc */
+    uint8_t upper = (pc_ & 0xff00) >> 8;
+    uint8_t lower = (pc_ & 0xff);
+
+    write(--sp_, upper);
+    write(--sp_, lower);
+
+    pc_ = 0x00;
+
+    return 0;
+}
+
 uint8_t CPU::RST_1() 
-{}
+{
+    /* save the current pc on the stack, and then reset the pc */
+    uint8_t upper = (pc_ & 0xff00) >> 8;
+    uint8_t lower = (pc_ & 0xff);
+
+    write(--sp_, upper);
+    write(--sp_, lower);
+
+    pc_ = 0x08;
+
+    return 0;
+}
+
 uint8_t CPU::RST_2() 
-{}
+{
+    /* save the current pc on the stack, and then reset the pc */
+    uint8_t upper = (pc_ & 0xff00) >> 8;
+    uint8_t lower = (pc_ & 0xff);
+
+    write(--sp_, upper);
+    write(--sp_, lower);
+
+    pc_ = 0x10;
+
+    return 0;
+}
 uint8_t CPU::RST_3() 
-{}
+{
+    /* save the current pc on the stack, and then reset the pc */
+    uint8_t upper = (pc_ & 0xff00) >> 8;
+    uint8_t lower = (pc_ & 0xff);
+
+    write(--sp_, upper);
+    write(--sp_, lower);
+
+    pc_ = 0x18;
+
+    return 0;
+}
 uint8_t CPU::RST_4() 
-{}
+{
+    /* save the current pc on the stack, and then reset the pc */
+    uint8_t upper = (pc_ & 0xff00) >> 8;
+    uint8_t lower = (pc_ & 0xff);
+
+    write(--sp_, upper);
+    write(--sp_, lower);
+
+    pc_ = 0x20;
+
+    return 0;
+}
+
 uint8_t CPU::RST_5() 
-{}
+{
+    /* save the current pc on the stack, and then reset the pc */
+    uint8_t upper = (pc_ & 0xff00) >> 8;
+    uint8_t lower = (pc_ & 0xff);
+
+    write(--sp_, upper);
+    write(--sp_, lower);
+
+    pc_ = 0x28;
+
+    return 0;
+}
+
 uint8_t CPU::RST_6() 
-{}
+{
+    /* save the current pc on the stack, and then reset the pc */
+    uint8_t upper = (pc_ & 0xff00) >> 8;
+    uint8_t lower = (pc_ & 0xff);
+
+    write(--sp_, upper);
+    write(--sp_, lower);
+
+    pc_ = 0x30;
+
+    return 0;
+}
+
 uint8_t CPU::RST_7()
+{
+    /* save the current pc on the stack, and then reset the pc */
+    uint8_t upper = (pc_ & 0xff00) >> 8;
+    uint8_t lower = (pc_ & 0xff);
+
+    write(--sp_, upper);
+    write(--sp_, lower);
+
+    pc_ = 0x38;
+
+    return 0;
+}
+
+uint8_t CPU::CALL_NZ_a16() 
 {}
 
-uint8_t CPU::CALL_NZ_a16() {}
-uint8_t CPU::CALL_Z_a16() {}
-uint8_t CPU::CALL_a16() {}
-uint8_t CPU::CALL_NC_a16() {}
-uint8_t CPU::CALL_C_a16() {}
+uint8_t CPU::CALL_Z_a16() 
+{}
+uint8_t CPU::CALL_a16() 
+{}
+uint8_t CPU::CALL_NC_a16() 
+{}
+uint8_t CPU::CALL_C_a16() 
+{}
 
 uint8_t CPU::LD_a8_m_A() {}
 uint8_t CPU::LD_C_m_A() {}
@@ -1417,10 +1516,25 @@ uint8_t CPU::ADD_SP_s8()
 
 }
 
-uint8_t CPU::LD_a16_m_A() {}
-uint8_t CPU::LD_A_a8_m() {}
-uint8_t CPU::LD_A_C_m() {}
-uint8_t CPU::LD_HL_SP_s8() {}
+uint8_t CPU::LD_a16_m_A() 
+{
+
+}
+
+uint8_t CPU::LD_A_a8_m() 
+{
+
+}
+
+uint8_t CPU::LD_A_C_m() 
+{
+
+}
+
+uint8_t CPU::LD_HL_SP_s8() 
+{
+
+}
 
 uint8_t CPU::LD_SP_HL() 
 {
