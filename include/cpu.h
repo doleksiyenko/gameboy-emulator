@@ -86,15 +86,15 @@ class CPU {
         uint8_t INC_C();        uint8_t DEC_C();        uint8_t LD_C_d8();      uint8_t RRCA();
         uint8_t STOP_0();       uint8_t LD_DE_d16();    uint8_t LD_DE_m_A();    uint8_t INC_DE();
         uint8_t INC_D();        uint8_t DEC_D();        uint8_t LD_D_d8();      uint8_t RLA();
-        uint8_t JR_s8();        uint8_t ADD_HL_DE();    uint8_t LD_A_DE_m();    uint8_t DEC_DE();
+        uint8_t JR_r8();        uint8_t ADD_HL_DE();    uint8_t LD_A_DE_m();    uint8_t DEC_DE();
         uint8_t INC_E();        uint8_t DEC_E();        uint8_t LD_E_d8();      uint8_t RRA();
-        uint8_t JR_NZ_s8();     uint8_t LD_HL_d16();    uint8_t LD_HLp_m_A();   uint8_t INC_HL();
+        uint8_t JR_NZ_r8();     uint8_t LD_HL_d16();    uint8_t LD_HLp_m_A();   uint8_t INC_HL();
         uint8_t INC_H();        uint8_t DEC_H();        uint8_t LD_H_d8();      uint8_t DAA();
-        uint8_t JR_Z_s8();      uint8_t ADD_HL_HL();    uint8_t LD_A_HLp_m();   uint8_t DEC_HL();
+        uint8_t JR_Z_r8();      uint8_t ADD_HL_HL();    uint8_t LD_A_HLp_m();   uint8_t DEC_HL();
         uint8_t INC_L();        uint8_t DEC_L();        uint8_t LD_L_d8();      uint8_t CPL();
-        uint8_t JR_NC_s8();     uint8_t LD_SP_d16();    uint8_t LD_HLm_m_A();   uint8_t INC_SP();
+        uint8_t JR_NC_r8();     uint8_t LD_SP_d16();    uint8_t LD_HLm_m_A();   uint8_t INC_SP();
         uint8_t INC_HL_m();     uint8_t DEC_HL_m();     uint8_t LD_HL_m_d8();   uint8_t SCF();
-        uint8_t JR_C_s8();      uint8_t ADD_HL_SP();    uint8_t LD_A_HLm_m();   uint8_t DEC_SP();
+        uint8_t JR_C_r8();      uint8_t ADD_HL_SP();    uint8_t LD_A_HLm_m();   uint8_t DEC_SP();
         uint8_t INC_A();        uint8_t DEC_A();        uint8_t LD_A_d8();      uint8_t CCF();
 
         uint8_t LD_B_B();       uint8_t LD_B_C();       uint8_t LD_B_D();       uint8_t LD_B_E();

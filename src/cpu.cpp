@@ -1,4 +1,3 @@
-#include <_types/_uint8_t.h>
 #include <cpu.h>
 #include <bus.h>
 #include <cstdint>
@@ -18,15 +17,15 @@ CPU::CPU()
       {&CPU::INC_C,4},       {&CPU::DEC_C,4},     {&CPU::LD_C_d8,8},    {&CPU::RRCA,4},
       {&CPU::STOP_0,4},      {&CPU::LD_DE_d16,12}, {&CPU::LD_DE_m_A,8},  {&CPU::INC_DE,8},
       {&CPU::INC_D,4},       {&CPU::DEC_D,4},     {&CPU::LD_D_d8,8},    {&CPU::RLA,4},
-      {&CPU::JR_s8,12},      {&CPU::ADD_HL_DE,8}, {&CPU::LD_A_DE_m,8},  {&CPU::DEC_DE,8},
+      {&CPU::JR_r8,12},      {&CPU::ADD_HL_DE,8}, {&CPU::LD_A_DE_m,8},  {&CPU::DEC_DE,8},
       {&CPU::INC_E,4},       {&CPU::DEC_E,4},     {&CPU::LD_E_d8,8},    {&CPU::RRA,4},
-      {&CPU::JR_NZ_s8,8},    {&CPU::LD_HL_d16,12}, {&CPU::LD_HLp_m_A,8}, {&CPU::INC_HL,8},
+      {&CPU::JR_NZ_r8,8},    {&CPU::LD_HL_d16,12}, {&CPU::LD_HLp_m_A,8}, {&CPU::INC_HL,8},
       {&CPU::INC_H,4},       {&CPU::DEC_H,4},     {&CPU::LD_H_d8,8},    {&CPU::DAA,4},
-      {&CPU::JR_Z_s8,8},     {&CPU::ADD_HL_HL,8}, {&CPU::LD_A_HLp_m,8}, {&CPU::DEC_HL,8},
+      {&CPU::JR_Z_r8,8},     {&CPU::ADD_HL_HL,8}, {&CPU::LD_A_HLp_m,8}, {&CPU::DEC_HL,8},
       {&CPU::INC_L,4},       {&CPU::DEC_L,4},     {&CPU::LD_L_d8,8},    {&CPU::CPL,4},
-      {&CPU::JR_NC_s8,8},    {&CPU::LD_SP_d16,12}, {&CPU::LD_HLm_m_A,8}, {&CPU::INC_SP,8},
+      {&CPU::JR_NC_r8,8},    {&CPU::LD_SP_d16,12}, {&CPU::LD_HLm_m_A,8}, {&CPU::INC_SP,8},
       {&CPU::INC_HL_m,12},    {&CPU::DEC_HL_m,12},  {&CPU::LD_HL_m_d8,12}, {&CPU::SCF,4},
-      {&CPU::JR_C_s8,8},     {&CPU::ADD_HL_SP,8}, {&CPU::LD_A_HLm_m,8}, {&CPU::DEC_SP,8},
+      {&CPU::JR_C_r8,8},     {&CPU::ADD_HL_SP,8}, {&CPU::LD_A_HLm_m,8}, {&CPU::DEC_SP,8},
       {&CPU::INC_A,4},       {&CPU::DEC_A,4},     {&CPU::LD_A_d8,8},    {&CPU::CCF,4},
       {&CPU::LD_B_B,4},      {&CPU::LD_B_C,4},    {&CPU::LD_B_D,4},     {&CPU::LD_B_E,4},
       {&CPU::LD_B_H,4},      {&CPU::LD_B_L,4},    {&CPU::LD_B_HL_m,8},  {&CPU::LD_B_A,4},
@@ -533,21 +532,22 @@ uint8_t CPU::RRA()
 }
 
 
-uint8_t CPU::JR_s8() 
+uint8_t CPU::JR_r8() 
 {
     // jump relative instruction
     uint8_t immediate = read(pc_++);
-    pc_ += immediate;
+    pc_ += TWOS_COMPLEMENT_8BIT(immediate);
     return 0;
 }
-uint8_t CPU::JR_NC_s8() 
+
+uint8_t CPU::JR_NC_r8() 
 {
     // jump if carry flag is not set 
     uint8_t immediate = read(pc_++);
     uint8_t c = read_flag(CPU::flags::C);
 
     if (c == 0) {
-        pc_ += immediate;
+        pc_ += TWOS_COMPLEMENT_8BIT(immediate);
         return 4;
     }
     
@@ -557,42 +557,42 @@ uint8_t CPU::JR_NC_s8()
 }
 
 // jump instructions
-uint8_t CPU::JR_NZ_s8() 
+uint8_t CPU::JR_NZ_r8() 
 {
     // jump if Z is not set
     uint8_t immediate = read(pc_++);
     uint8_t z = read_flag(CPU::flags::Z);
 
     if (z == 0) {
-        // branch
+        pc_ += TWOS_COMPLEMENT_8BIT(immediate);
         return 4; // require 4 extra cycles
     }
     
     return 0;
 }
 
-uint8_t CPU::JR_Z_s8() 
+uint8_t CPU::JR_Z_r8() 
 {
     // jump if Z flag is set
     uint8_t immediate = read(pc_++);
     uint8_t z = read_flag(CPU::flags::Z);
 
     if (z == 1) {
-        pc_ += immediate;
+        pc_ += TWOS_COMPLEMENT_8BIT(immediate);
         return 4;
     }
 
     return 0;
 }
 
-uint8_t CPU::JR_C_s8() 
+uint8_t CPU::JR_C_r8() 
 {
     // jump if carry flag is set 
     uint8_t immediate = read(pc_++);
     uint8_t c = read_flag(CPU::flags::C);
 
     if (c == 1) {
-        pc_ += immediate;
+        pc_ += TWOS_COMPLEMENT_8BIT(immediate);
         return 4;
     }
     
