@@ -59,6 +59,13 @@ class CPU {
         void PUSH(uint16_t* reg); // helper function for PUSH instructions
         void POP(uint16_t* reg); // helper function for POP instructions
 
+        // take the twos complement for an 8 bit value:
+        // if the sign bit is 0, the value is positive and we subtract 0. The value 0-128 is determined by the first 7 bits
+        // if the sign bit is 1, the value is negative. By the way that 2's complement works, if the first 7 bits get larger, we have a smaller negative
+        // value. Subtracting 128 from the value expressed by the 7 bits gives us the signed value:
+        // For reference: https://en.wikipedia.org/wiki/Two's_complement, look at "Eight-bit integers" table under the section "Theory"
+        int TWOS_COMPLEMENT_8BIT(uint8_t val) { return (val & 127) - (val & 128); };
+
         struct Instruction {
             uint8_t (CPU::*opcode_function)(void) = nullptr; // function pointer to the atomic implementation of the instruction behaviour
             uint8_t t_cycles = 0; // each instruction takes a number of cycles to complete

@@ -1622,7 +1622,46 @@ uint8_t CPU::LD_A_a8_m()
 
 uint8_t CPU::ADD_SP_s8() 
 {
+    /* add the contents of the 8 bit signed immediate to the stack pointer */ 
 
+    int signed_immediate = TWOS_COMPLEMENT_8BIT(read(pc_++));
+
+    if (signed_immediate >= 0) {
+        // positive, so treat as addition when checking for carry flag and half-carry flag
+        if ((sp_ & 0xff) + (signed_immediate & 0xff) > 0xff) { 
+            set_flag(CPU::flags::C, 1);
+        }
+        else {
+            set_flag(CPU::flags::C, 0);
+        }
+
+        if ((sp_ & 0xf) + (signed_immediate & 0xf) > 0xf) {
+            set_flag(CPU::flags::H, 1);
+        }
+        else {
+            set_flag(CPU::flags::H, 0);
+        }
+    }
+    else {
+        // negative, so treat as subtraction when checking for carry flag and half-carry flag
+        if ((sp_ & 0xff) + (signed_immediate & 0xff) < 0x0) { 
+            set_flag(CPU::flags::C, 1);
+        }
+        else {
+            set_flag(CPU::flags::C, 0);
+        }
+
+        if ((sp_ & 0xf) + (signed_immediate & 0xf) < 0x0) {
+            set_flag(CPU::flags::H, 1);
+        }
+        else {
+            set_flag(CPU::flags::H, 0);
+        }
+    }
+
+    sp_ += signed_immediate;
+
+    return 0;
 }
 
 
