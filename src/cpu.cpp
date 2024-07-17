@@ -3,6 +3,7 @@
 #include <bus.h>
 #include <cstdint>
 #include <sys/wait.h>
+#include <unistd.h>
 
 CPU::CPU() 
 {
@@ -1623,10 +1624,6 @@ uint8_t CPU::ADD_SP_s8()
 
 }
 
-uint8_t CPU::LD_a16_m_A() 
-{
-
-}
 
 uint8_t CPU::LD_A_a8_m() 
 {
@@ -1647,6 +1644,17 @@ uint8_t CPU::LD_SP_HL()
 {
     /* load contents of register HL into the stack pointer */
     sp_ = hl_;
+    return 0;
+}
+
+uint8_t CPU::LD_a16_m_A() 
+{
+    // store the contents of register A into the location specified by the 16 bit immedaite value
+    uint8_t lower = read(pc_++);
+    uint16_t upper = read(pc_++); 
+
+    write(upper + lower, (af_ & 0xff00) >> 8);
+
     return 0;
 }
 
