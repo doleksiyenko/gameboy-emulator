@@ -1497,16 +1497,58 @@ uint8_t CPU::RST_7()
 }
 
 uint8_t CPU::CALL_NZ_a16() 
-{}
+{
+    // call if the Z flag is 0
+    uint8_t lower = read(pc_++);
+    uint16_t upper = read(pc_++);
+
+    if (read_flag(CPU::flags::Z) == 0) {
+        // write the current PC (the next instruction) to the stack
+        write(--sp_, (pc_ & 0xff) >> 8);
+        write(--sp_, (pc_ & 0x00ff));
+
+        // jump to where the instruction specified
+        pc_ = (upper << 8) + lower;
+
+        return 12;
+    }
+    else {
+        return 0;
+    }
+}
 
 uint8_t CPU::CALL_Z_a16() 
-{}
+{
+    // call if the Z flag is 1
+    uint8_t lower = read(pc_++);
+    uint16_t upper = read(pc_++);
+
+    if (read_flag(CPU::flags::Z) == 1) {
+        // write the current PC (the next instruction) to the stack
+        write(--sp_, (pc_ & 0xff) >> 8);
+        write(--sp_, (pc_ & 0x00ff));
+
+        // jump to where the instruction specified
+        pc_ = (upper << 8) + lower;
+
+        return 12;
+    }
+    else {
+        return 0;
+    }
+}
+
 uint8_t CPU::CALL_a16() 
 {}
 uint8_t CPU::CALL_NC_a16() 
-{}
+{
+
+}
+
 uint8_t CPU::CALL_C_a16() 
-{}
+{
+
+}
 
 uint8_t CPU::LD_a8_m_A() {}
 uint8_t CPU::LD_C_m_A() {}
