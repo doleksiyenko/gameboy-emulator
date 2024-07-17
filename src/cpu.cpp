@@ -69,11 +69,11 @@ CPU::CPU()
       {&CPU::CALL_C_a16,12},  {&CPU::INVALID,0},   {&CPU::SBC_A_d8,8},   {&CPU::RST_3,16},
       {&CPU::LD_a8_m_A,12},   {&CPU::POP_HL,12},    {&CPU::LD_C_m_A,8},   {&CPU::INVALID,0},
       {&CPU::INVALID,0},     {&CPU::PUSH_HL,16},   {&CPU::AND_d8,8},     {&CPU::RST_4,16},
-      {&CPU::ADD_SP_s8,16},   {&CPU::JP_HL,4},     {&CPU::LD_a16_m_A,16}, {&CPU::INVALID,0},
+      {&CPU::ADD_SP_r8,16},   {&CPU::JP_HL,4},     {&CPU::LD_a16_m_A,16}, {&CPU::INVALID,0},
       {&CPU::INVALID,0},     {&CPU::INVALID,0},   {&CPU::XOR_d8,8},     {&CPU::RST_5,16},
       {&CPU::LD_A_a8_m,12},   {&CPU::POP_AF,12},    {&CPU::LD_A_C_m,8},   {&CPU::DI,4},
       {&CPU::INVALID,0},     {&CPU::PUSH_AF,16},   {&CPU::OR_d8,8},      {&CPU::RST_6,16},
-      {&CPU::LD_HL_SP_s8,12}, {&CPU::LD_SP_HL,8},  {&CPU::LD_A_a16_m,16}, {&CPU::EI,4},
+      {&CPU::LD_HL_SP_r8,12}, {&CPU::LD_SP_HL,8},  {&CPU::LD_A_a16_m,16}, {&CPU::EI,4},
       {&CPU::INVALID,0},     {&CPU::INVALID,0},   {&CPU::CP_d8,8},      {&CPU::RST_7, 16}
       };
 
@@ -1620,7 +1620,7 @@ uint8_t CPU::LD_A_a8_m()
 }
 
 
-uint8_t CPU::ADD_SP_s8() 
+uint8_t CPU::ADD_SP_r8() 
 {
     /* add the contents of the 8 bit signed immediate to the stack pointer */ 
 
@@ -1685,9 +1685,49 @@ uint8_t CPU::LD_A_C_m()
     return 0;
 }
 
-uint8_t CPU::LD_HL_SP_s8() 
+uint8_t CPU::LD_HL_SP_r8() 
 {
+    int signed_immediate = TWOS_COMPLEMENT_8BIT(read(pc_++));
+    
+    // set flags depending on if addition or subtraction
 
+    if (signed_immediate >= 0) {
+        // positive, so treat as addition when checking for carry flag and half-carry flag
+        if ((sp_ & 0xff) + (signed_immediate & 0xff) > 0xff) { 
+            set_flag(CPU::flags::C, 1);
+        }
+        else {
+            set_flag(CPU::flags::C, 0);
+        }
+
+        if ((sp_ & 0xf) + (signed_immediate & 0xf) > 0xf) {
+            set_flag(CPU::flags::H, 1);
+        }
+        else {
+            set_flag(CPU::flags::H, 0);
+        }
+    }
+    else {
+        // negative, so treat as subtraction when checking for carry flag and half-carry flag
+        if ((sp_ & 0xff) + (signed_immediate & 0xff) < 0x0) { 
+            set_flag(CPU::flags::C, 1);
+        }
+        else {
+            set_flag(CPU::flags::C, 0);
+        }
+
+        if ((sp_ & 0xf) + (signed_immediate & 0xf) < 0x0) {
+            set_flag(CPU::flags::H, 1);
+        }
+        else {
+            set_flag(CPU::flags::H, 0);
+        }
+    }
+
+    // load the value in the hl register
+    hl_ = sp_ + signed_immediate;
+
+    return 0;
 }
 
 uint8_t CPU::LD_SP_HL() 

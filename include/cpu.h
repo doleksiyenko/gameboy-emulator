@@ -141,11 +141,11 @@ class CPU {
         uint8_t CALL_C_a16();   /* invalid */;          uint8_t SBC_A_d8();     uint8_t RST_3();
         uint8_t LD_a8_m_A();    uint8_t POP_HL();       uint8_t LD_C_m_A();     /* invalid */;
         /* invalid */;          uint8_t PUSH_HL();      uint8_t AND_d8();       uint8_t RST_4();
-        uint8_t ADD_SP_s8();    uint8_t JP_HL();        uint8_t LD_a16_m_A();   /* invalid */;
+        uint8_t ADD_SP_r8();    uint8_t JP_HL();        uint8_t LD_a16_m_A();   /* invalid */;
         /* invalid */;          /* invalid */;          uint8_t XOR_d8();       uint8_t RST_5();
         uint8_t LD_A_a8_m();    uint8_t POP_AF();       uint8_t LD_A_C_m();     uint8_t DI();
         /* invalid */;          uint8_t PUSH_AF();      uint8_t OR_d8();        uint8_t RST_6();
-        uint8_t LD_HL_SP_s8();  uint8_t LD_SP_HL();     uint8_t LD_A_a16_m();   uint8_t EI();
+        uint8_t LD_HL_SP_r8();  uint8_t LD_SP_HL();     uint8_t LD_A_a16_m();   uint8_t EI();
         /* invalid */;          /* invalid */           uint8_t CP_d8();        uint8_t RST_7();
 
 
