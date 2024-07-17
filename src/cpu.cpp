@@ -1607,7 +1607,7 @@ uint8_t CPU::LD_a8_m_A()
     return 0;
 }
 
-uint8_t CPU::LD_C_m_A() 
+uint8_t CPU::LD_A_a8_m() 
 {
     // store into register A the value at address in range 0xff00 ->  0xffff specified by the 8 bit immediate value
     uint8_t immediate = read(pc_++);
@@ -1619,20 +1619,31 @@ uint8_t CPU::LD_C_m_A()
     return 0;
 }
 
+
 uint8_t CPU::ADD_SP_s8() 
 {
 
 }
 
 
-uint8_t CPU::LD_A_a8_m() 
-{
 
+uint8_t CPU::LD_C_m_A() 
+{
+    // store the contents of register A in address in range 0xff00 -> 0xffff specified by register C 
+    write(0xff00 + (bc_ & 0x00ff), (af_ & 0xff00) >> 8);
+
+    return 0;
 }
 
 uint8_t CPU::LD_A_C_m() 
 {
+    // store into register A the value at address in range 0xff00 ->  0xffff specified by register C 
+    uint16_t mem_val = read(0xff00 + (bc_ & 0x00ff)) << 8;
 
+    af_ &= 0x00ff;
+    af_ |= mem_val;
+
+    return 0;
 }
 
 uint8_t CPU::LD_HL_SP_s8() 
