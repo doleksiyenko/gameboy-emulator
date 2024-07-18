@@ -2623,70 +2623,150 @@ uint8_t CPU::RES_7_HL_m()
 
 uint8_t CPU::RES_7_A() { af_ &= ~(1 << 15); return 0; }
 
-uint8_t CPU::SET_0_B() {}
-uint8_t CPU::SET_0_C() {}
-uint8_t CPU::SET_0_D() {}
-uint8_t CPU::SET_0_E() {}
-uint8_t CPU::SET_0_H() {}
-uint8_t CPU::SET_0_L() {}
-uint8_t CPU::SET_0_HL_m() {}
-uint8_t CPU::SET_0_A() {}
-uint8_t CPU::SET_1_B() {}
-uint8_t CPU::SET_1_C() {}
-uint8_t CPU::SET_1_D() {}
-uint8_t CPU::SET_1_E() {}
-uint8_t CPU::SET_1_H() {}
-uint8_t CPU::SET_1_L() {}
-uint8_t CPU::SET_1_HL_m() {}
-uint8_t CPU::SET_1_A() {}
-uint8_t CPU::SET_2_B() {}
-uint8_t CPU::SET_2_C() {}
-uint8_t CPU::SET_2_D() {}
-uint8_t CPU::SET_2_E() {}
-uint8_t CPU::SET_2_H() {}
-uint8_t CPU::SET_2_L() {}
-uint8_t CPU::SET_2_HL_m() {}
-uint8_t CPU::SET_2_A() {}
-uint8_t CPU::SET_3_B() {}
-uint8_t CPU::SET_3_C() {}
-uint8_t CPU::SET_3_D() {}
-uint8_t CPU::SET_3_E() {}
-uint8_t CPU::SET_3_H() {}
-uint8_t CPU::SET_3_L() {}
-uint8_t CPU::SET_3_HL_m() {}
-uint8_t CPU::SET_3_A() {}
-uint8_t CPU::SET_4_B() {}
-uint8_t CPU::SET_4_C() {}
-uint8_t CPU::SET_4_D() {}
-uint8_t CPU::SET_4_E() {}
-uint8_t CPU::SET_4_H() {}
-uint8_t CPU::SET_4_L() {}
-uint8_t CPU::SET_4_HL_m() {}
-uint8_t CPU::SET_4_A() {}
-uint8_t CPU::SET_5_B() {}
-uint8_t CPU::SET_5_C() {}
-uint8_t CPU::SET_5_D() {}
-uint8_t CPU::SET_5_E() {}
-uint8_t CPU::SET_5_H() {}
-uint8_t CPU::SET_5_L() {}
-uint8_t CPU::SET_5_HL_m() {}
-uint8_t CPU::SET_5_A() {}
-uint8_t CPU::SET_6_B() {}
-uint8_t CPU::SET_6_C() {}
-uint8_t CPU::SET_6_D() {}
-uint8_t CPU::SET_6_E() {}
-uint8_t CPU::SET_6_H() {}
-uint8_t CPU::SET_6_L() {}
-uint8_t CPU::SET_6_HL_m() {}
-uint8_t CPU::SET_6_A() {}
-uint8_t CPU::SET_7_B() {}
-uint8_t CPU::SET_7_C() {}
-uint8_t CPU::SET_7_D() {}
-uint8_t CPU::SET_7_E() {}
-uint8_t CPU::SET_7_H() {}
-uint8_t CPU::SET_7_L() {}
-uint8_t CPU::SET_7_HL_m() {}
-uint8_t CPU::SET_7_A() {}
+// SET instructions: set the specified bit in the register to 1
+uint8_t CPU::SET_0_B() { bc_ |= (1 << 8); return 0; }
+uint8_t CPU::SET_0_C() { bc_ |= (1 << 0); return 0; }
+uint8_t CPU::SET_0_D() { de_ |= (1 << 8); return 0; }
+uint8_t CPU::SET_0_E() { de_ |= (1 << 0); return 0; }
+uint8_t CPU::SET_0_H() { hl_ |= (1 << 8); return 0; }
+uint8_t CPU::SET_0_L() { hl_ |= (1 << 0); return 0; }
+uint8_t CPU::SET_0_HL_m() 
+{
+
+    uint8_t mem_val = read(hl_);
+    mem_val |= (1 << 0);
+    write(hl_, mem_val);
+    return 0;
+
+}
+
+uint8_t CPU::SET_0_A() { bc_ |= (1 << 8); return 0; }
+
+uint8_t CPU::SET_1_B() { bc_ |= (1 << 9); return 0; }
+uint8_t CPU::SET_1_C() { bc_ |= (1 << 1); return 0; }
+uint8_t CPU::SET_1_D() { de_ |= (1 << 9); return 0; }
+uint8_t CPU::SET_1_E() { de_ |= (1 << 1); return 0; }
+uint8_t CPU::SET_1_H() { hl_ |= (1 << 9); return 0; }
+uint8_t CPU::SET_1_L() { hl_ |= (1 << 1); return 0; }
+uint8_t CPU::SET_1_HL_m() 
+{
+
+    uint8_t mem_val = read(hl_);
+    mem_val |= (1 << 1);
+    write(hl_, mem_val);
+    return 0;
+
+}
+
+uint8_t CPU::SET_1_A() { af_ |= (1 << 9); return 0; }
+
+uint8_t CPU::SET_2_B() { bc_ |= (1 << 10); return 0; }
+uint8_t CPU::SET_2_C() { bc_ |= (1 << 2); return 0; }
+uint8_t CPU::SET_2_D() { de_ |= (1 << 10); return 0; }
+uint8_t CPU::SET_2_E() { de_ |= (1 << 2); return 0; }
+uint8_t CPU::SET_2_H() { hl_ |= (1 << 10); return 0; }
+uint8_t CPU::SET_2_L() { hl_ |= (1 << 2); return 0; }
+uint8_t CPU::SET_2_HL_m() 
+{
+
+    uint8_t mem_val = read(hl_);
+    mem_val |= (1 << 2);
+    write(hl_, mem_val);
+    return 0;
+
+}
+
+uint8_t CPU::SET_2_A() { af_ |= (1 << 10); return 0; }
+
+uint8_t CPU::SET_3_B() { bc_ |= (1 << 11); return 0; }
+uint8_t CPU::SET_3_C() { bc_ |= (1 << 3); return 0; }
+uint8_t CPU::SET_3_D() { de_ |= (1 << 11); return 0; }
+uint8_t CPU::SET_3_E() { de_ |= (1 << 3); return 0; }
+uint8_t CPU::SET_3_H() { hl_ |= (1 << 11); return 0; }
+uint8_t CPU::SET_3_L() { hl_ |= (1 << 3); return 0; }
+uint8_t CPU::SET_3_HL_m() 
+{
+
+    uint8_t mem_val = read(hl_);
+    mem_val |= (1 << 3);
+    write(hl_, mem_val);
+    return 0;
+
+}
+
+uint8_t CPU::SET_3_A() { af_ |= (1 << 11); return 0; }
+
+uint8_t CPU::SET_4_B() { bc_ |= (1 << 12); return 0; }
+uint8_t CPU::SET_4_C() { bc_ |= (1 << 4); return 0; }
+uint8_t CPU::SET_4_D() { de_ |= (1 << 12); return 0; }
+uint8_t CPU::SET_4_E() { de_ |= (1 << 4); return 0; }
+uint8_t CPU::SET_4_H() { hl_ |= (1 << 12); return 0; }
+uint8_t CPU::SET_4_L() { hl_ |= (1 << 4); return 0; }
+uint8_t CPU::SET_4_HL_m() 
+{
+
+    uint8_t mem_val = read(hl_);
+    mem_val |= (1 << 4);
+    write(hl_, mem_val);
+    return 0;
+
+}
+
+uint8_t CPU::SET_4_A() { af_ |= (1 << 12); return 0; }
+
+uint8_t CPU::SET_5_B() { bc_ |= (1 << 13); return 0; }
+uint8_t CPU::SET_5_C() { bc_ |= (1 << 5); return 0; }
+uint8_t CPU::SET_5_D() { de_ |= (1 << 13); return 0; }
+uint8_t CPU::SET_5_E() { de_ |= (1 << 5); return 0; }
+uint8_t CPU::SET_5_H() { hl_ |= (1 << 13); return 0; }
+uint8_t CPU::SET_5_L() { hl_ |= (1 << 5); return 0; }
+uint8_t CPU::SET_5_HL_m() 
+{
+
+    uint8_t mem_val = read(hl_);
+    mem_val |= (1 << 5);
+    write(hl_, mem_val);
+    return 0;
+
+}
+
+uint8_t CPU::SET_5_A() { af_ |= (1 << 13); return 0; }
+
+uint8_t CPU::SET_6_B() { bc_ |= (1 << 14); return 0; }
+uint8_t CPU::SET_6_C() { bc_ |= (1 << 6); return 0; }
+uint8_t CPU::SET_6_D() { de_ |= (1 << 14); return 0; }
+uint8_t CPU::SET_6_E() { de_ |= (1 << 6); return 0; }
+uint8_t CPU::SET_6_H() { hl_ |= (1 << 14); return 0; }
+uint8_t CPU::SET_6_L() { hl_ |= (1 << 6); return 0; }
+uint8_t CPU::SET_6_HL_m() 
+{
+
+    uint8_t mem_val = read(hl_);
+    mem_val |= (1 << 6);
+    write(hl_, mem_val);
+    return 0;
+
+}
+
+uint8_t CPU::SET_6_A() { af_ |= (1 << 14); return 0; }
+
+uint8_t CPU::SET_7_B() { bc_ |= (1 << 15); return 0; }
+uint8_t CPU::SET_7_C() { bc_ |= (1 << 7); return 0; }
+uint8_t CPU::SET_7_D() { de_ |= (1 << 15); return 0; }
+uint8_t CPU::SET_7_E() { de_ |= (1 << 7); return 0; }
+uint8_t CPU::SET_7_H() { hl_ |= (1 << 15); return 0; }
+uint8_t CPU::SET_7_L() { hl_ |= (1 << 7); return 0; }
+uint8_t CPU::SET_7_HL_m() 
+{
+
+    uint8_t mem_val = read(hl_);
+    mem_val |= (1 << 7);
+    write(hl_, mem_val);
+    return 0;
+
+}
+
+uint8_t CPU::SET_7_A() { af_ |= (1 << 15); return 0; }
 
 
 uint8_t CPU::INVALID() { return 0; }
