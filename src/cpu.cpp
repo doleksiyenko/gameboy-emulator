@@ -2181,6 +2181,91 @@ void CPU::SRA(uint16_t* reg_pair, bool upper) // shift register to the right
         uint8_t reg = *reg_pair >> 8;
         set_flag(CPU::flags::C, reg & 1); // check if the bit shifted out (previous MSB) is 1
 
+        reg = (reg << 1) | (reg & 1); // arithmetic shift (keep the lsb)
+
+        if (reg == 0) {
+            set_flag(CPU::flags::Z, 1);
+        }
+        else {
+            set_flag(CPU::flags::Z, 0);
+        }
+
+        set_flag(CPU::flags::H, 0);
+        set_flag(CPU::flags::N, 0);
+
+        // set the register with the new value
+        *reg_pair &= 0x00ff;
+        *reg_pair |= static_cast<uint16_t>(reg) << 8;
+    }
+    else {
+        uint8_t reg = *reg_pair & 0xff;
+        set_flag(CPU::flags::C, reg & 1); // check if the bit shifted out (previous MSB) is 1
+
+        reg = (reg << 1) | (reg & 1); // arithmetic shift (keep the lsb)
+
+        if (reg == 0) {
+            set_flag(CPU::flags::Z, 1);
+        }
+        else {
+            set_flag(CPU::flags::Z, 0);
+        }
+
+        set_flag(CPU::flags::H, 0);
+        set_flag(CPU::flags::N, 0);
+
+        // set the register with the new value
+        *reg_pair &= 0xff00;
+        *reg_pair |= reg;
+    }
+}
+
+uint8_t CPU::SRA_B() { SRA(&bc_, true); return 0; }
+uint8_t CPU::SRA_C() { SRA(&bc_, false); return 0; }
+uint8_t CPU::SRA_D() { SRA(&de_, true); return 0; }
+uint8_t CPU::SRA_E() { SRA(&de_, false); return 0; }
+uint8_t CPU::SRA_H() { SRA(&hl_, true); return 0; }
+uint8_t CPU::SRA_L() { SRA(&hl_, false); return 0; }
+
+uint8_t CPU::SRA_HL_m() 
+{ 
+    uint8_t reg = read(hl_);
+    set_flag(CPU::flags::C, reg & 0x80); // check if the bit shifted out (and now the LSB) is 1
+
+    reg = (reg << 1) | (reg & 1); // arithmetic shift (keep the lsb)
+
+    if (reg == 0) {
+        set_flag(CPU::flags::Z, 1);
+    }
+    else {
+        set_flag(CPU::flags::Z, 0);
+    }
+
+    set_flag(CPU::flags::H, 0);
+    set_flag(CPU::flags::N, 0);
+
+    write(hl_, reg);
+
+    return 0;
+}
+
+uint8_t CPU::SRA_A() { SRA(&af_, true); return 0; }
+
+uint8_t CPU::SWAP_B() {}
+uint8_t CPU::SWAP_C() {}
+uint8_t CPU::SWAP_D() {}
+uint8_t CPU::SWAP_E() {}
+uint8_t CPU::SWAP_H() {}
+uint8_t CPU::SWAP_L() {}
+uint8_t CPU::SWAP_HL_m() {}
+uint8_t CPU::SWAP_A() {}
+
+void CPU::SRL(uint16_t* reg_pair, bool upper) // shift register to the right 
+{
+    /* shift a register to the right and then set appropriate flags */
+    if (upper) {
+        uint8_t reg = *reg_pair >> 8;
+        set_flag(CPU::flags::C, reg & 1); // check if the bit shifted out (previous MSB) is 1
+
         reg = (reg >> 1);
 
         if (reg == 0) {
@@ -2219,14 +2304,14 @@ void CPU::SRA(uint16_t* reg_pair, bool upper) // shift register to the right
     }
 }
 
-uint8_t CPU::SRA_B() { SRA(&bc_, true); return 0; }
-uint8_t CPU::SRA_C() { SRA(&bc_, false); return 0; }
-uint8_t CPU::SRA_D() { SRA(&de_, true); return 0; }
-uint8_t CPU::SRA_E() { SRA(&de_, false); return 0; }
-uint8_t CPU::SRA_H() { SRA(&hl_, true); return 0; }
-uint8_t CPU::SRA_L() { SRA(&hl_, false); return 0; }
+uint8_t CPU::SRL_B() { SRL(&bc_, true); return 0; }
+uint8_t CPU::SRL_C() { SRL(&bc_, false); return 0; }
+uint8_t CPU::SRL_D() { SRL(&de_, true); return 0; }
+uint8_t CPU::SRL_E() { SRL(&de_, false); return 0; }
+uint8_t CPU::SRL_H() { SRL(&hl_, true); return 0; }
+uint8_t CPU::SRL_L() { SRL(&hl_, false); return 0; }
 
-uint8_t CPU::SRA_HL_m() 
+uint8_t CPU::SRL_HL_m() 
 { 
     uint8_t reg = read(hl_);
     set_flag(CPU::flags::C, reg & 0x80); // check if the bit shifted out (and now the LSB) is 1
@@ -2248,24 +2333,8 @@ uint8_t CPU::SRA_HL_m()
     return 0;
 }
 
-uint8_t CPU::SRA_A() { SRA(&af_, true); return 0; }
+uint8_t CPU::SRL_A() { SRL(&af_, true); return 0; }
 
-uint8_t CPU::SWAP_B() {}
-uint8_t CPU::SWAP_C() {}
-uint8_t CPU::SWAP_D() {}
-uint8_t CPU::SWAP_E() {}
-uint8_t CPU::SWAP_H() {}
-uint8_t CPU::SWAP_L() {}
-uint8_t CPU::SWAP_HL_m() {}
-uint8_t CPU::SWAP_A() {}
-uint8_t CPU::SRL_B() {}
-uint8_t CPU::SRL_C() {}
-uint8_t CPU::SRL_D() {}
-uint8_t CPU::SRL_E() {}
-uint8_t CPU::SRL_H() {}
-uint8_t CPU::SRL_L() {}
-uint8_t CPU::SRL_HL_m() {}
-uint8_t CPU::SRL_A() {}
 uint8_t CPU::BIT_0_B() {}
 uint8_t CPU::BIT_0_C() {}
 uint8_t CPU::BIT_0_D() {}

@@ -65,7 +65,8 @@ class CPU {
         void RL(uint16_t* reg_pair, bool upper); // rotate register to the left, rotate in carry flag
         void RR(uint16_t* reg_pair, bool upper); // rotate register to the right, rotate in carry flag
         void SLA(uint16_t* reg_pair, bool upper); // shift register to the left
-        void SRA(uint16_t* reg_pair, bool upper); // shift register to the right 
+        void SRA(uint16_t* reg_pair, bool upper); // shift register to the right (arithmetic)
+        void SRL(uint16_t* reg_pair, bool upper); // shift register to the right (logical)
 
         // take the twos complement for an 8 bit value:
         // if the sign bit is 0, the value is positive and we subtract 0. The value 0-128 is determined by the first 7 bits
