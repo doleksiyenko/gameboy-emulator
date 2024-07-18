@@ -60,9 +60,12 @@ class CPU {
         void POP(uint16_t* reg); // helper function for POP instructions
 
         // 16 bit instruction helpers
-        void RLC(uint16_t* reg_pair, bool upper); // rotate register to the left
-        void RRC(uint16_t* reg_pair, bool upper); // rotate register to the right
-
+        void RLC(uint16_t* reg_pair, bool upper); // rotate register to the left + store rotated bit in flag
+        void RRC(uint16_t* reg_pair, bool upper); // rotate register to the right + store rotated bit in flag 
+        void RL(uint16_t* reg_pair, bool upper); // rotate register to the left, rotate in carry flag
+        void RR(uint16_t* reg_pair, bool upper); // rotate register to the right, rotate in carry flag
+        void SLA(uint16_t* reg_pair, bool upper); // shift register to the left
+        void SRA(uint16_t* reg_pair, bool upper); // shift register to the right 
 
         // take the twos complement for an 8 bit value:
         // if the sign bit is 0, the value is positive and we subtract 0. The value 0-128 is determined by the first 7 bits
