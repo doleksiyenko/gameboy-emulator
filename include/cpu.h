@@ -66,6 +66,7 @@ class CPU {
         void RR(uint16_t* reg_pair, bool upper); // rotate register to the right, rotate in carry flag
         void SLA(uint16_t* reg_pair, bool upper); // shift register to the left
         void SRA(uint16_t* reg_pair, bool upper); // shift register to the right (arithmetic)
+        void SWAP(uint16_t* reg_pair, bool upper); // swap lower 4 bits with upper 4 bits
         void SRL(uint16_t* reg_pair, bool upper); // shift register to the right (logical)
 
         // take the twos complement for an 8 bit value:

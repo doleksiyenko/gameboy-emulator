@@ -2250,14 +2250,83 @@ uint8_t CPU::SRA_HL_m()
 
 uint8_t CPU::SRA_A() { SRA(&af_, true); return 0; }
 
-uint8_t CPU::SWAP_B() {}
-uint8_t CPU::SWAP_C() {}
-uint8_t CPU::SWAP_D() {}
-uint8_t CPU::SWAP_E() {}
-uint8_t CPU::SWAP_H() {}
-uint8_t CPU::SWAP_L() {}
-uint8_t CPU::SWAP_HL_m() {}
-uint8_t CPU::SWAP_A() {}
+
+void CPU::SWAP(uint16_t* reg_pair, bool upper) // swap lower 4 bits with upper 4 bits
+{
+    /* swap the contents of the lower-order bits and higher-order bits */
+    if (upper) {
+        uint8_t reg = *reg_pair >> 8;
+
+        reg = ((reg & 0xf0) >> 4) + ((reg & 0x0f) << 4);
+
+        if (reg == 0) {
+            set_flag(CPU::flags::Z, 1);
+        }
+        else {
+            set_flag(CPU::flags::Z, 0);
+        }
+
+        set_flag(CPU::flags::C, 0);
+        set_flag(CPU::flags::H, 0);
+        set_flag(CPU::flags::N, 0);
+
+        // set the register with the new value
+        *reg_pair &= 0x00ff;
+        *reg_pair |= static_cast<uint16_t>(reg) << 8;
+    }
+    else {
+        uint8_t reg = *reg_pair & 0xff;
+
+        reg = ((reg & 0xf0) >> 4) + ((reg & 0x0f) << 4);
+
+        if (reg == 0) {
+            set_flag(CPU::flags::Z, 1);
+        }
+        else {
+            set_flag(CPU::flags::Z, 0);
+        }
+
+        set_flag(CPU::flags::C, 0);
+        set_flag(CPU::flags::H, 0);
+        set_flag(CPU::flags::N, 0);
+
+        // set the register with the new value
+        *reg_pair &= 0xff00;
+        *reg_pair |= reg;
+    }
+}
+
+uint8_t CPU::SWAP_B() { SWAP(&bc_, true); return 0; }
+uint8_t CPU::SWAP_C() { SWAP(&bc_, false); return 0; }
+uint8_t CPU::SWAP_D() { SWAP(&de_, true); return 0; }
+uint8_t CPU::SWAP_E() { SWAP(&de_, false); return 0; }
+uint8_t CPU::SWAP_H() { SWAP(&hl_, true); return 0; }
+uint8_t CPU::SWAP_L() { SWAP(&hl_, false); return 0; }
+
+uint8_t CPU::SWAP_HL_m() 
+{ 
+    uint8_t reg = read(hl_);
+
+    reg = ((reg & 0xf0) >> 4) + ((reg & 0x0f) << 4);
+
+    if (reg == 0) {
+        set_flag(CPU::flags::Z, 1);
+    }
+    else {
+        set_flag(CPU::flags::Z, 0);
+    }
+
+        set_flag(CPU::flags::C, 0);
+    set_flag(CPU::flags::H, 0);
+    set_flag(CPU::flags::N, 0);
+
+    write(hl_, reg);
+
+    return 0;
+}
+
+uint8_t CPU::SWAP_A() { SWAP(&af_, true); return 0; }
+
 
 void CPU::SRL(uint16_t* reg_pair, bool upper) // shift register to the right 
 {
