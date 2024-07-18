@@ -1620,7 +1620,7 @@ uint8_t CPU::LD_A_a8_m()
 }
 
 
-uint8_t CPU::ADD_SP_s8() 
+uint8_t CPU::ADD_SP_r8() 
 {
     /* add the contents of the 8 bit signed immediate to the stack pointer */ 
 
@@ -2478,70 +2478,151 @@ uint8_t CPU::BIT_7_L() { BIT(hl_ & 0xff, 7); return 0; }
 uint8_t CPU::BIT_7_HL_m() { BIT(read(hl_), 7); return 0; }
 uint8_t CPU::BIT_7_A() { BIT(af_ >> 8, 7); return 0; }
 
-uint8_t CPU::RES_0_B() {}
-uint8_t CPU::RES_0_C() {}
-uint8_t CPU::RES_0_D() {}
-uint8_t CPU::RES_0_E() {}
-uint8_t CPU::RES_0_H() {}
-uint8_t CPU::RES_0_L() {}
-uint8_t CPU::RES_0_HL_m() {}
-uint8_t CPU::RES_0_A() {}
-uint8_t CPU::RES_1_B() {}
-uint8_t CPU::RES_1_C() {}
-uint8_t CPU::RES_1_D() {}
-uint8_t CPU::RES_1_E() {}
-uint8_t CPU::RES_1_H() {}
-uint8_t CPU::RES_1_L() {}
-uint8_t CPU::RES_1_HL_m() {}
-uint8_t CPU::RES_1_A() {}
-uint8_t CPU::RES_2_B() {}
-uint8_t CPU::RES_2_C() {}
-uint8_t CPU::RES_2_D() {}
-uint8_t CPU::RES_2_E() {}
-uint8_t CPU::RES_2_H() {}
-uint8_t CPU::RES_2_L() {}
-uint8_t CPU::RES_2_HL_m() {}
-uint8_t CPU::RES_2_A() {}
-uint8_t CPU::RES_3_B() {}
-uint8_t CPU::RES_3_C() {}
-uint8_t CPU::RES_3_D() {}
-uint8_t CPU::RES_3_E() {}
-uint8_t CPU::RES_3_H() {}
-uint8_t CPU::RES_3_L() {}
-uint8_t CPU::RES_3_HL_m() {}
-uint8_t CPU::RES_3_A() {}
-uint8_t CPU::RES_4_B() {}
-uint8_t CPU::RES_4_C() {}
-uint8_t CPU::RES_4_D() {}
-uint8_t CPU::RES_4_E() {}
-uint8_t CPU::RES_4_H() {}
-uint8_t CPU::RES_4_L() {}
-uint8_t CPU::RES_4_HL_m() {}
-uint8_t CPU::RES_4_A() {}
-uint8_t CPU::RES_5_B() {}
-uint8_t CPU::RES_5_C() {}
-uint8_t CPU::RES_5_D() {}
-uint8_t CPU::RES_5_E() {}
-uint8_t CPU::RES_5_H() {}
-uint8_t CPU::RES_5_L() {}
-uint8_t CPU::RES_5_HL_m() {}
-uint8_t CPU::RES_5_A() {}
-uint8_t CPU::RES_6_B() {}
-uint8_t CPU::RES_6_C() {}
-uint8_t CPU::RES_6_D() {}
-uint8_t CPU::RES_6_E() {}
-uint8_t CPU::RES_6_H() {}
-uint8_t CPU::RES_6_L() {}
-uint8_t CPU::RES_6_HL_m() {}
-uint8_t CPU::RES_6_A() {}
-uint8_t CPU::RES_7_B() {}
-uint8_t CPU::RES_7_C() {}
-uint8_t CPU::RES_7_D() {}
-uint8_t CPU::RES_7_E() {}
-uint8_t CPU::RES_7_H() {}
-uint8_t CPU::RES_7_L() {}
-uint8_t CPU::RES_7_HL_m() {}
-uint8_t CPU::RES_7_A() {}
+// RESET instructions: set the specified bit in the register to 0
+uint8_t CPU::RES_0_B() { bc_ &= ~(1 << 8); return 0; }
+uint8_t CPU::RES_0_C() { bc_ &= ~(1 << 0); return 0; }
+uint8_t CPU::RES_0_D() { de_ &= ~(1 << 8); return 0; }
+uint8_t CPU::RES_0_E() { de_ &= ~(1 << 0); return 0; }
+uint8_t CPU::RES_0_H() { hl_ &= ~(1 << 8); return 0; }
+uint8_t CPU::RES_0_L() { hl_ &= ~(1 << 0); return 0; }
+uint8_t CPU::RES_0_HL_m() 
+{
+
+    uint8_t mem_val = read(hl_);
+    mem_val &= ~(1 << 0);
+    write(hl_, mem_val);
+    return 0;
+
+}
+
+uint8_t CPU::RES_0_A() { bc_ &= ~(1 << 8); return 0; }
+
+uint8_t CPU::RES_1_B() { bc_ &= ~(1 << 9); return 0; }
+uint8_t CPU::RES_1_C() { bc_ &= ~(1 << 1); return 0; }
+uint8_t CPU::RES_1_D() { de_ &= ~(1 << 9); return 0; }
+uint8_t CPU::RES_1_E() { de_ &= ~(1 << 1); return 0; }
+uint8_t CPU::RES_1_H() { hl_ &= ~(1 << 9); return 0; }
+uint8_t CPU::RES_1_L() { hl_ &= ~(1 << 1); return 0; }
+uint8_t CPU::RES_1_HL_m() 
+{
+
+    uint8_t mem_val = read(hl_);
+    mem_val &= ~(1 << 1);
+    write(hl_, mem_val);
+    return 0;
+
+}
+
+uint8_t CPU::RES_1_A() { af_ &= ~(1 << 9); return 0; }
+
+uint8_t CPU::RES_2_B() { bc_ &= ~(1 << 10); return 0; }
+uint8_t CPU::RES_2_C() { bc_ &= ~(1 << 2); return 0; }
+uint8_t CPU::RES_2_D() { de_ &= ~(1 << 10); return 0; }
+uint8_t CPU::RES_2_E() { de_ &= ~(1 << 2); return 0; }
+uint8_t CPU::RES_2_H() { hl_ &= ~(1 << 10); return 0; }
+uint8_t CPU::RES_2_L() { hl_ &= ~(1 << 2); return 0; }
+uint8_t CPU::RES_2_HL_m() 
+{
+
+    uint8_t mem_val = read(hl_);
+    mem_val &= ~(1 << 2);
+    write(hl_, mem_val);
+    return 0;
+
+}
+
+uint8_t CPU::RES_2_A() { af_ &= ~(1 << 10); return 0; }
+
+uint8_t CPU::RES_3_B() { bc_ &= ~(1 << 11); return 0; }
+uint8_t CPU::RES_3_C() { bc_ &= ~(1 << 3); return 0; }
+uint8_t CPU::RES_3_D() { de_ &= ~(1 << 11); return 0; }
+uint8_t CPU::RES_3_E() { de_ &= ~(1 << 3); return 0; }
+uint8_t CPU::RES_3_H() { hl_ &= ~(1 << 11); return 0; }
+uint8_t CPU::RES_3_L() { hl_ &= ~(1 << 3); return 0; }
+uint8_t CPU::RES_3_HL_m() 
+{
+
+    uint8_t mem_val = read(hl_);
+    mem_val &= ~(1 << 3);
+    write(hl_, mem_val);
+    return 0;
+
+}
+
+uint8_t CPU::RES_3_A() { af_ &= ~(1 << 11); return 0; }
+
+uint8_t CPU::RES_4_B() { bc_ &= ~(1 << 12); return 0; }
+uint8_t CPU::RES_4_C() { bc_ &= ~(1 << 4); return 0; }
+uint8_t CPU::RES_4_D() { de_ &= ~(1 << 12); return 0; }
+uint8_t CPU::RES_4_E() { de_ &= ~(1 << 4); return 0; }
+uint8_t CPU::RES_4_H() { hl_ &= ~(1 << 12); return 0; }
+uint8_t CPU::RES_4_L() { hl_ &= ~(1 << 4); return 0; }
+uint8_t CPU::RES_4_HL_m() 
+{
+
+    uint8_t mem_val = read(hl_);
+    mem_val &= ~(1 << 4);
+    write(hl_, mem_val);
+    return 0;
+
+}
+
+uint8_t CPU::RES_4_A() { af_ &= ~(1 << 12); return 0; }
+
+uint8_t CPU::RES_5_B() { bc_ &= ~(1 << 13); return 0; }
+uint8_t CPU::RES_5_C() { bc_ &= ~(1 << 5); return 0; }
+uint8_t CPU::RES_5_D() { de_ &= ~(1 << 13); return 0; }
+uint8_t CPU::RES_5_E() { de_ &= ~(1 << 5); return 0; }
+uint8_t CPU::RES_5_H() { hl_ &= ~(1 << 13); return 0; }
+uint8_t CPU::RES_5_L() { hl_ &= ~(1 << 5); return 0; }
+uint8_t CPU::RES_5_HL_m() 
+{
+
+    uint8_t mem_val = read(hl_);
+    mem_val &= ~(1 << 5);
+    write(hl_, mem_val);
+    return 0;
+
+}
+
+uint8_t CPU::RES_5_A() { af_ &= ~(1 << 13); return 0; }
+
+uint8_t CPU::RES_6_B() { bc_ &= ~(1 << 14); return 0; }
+uint8_t CPU::RES_6_C() { bc_ &= ~(1 << 6); return 0; }
+uint8_t CPU::RES_6_D() { de_ &= ~(1 << 14); return 0; }
+uint8_t CPU::RES_6_E() { de_ &= ~(1 << 6); return 0; }
+uint8_t CPU::RES_6_H() { hl_ &= ~(1 << 14); return 0; }
+uint8_t CPU::RES_6_L() { hl_ &= ~(1 << 6); return 0; }
+uint8_t CPU::RES_6_HL_m() 
+{
+
+    uint8_t mem_val = read(hl_);
+    mem_val &= ~(1 << 6);
+    write(hl_, mem_val);
+    return 0;
+
+}
+
+uint8_t CPU::RES_6_A() { af_ &= ~(1 << 14); return 0; }
+
+uint8_t CPU::RES_7_B() { bc_ &= ~(1 << 15); return 0; }
+uint8_t CPU::RES_7_C() { bc_ &= ~(1 << 7); return 0; }
+uint8_t CPU::RES_7_D() { de_ &= ~(1 << 15); return 0; }
+uint8_t CPU::RES_7_E() { de_ &= ~(1 << 7); return 0; }
+uint8_t CPU::RES_7_H() { hl_ &= ~(1 << 15); return 0; }
+uint8_t CPU::RES_7_L() { hl_ &= ~(1 << 7); return 0; }
+uint8_t CPU::RES_7_HL_m() 
+{
+
+    uint8_t mem_val = read(hl_);
+    mem_val &= ~(1 << 7);
+    write(hl_, mem_val);
+    return 0;
+
+}
+
+uint8_t CPU::RES_7_A() { af_ &= ~(1 << 15); return 0; }
+
 uint8_t CPU::SET_0_B() {}
 uint8_t CPU::SET_0_C() {}
 uint8_t CPU::SET_0_D() {}
@@ -2606,11 +2687,6 @@ uint8_t CPU::SET_7_H() {}
 uint8_t CPU::SET_7_L() {}
 uint8_t CPU::SET_7_HL_m() {}
 uint8_t CPU::SET_7_A() {}
-
-
-
-
-
 
 
 uint8_t CPU::INVALID() { return 0; }
