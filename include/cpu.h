@@ -68,6 +68,7 @@ class CPU {
         void SRA(uint16_t* reg_pair, bool upper); // shift register to the right (arithmetic)
         void SWAP(uint16_t* reg_pair, bool upper); // swap lower 4 bits with upper 4 bits
         void SRL(uint16_t* reg_pair, bool upper); // shift register to the right (logical)
+        void BIT(uint8_t reg_content, uint8_t bit); // copy the complement of <bit> into the Z flag
 
         // take the twos complement for an 8 bit value:
         // if the sign bit is 0, the value is positive and we subtract 0. The value 0-128 is determined by the first 7 bits

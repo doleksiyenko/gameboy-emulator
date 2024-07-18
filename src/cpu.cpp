@@ -2404,70 +2404,80 @@ uint8_t CPU::SRL_HL_m()
 
 uint8_t CPU::SRL_A() { SRL(&af_, true); return 0; }
 
-uint8_t CPU::BIT_0_B() {}
-uint8_t CPU::BIT_0_C() {}
-uint8_t CPU::BIT_0_D() {}
-uint8_t CPU::BIT_0_E() {}
-uint8_t CPU::BIT_0_H() {}
-uint8_t CPU::BIT_0_L() {}
-uint8_t CPU::BIT_0_HL_m() {}
-uint8_t CPU::BIT_0_A() {}
-uint8_t CPU::BIT_1_B() {}
-uint8_t CPU::BIT_1_C() {}
-uint8_t CPU::BIT_1_D() {}
-uint8_t CPU::BIT_1_E() {}
-uint8_t CPU::BIT_1_H() {}
-uint8_t CPU::BIT_1_L() {}
-uint8_t CPU::BIT_1_HL_m() {}
-uint8_t CPU::BIT_1_A() {}
-uint8_t CPU::BIT_2_B() {}
-uint8_t CPU::BIT_2_C() {}
-uint8_t CPU::BIT_2_D() {}
-uint8_t CPU::BIT_2_E() {}
-uint8_t CPU::BIT_2_H() {}
-uint8_t CPU::BIT_2_L() {}
-uint8_t CPU::BIT_2_HL_m() {}
-uint8_t CPU::BIT_2_A() {}
-uint8_t CPU::BIT_3_B() {}
-uint8_t CPU::BIT_3_C() {}
-uint8_t CPU::BIT_3_D() {}
-uint8_t CPU::BIT_3_E() {}
-uint8_t CPU::BIT_3_H() {}
-uint8_t CPU::BIT_3_L() {}
-uint8_t CPU::BIT_3_HL_m() {}
-uint8_t CPU::BIT_3_A() {}
-uint8_t CPU::BIT_4_B() {}
-uint8_t CPU::BIT_4_C() {}
-uint8_t CPU::BIT_4_D() {}
-uint8_t CPU::BIT_4_E() {}
-uint8_t CPU::BIT_4_H() {}
-uint8_t CPU::BIT_4_L() {}
-uint8_t CPU::BIT_4_HL_m() {}
-uint8_t CPU::BIT_4_A() {}
-uint8_t CPU::BIT_5_B() {}
-uint8_t CPU::BIT_5_C() {}
-uint8_t CPU::BIT_5_D() {}
-uint8_t CPU::BIT_5_E() {}
-uint8_t CPU::BIT_5_H() {}
-uint8_t CPU::BIT_5_L() {}
-uint8_t CPU::BIT_5_HL_m() {}
-uint8_t CPU::BIT_5_A() {}
-uint8_t CPU::BIT_6_B() {}
-uint8_t CPU::BIT_6_C() {}
-uint8_t CPU::BIT_6_D() {}
-uint8_t CPU::BIT_6_E() {}
-uint8_t CPU::BIT_6_H() {}
-uint8_t CPU::BIT_6_L() {}
-uint8_t CPU::BIT_6_HL_m() {}
-uint8_t CPU::BIT_6_A() {}
-uint8_t CPU::BIT_7_B() {}
-uint8_t CPU::BIT_7_C() {}
-uint8_t CPU::BIT_7_D() {}
-uint8_t CPU::BIT_7_E() {}
-uint8_t CPU::BIT_7_H() {}
-uint8_t CPU::BIT_7_L() {}
-uint8_t CPU::BIT_7_HL_m() {}
-uint8_t CPU::BIT_7_A() {}
+
+void CPU::BIT(uint8_t reg_content, uint8_t bit) // copy the complement of <bit> into the Z flag
+{
+        // set Z to the complement of the value at bit. if the bit is 1, value is not 0, therefore set to 0, and vice-versa
+        set_flag(CPU::flags::Z, (reg_content & (1 << bit)) == 0); 
+        set_flag(CPU::flags::N, 0);
+        set_flag(CPU::flags::H, 1);
+}
+
+uint8_t CPU::BIT_0_B() { BIT(bc_ >> 8, 0); return 0; }
+uint8_t CPU::BIT_0_C() { BIT(bc_ & 0xff, 0); return 0; }
+uint8_t CPU::BIT_0_D() { BIT(de_ >> 8, 0); return 0; }
+uint8_t CPU::BIT_0_E() { BIT(de_ & 0xff, 0); return 0; }
+uint8_t CPU::BIT_0_H() { BIT(hl_ >> 8, 0); return 0; }
+uint8_t CPU::BIT_0_L() { BIT(hl_ & 0xff, 0); return 0; }
+uint8_t CPU::BIT_0_HL_m() { BIT(read(hl_), 0); return 0; }
+uint8_t CPU::BIT_0_A() { BIT(af_ >> 8, 0); return 0; }
+uint8_t CPU::BIT_1_B() { BIT(bc_ >> 8, 1); return 0; }
+uint8_t CPU::BIT_1_C() { BIT(bc_ & 0xff, 1); return 0; }
+uint8_t CPU::BIT_1_D() { BIT(de_ >> 8, 1); return 0; }
+uint8_t CPU::BIT_1_E() { BIT(de_ & 0xff, 1); return 0; }
+uint8_t CPU::BIT_1_H() { BIT(hl_ >> 8, 1); return 0; }
+uint8_t CPU::BIT_1_L() { BIT(hl_ & 0xff, 1); return 0; }
+uint8_t CPU::BIT_1_HL_m() { BIT(read(hl_), 1); return 0; }
+uint8_t CPU::BIT_1_A() { BIT(af_ >> 8, 1); return 0; }
+uint8_t CPU::BIT_2_B() { BIT(bc_ >> 8, 2); return 0; }
+uint8_t CPU::BIT_2_C() { BIT(bc_ & 0xff, 2); return 0; }
+uint8_t CPU::BIT_2_D() { BIT(de_ >> 8, 2); return 0; }
+uint8_t CPU::BIT_2_E() { BIT(de_ & 0xff, 2); return 0; }
+uint8_t CPU::BIT_2_H() { BIT(hl_ >> 8, 2); return 0; }
+uint8_t CPU::BIT_2_L() { BIT(hl_ & 0xff, 2); return 0; }
+uint8_t CPU::BIT_2_HL_m() { BIT(read(hl_), 2); return 0; }
+uint8_t CPU::BIT_2_A() { BIT(af_ >> 8, 2); return 0; }
+uint8_t CPU::BIT_3_B() { BIT(bc_ >> 8, 3); return 0; }
+uint8_t CPU::BIT_3_C() { BIT(bc_ & 0xff, 3); return 0; }
+uint8_t CPU::BIT_3_D() { BIT(de_ >> 8, 3); return 0; }
+uint8_t CPU::BIT_3_E() { BIT(de_ & 0xff, 3); return 0; }
+uint8_t CPU::BIT_3_H() { BIT(hl_ >> 8, 3); return 0; }
+uint8_t CPU::BIT_3_L() { BIT(hl_ & 0xff, 3); return 0; }
+uint8_t CPU::BIT_3_HL_m() { BIT(read(hl_), 3); return 0; }
+uint8_t CPU::BIT_3_A() { BIT(af_ >> 8, 3); return 0; }
+uint8_t CPU::BIT_4_B() { BIT(bc_ >> 8, 4); return 0; }
+uint8_t CPU::BIT_4_C() { BIT(bc_ & 0xff,4); return 0; }
+uint8_t CPU::BIT_4_D() { BIT(de_ >> 8, 4); return 0; }
+uint8_t CPU::BIT_4_E() { BIT(de_ & 0xff, 4); return 0; }
+uint8_t CPU::BIT_4_H() { BIT(hl_ >> 8, 4); return 0; }
+uint8_t CPU::BIT_4_L() { BIT(hl_ & 0xff, 4); return 0; }
+uint8_t CPU::BIT_4_HL_m() { BIT(read(hl_), 4); return 0; }
+uint8_t CPU::BIT_4_A() { BIT(af_ >> 8, 4); return 0; }
+uint8_t CPU::BIT_5_B() { BIT(bc_ >> 8, 5); return 0; }
+uint8_t CPU::BIT_5_C() { BIT(bc_ & 0xff, 5); return 0; }
+uint8_t CPU::BIT_5_D() { BIT(de_ >> 8, 5); return 0; }
+uint8_t CPU::BIT_5_E() { BIT(de_ & 0xff, 5); return 0; }
+uint8_t CPU::BIT_5_H() { BIT(hl_ >> 8, 5); return 0; }
+uint8_t CPU::BIT_5_L() { BIT(hl_ & 0xff, 5); return 0; }
+uint8_t CPU::BIT_5_HL_m() { BIT(read(hl_), 5); return 0; }
+uint8_t CPU::BIT_5_A() { BIT(af_ >> 8, 5); return 0; }
+uint8_t CPU::BIT_6_B() { BIT(bc_ >> 8, 6); return 0; }
+uint8_t CPU::BIT_6_C() { BIT(bc_ & 0xff, 6); return 0; }
+uint8_t CPU::BIT_6_D() { BIT(de_ >> 8, 6); return 0; }
+uint8_t CPU::BIT_6_E() { BIT(de_ & 0xff, 6); return 0; }
+uint8_t CPU::BIT_6_H() { BIT(hl_ >> 8, 6); return 0; }
+uint8_t CPU::BIT_6_L() { BIT(hl_ & 0xff, 6); return 0; }
+uint8_t CPU::BIT_6_HL_m() { BIT(read(hl_), 6); return 0; }
+uint8_t CPU::BIT_6_A() { BIT(af_ >> 8, 6); return 0; }
+uint8_t CPU::BIT_7_B() { BIT(bc_ >> 8, 7); return 0; }
+uint8_t CPU::BIT_7_C() { BIT(bc_ & 0xff, 7); return 0; }
+uint8_t CPU::BIT_7_D() { BIT(de_ >> 8, 7); return 0; }
+uint8_t CPU::BIT_7_E() { BIT(de_ & 0xff, 7); return 0; }
+uint8_t CPU::BIT_7_H() { BIT(hl_ >> 8, 7); return 0; }
+uint8_t CPU::BIT_7_L() { BIT(hl_ & 0xff, 7); return 0; }
+uint8_t CPU::BIT_7_HL_m() { BIT(read(hl_), 7); return 0; }
+uint8_t CPU::BIT_7_A() { BIT(af_ >> 8, 7); return 0; }
+
 uint8_t CPU::RES_0_B() {}
 uint8_t CPU::RES_0_C() {}
 uint8_t CPU::RES_0_D() {}
