@@ -59,6 +59,10 @@ class CPU {
         void PUSH(uint16_t* reg); // helper function for PUSH instructions
         void POP(uint16_t* reg); // helper function for POP instructions
 
+        // 16 bit instruction helpers
+        void RLC(uint16_t* reg_pair, bool upper);
+
+
         // take the twos complement for an 8 bit value:
         // if the sign bit is 0, the value is positive and we subtract 0. The value 0-128 is determined by the first 7 bits
         // if the sign bit is 1, the value is negative. By the way that 2's complement works, if the first 7 bits get larger, we have a smaller negative
