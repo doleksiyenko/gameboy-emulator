@@ -1779,6 +1779,7 @@ uint8_t CPU::EI()
 }
 
 
+// rotate register to the left 
 void CPU::RLC(uint16_t* reg_pair, bool upper)
 {
     /* rotate a register to the left and then set appropriate flags */
@@ -1847,14 +1848,73 @@ uint8_t CPU::RLC_HL_m()
 
 uint8_t CPU::RLC_A() { RLC(&af_, true); return 0; }
 
-uint8_t CPU::RRC_B() {}
-uint8_t CPU::RRC_C() {}
-uint8_t CPU::RRC_D() {}
-uint8_t CPU::RRC_E() {}
-uint8_t CPU::RRC_H() {}
-uint8_t CPU::RRC_L() {}
-uint8_t CPU::RRC_HL_m() {}
-uint8_t CPU::RRC_A() {}
+// rotate register to the right
+void CPU::RRC(uint16_t* reg_pair, bool upper)
+{
+    /* rotate a register to the right and then set appropriate flags */
+    if (upper) {
+        uint8_t reg = *reg_pair >> 8;
+        reg = (reg >> 1) + ((reg & 1) << 7);
+
+        set_flag(CPU::flags::C, reg & 0x80); // check if the bit shifted out (and now the MSB) is 1
+
+        if (reg == 0) {
+            set_flag(CPU::flags::Z, 1);
+        }
+        else {
+            set_flag(CPU::flags::Z, 0);
+        }
+
+        // set the b register with the new value
+        *reg_pair &= 0x00ff;
+        *reg_pair |= static_cast<uint16_t>(reg) << 8;
+    }
+    else {
+        uint8_t reg = *reg_pair & 0xff;
+        reg = (reg >> 1) + ((reg & 1) << 7);
+
+        set_flag(CPU::flags::C, reg & 0x80); // check if the bit shifted out (and now the LSB) is 1
+
+        if (reg == 0) {
+            set_flag(CPU::flags::Z, 1);
+        }
+        else {
+            set_flag(CPU::flags::Z, 0);
+        }
+
+        // set the b register with the new value
+        *reg_pair &= 0xff00;
+        *reg_pair |= reg;
+    }
+}
+
+uint8_t CPU::RRC_B() { RRC(&bc_, true); return 0; }
+uint8_t CPU::RRC_C() { RRC(&bc_, false); return 0; }
+uint8_t CPU::RRC_D() { RRC(&de_, true); return 0; }
+uint8_t CPU::RRC_E() { RRC(&de_, false); return 0; }
+uint8_t CPU::RRC_H() { RRC(&hl_, true); return 0; }
+uint8_t CPU::RRC_L() { RRC(&hl_, false); return 0; }
+
+uint8_t CPU::RRC_HL_m() 
+{ 
+    uint8_t reg = read(hl_);
+    reg = (reg >> 1) + ((reg & 1) << 7);
+    set_flag(CPU::flags::C, reg & 0x80); // check if the bit shifted out (and now the MSB) is 1
+
+    if (reg == 0) {
+        set_flag(CPU::flags::Z, 1);
+    }
+    else {
+        set_flag(CPU::flags::Z, 0);
+    }
+
+    write(hl_, reg);
+
+    return 0;
+}
+
+uint8_t CPU::RRC_A() { RRC(&af_, true); return 0; }
+
 uint8_t CPU::RL_B() {}
 uint8_t CPU::RL_C() {}
 uint8_t CPU::RL_D() {}

@@ -60,7 +60,8 @@ class CPU {
         void POP(uint16_t* reg); // helper function for POP instructions
 
         // 16 bit instruction helpers
-        void RLC(uint16_t* reg_pair, bool upper);
+        void RLC(uint16_t* reg_pair, bool upper); // rotate register to the left
+        void RRC(uint16_t* reg_pair, bool upper); // rotate register to the right
 
 
         // take the twos complement for an 8 bit value:
