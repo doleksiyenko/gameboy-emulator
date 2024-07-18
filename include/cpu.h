@@ -168,8 +168,8 @@ class CPU {
         uint8_t RR_H();         uint8_t RR_L();         uint8_t RR_HL_m();      uint8_t RR_A();
         uint8_t SLA_B();        uint8_t SLA_C();        uint8_t SLA_D();        uint8_t SLA_E();
         uint8_t SLA_H();        uint8_t SLA_L();        uint8_t SLA_HL_m();     uint8_t SLA_A();
-        uint8_t SRC_B();        uint8_t SRC_C();        uint8_t SRC_D();        uint8_t SRC_E();
-        uint8_t SRC_H();        uint8_t SRC_L();        uint8_t SRC_HL_m();     uint8_t SRC_A();
+        uint8_t SRA_B();        uint8_t SRA_C();        uint8_t SRA_D();        uint8_t SRA_E();
+        uint8_t SRA_H();        uint8_t SRA_L();        uint8_t SRA_HL_m();     uint8_t SRA_A();
         uint8_t SWAP_B();       uint8_t SWAP_C();       uint8_t SWAP_D();       uint8_t SWAP_E();
         uint8_t SWAP_H();       uint8_t SWAP_L();       uint8_t SWAP_HL_m();    uint8_t SWAP_A();
         uint8_t SRL_B();        uint8_t SRL_C();        uint8_t SRL_D();        uint8_t SRL_E();

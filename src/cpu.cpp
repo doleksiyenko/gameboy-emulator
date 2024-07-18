@@ -91,8 +91,8 @@ CPU::CPU()
       {&CPU::RR_H, 8},    {&CPU::RR_L, 8},    {&CPU::RR_HL_m, 16},    {&CPU::RR_A, 8},
       {&CPU::SLA_B, 8},   {&CPU::SLA_C, 8},   {&CPU::SLA_D, 8},      {&CPU::SLA_E, 8},
       {&CPU::SLA_H, 8},   {&CPU::SLA_L, 8},   {&CPU::SLA_HL_m, 16},   {&CPU::SLA_A, 8},
-      {&CPU::SRC_B, 8},   {&CPU::SRC_C, 8},   {&CPU::SRC_D, 8},      {&CPU::SRC_E, 8},
-      {&CPU::SRC_H, 8},   {&CPU::SRC_L, 8},   {&CPU::SRC_HL_m, 16},   {&CPU::SRC_A, 8},
+      {&CPU::SRA_B, 8},   {&CPU::SRA_C, 8},   {&CPU::SRA_D, 8},      {&CPU::SRA_E, 8},
+      {&CPU::SRA_H, 8},   {&CPU::SRA_L, 8},   {&CPU::SRA_HL_m, 16},   {&CPU::SRA_A, 8},
       {&CPU::SWAP_B, 8},  {&CPU::SWAP_C, 8},  {&CPU::SWAP_D, 8},     {&CPU::SWAP_E, 8},
       {&CPU::SWAP_H, 8},  {&CPU::SWAP_L, 8},  {&CPU::SWAP_HL_m, 16},  {&CPU::SWAP_A, 8},
       {&CPU::SRL_B, 8},   {&CPU::SRL_C, 8},   {&CPU::SRL_D, 8},      {&CPU::SRL_E, 8},
@@ -1796,6 +1796,9 @@ void CPU::RLC(uint16_t* reg_pair, bool upper)
             set_flag(CPU::flags::Z, 0);
         }
 
+        set_flag(CPU::flags::H, 0);
+        set_flag(CPU::flags::N, 0);
+
         // set the b register with the new value
         *reg_pair &= 0x00ff;
         *reg_pair |= static_cast<uint16_t>(reg) << 8;
@@ -1813,6 +1816,9 @@ void CPU::RLC(uint16_t* reg_pair, bool upper)
         else {
             set_flag(CPU::flags::Z, 0);
         }
+
+        set_flag(CPU::flags::H, 0);
+        set_flag(CPU::flags::N, 0);
 
         // set the b register with the new value
         *reg_pair &= 0xff00;
@@ -1841,6 +1847,9 @@ uint8_t CPU::RLC_HL_m()
         set_flag(CPU::flags::Z, 0);
     }
 
+    set_flag(CPU::flags::H, 0);
+    set_flag(CPU::flags::N, 0);
+
     write(hl_, reg);
 
     return 0;
@@ -1865,6 +1874,9 @@ void CPU::RRC(uint16_t* reg_pair, bool upper)
             set_flag(CPU::flags::Z, 0);
         }
 
+        set_flag(CPU::flags::H, 0);
+        set_flag(CPU::flags::N, 0);
+
         // set the b register with the new value
         *reg_pair &= 0x00ff;
         *reg_pair |= static_cast<uint16_t>(reg) << 8;
@@ -1881,6 +1893,9 @@ void CPU::RRC(uint16_t* reg_pair, bool upper)
         else {
             set_flag(CPU::flags::Z, 0);
         }
+
+        set_flag(CPU::flags::H, 0);
+        set_flag(CPU::flags::N, 0);
 
         // set the b register with the new value
         *reg_pair &= 0xff00;
@@ -1908,6 +1923,9 @@ uint8_t CPU::RRC_HL_m()
         set_flag(CPU::flags::Z, 0);
     }
 
+    set_flag(CPU::flags::H, 0);
+    set_flag(CPU::flags::N, 0);
+
     write(hl_, reg);
 
     return 0;
@@ -1918,7 +1936,7 @@ uint8_t CPU::RRC_A() { RRC(&af_, true); return 0; }
 
 void CPU::RL(uint16_t* reg_pair, bool upper) // rotate register to the left, rotate in carry flag
 {
-    /* rotate a register to the left and then set appropriate flags */
+    /* rotate a register to the left from the carry and then set appropriate flags */
     if (upper) {
         uint8_t reg = *reg_pair >> 8;
         uint8_t msb = reg & 0x80;
@@ -1932,6 +1950,9 @@ void CPU::RL(uint16_t* reg_pair, bool upper) // rotate register to the left, rot
         else {
             set_flag(CPU::flags::Z, 0);
         }
+
+        set_flag(CPU::flags::H, 0);
+        set_flag(CPU::flags::N, 0);
 
         // set the b register with the new value
         *reg_pair &= 0x00ff;
@@ -1952,6 +1973,9 @@ void CPU::RL(uint16_t* reg_pair, bool upper) // rotate register to the left, rot
             set_flag(CPU::flags::Z, 0);
         }
 
+        set_flag(CPU::flags::H, 0);
+        set_flag(CPU::flags::N, 0);
+        
         // set the b register with the new value
         *reg_pair &= 0xff00;
         *reg_pair |= reg;
@@ -1981,6 +2005,9 @@ uint8_t CPU::RL_HL_m()
         set_flag(CPU::flags::Z, 0);
     }
 
+    set_flag(CPU::flags::H, 0);
+    set_flag(CPU::flags::N, 0);
+
     write(hl_, reg);
 
     return 0;
@@ -1991,7 +2018,7 @@ uint8_t CPU::RL_A() { RL(&af_, true); return 0; }
 
 void CPU::RR(uint16_t* reg_pair, bool upper) // rotate register to the left, rotate in carry flag
 {
-    /* rotate a register to the left and then set appropriate flags */
+    /* rotate a register to the right from the carry and then set appropriate flags */
     if (upper) {
         uint8_t reg = *reg_pair >> 8;
         uint8_t lsb = reg & 1;
@@ -2006,7 +2033,10 @@ void CPU::RR(uint16_t* reg_pair, bool upper) // rotate register to the left, rot
             set_flag(CPU::flags::Z, 0);
         }
 
-        // set the b register with the new value
+        set_flag(CPU::flags::H, 0);
+        set_flag(CPU::flags::N, 0);
+
+        // set the register with the new value
         *reg_pair &= 0x00ff;
         *reg_pair |= static_cast<uint16_t>(reg) << 8;
     }
@@ -2025,7 +2055,10 @@ void CPU::RR(uint16_t* reg_pair, bool upper) // rotate register to the left, rot
             set_flag(CPU::flags::Z, 0);
         }
 
-        // set the b register with the new value
+        set_flag(CPU::flags::H, 0);
+        set_flag(CPU::flags::N, 0);
+
+        // set the register with the new value
         *reg_pair &= 0xff00;
         *reg_pair |= reg;
 
@@ -2053,6 +2086,9 @@ uint8_t CPU::RR_HL_m()
         set_flag(CPU::flags::Z, 0);
     }
 
+    set_flag(CPU::flags::H, 0);
+    set_flag(CPU::flags::N, 0);
+
     write(hl_, reg);
 
     return 0;
@@ -2060,22 +2096,160 @@ uint8_t CPU::RR_HL_m()
 
 uint8_t CPU::RR_A() { RR(&af_, true); return 0; }
 
-uint8_t CPU::SLA_B() {}
-uint8_t CPU::SLA_C() {}
-uint8_t CPU::SLA_D() {}
-uint8_t CPU::SLA_E() {}
-uint8_t CPU::SLA_H() {}
-uint8_t CPU::SLA_L() {}
-uint8_t CPU::SLA_HL_m() {}
-uint8_t CPU::SLA_A() {}
-uint8_t CPU::SRC_B() {}
-uint8_t CPU::SRC_C() {}
-uint8_t CPU::SRC_D() {}
-uint8_t CPU::SRC_E() {}
-uint8_t CPU::SRC_H() {}
-uint8_t CPU::SRC_L() {}
-uint8_t CPU::SRC_HL_m() {}
-uint8_t CPU::SRC_A() {}
+void CPU::SLA(uint16_t* reg_pair, bool upper) // shift register to the left
+{
+    /* shift a register to the left and then set appropriate flags */
+    if (upper) {
+        uint8_t reg = *reg_pair >> 8;
+        set_flag(CPU::flags::C, reg & 0x80); // check if the bit shifted out (previous MSB) is 1
+
+        reg = (reg << 1);
+
+        if (reg == 0) {
+            set_flag(CPU::flags::Z, 1);
+        }
+        else {
+            set_flag(CPU::flags::Z, 0);
+        }
+
+        set_flag(CPU::flags::H, 0);
+        set_flag(CPU::flags::N, 0);
+
+        // set the register with the new value
+        *reg_pair &= 0x00ff;
+        *reg_pair |= static_cast<uint16_t>(reg) << 8;
+    }
+    else {
+        uint8_t reg = *reg_pair & 0xff;
+        set_flag(CPU::flags::C, reg & 0x80); // check if the bit shifted out (previous MSB) is 1
+
+        reg = (reg << 1); 
+
+        if (reg == 0) {
+            set_flag(CPU::flags::Z, 1);
+        }
+        else {
+            set_flag(CPU::flags::Z, 0);
+        }
+
+        set_flag(CPU::flags::H, 0);
+        set_flag(CPU::flags::N, 0);
+
+        // set the register with the new value
+        *reg_pair &= 0xff00;
+        *reg_pair |= reg;
+    }
+}
+
+
+uint8_t CPU::SLA_B() { SLA(&bc_, true); return 0; }
+uint8_t CPU::SLA_C() { SLA(&bc_, false); return 0; }
+uint8_t CPU::SLA_D() { SLA(&de_, true); return 0; }
+uint8_t CPU::SLA_E() { SLA(&de_, false); return 0; }
+uint8_t CPU::SLA_H() { SLA(&hl_, true); return 0; }
+uint8_t CPU::SLA_L() { SLA(&hl_, false); return 0; }
+
+uint8_t CPU::SLA_HL_m() 
+{ 
+    uint8_t reg = read(hl_);
+    set_flag(CPU::flags::C, reg & 0x80); // check if the bit shifted out (and now the LSB) is 1
+
+    reg = (reg << 1);
+
+    if (reg == 0) {
+        set_flag(CPU::flags::Z, 1);
+    }
+    else {
+        set_flag(CPU::flags::Z, 0);
+    }
+
+    set_flag(CPU::flags::H, 0);
+    set_flag(CPU::flags::N, 0);
+
+    write(hl_, reg);
+
+    return 0;
+}
+
+uint8_t CPU::SLA_A() { SLA(&af_, true); return 0; }
+
+
+void CPU::SRA(uint16_t* reg_pair, bool upper) // shift register to the right 
+{
+    /* shift a register to the right and then set appropriate flags */
+    if (upper) {
+        uint8_t reg = *reg_pair >> 8;
+        set_flag(CPU::flags::C, reg & 1); // check if the bit shifted out (previous MSB) is 1
+
+        reg = (reg >> 1);
+
+        if (reg == 0) {
+            set_flag(CPU::flags::Z, 1);
+        }
+        else {
+            set_flag(CPU::flags::Z, 0);
+        }
+
+        set_flag(CPU::flags::H, 0);
+        set_flag(CPU::flags::N, 0);
+
+        // set the register with the new value
+        *reg_pair &= 0x00ff;
+        *reg_pair |= static_cast<uint16_t>(reg) << 8;
+    }
+    else {
+        uint8_t reg = *reg_pair & 0xff;
+        set_flag(CPU::flags::C, reg & 1); // check if the bit shifted out (previous MSB) is 1
+
+        reg = (reg >> 1); 
+
+        if (reg == 0) {
+            set_flag(CPU::flags::Z, 1);
+        }
+        else {
+            set_flag(CPU::flags::Z, 0);
+        }
+
+        set_flag(CPU::flags::H, 0);
+        set_flag(CPU::flags::N, 0);
+
+        // set the register with the new value
+        *reg_pair &= 0xff00;
+        *reg_pair |= reg;
+    }
+}
+
+uint8_t CPU::SRA_B() { SRA(&bc_, true); return 0; }
+uint8_t CPU::SRA_C() { SRA(&bc_, false); return 0; }
+uint8_t CPU::SRA_D() { SRA(&de_, true); return 0; }
+uint8_t CPU::SRA_E() { SRA(&de_, false); return 0; }
+uint8_t CPU::SRA_H() { SRA(&hl_, true); return 0; }
+uint8_t CPU::SRA_L() { SRA(&hl_, false); return 0; }
+
+uint8_t CPU::SRA_HL_m() 
+{ 
+    uint8_t reg = read(hl_);
+    set_flag(CPU::flags::C, reg & 0x80); // check if the bit shifted out (and now the LSB) is 1
+
+    reg = (reg << 1);
+
+    if (reg == 0) {
+        set_flag(CPU::flags::Z, 1);
+    }
+    else {
+        set_flag(CPU::flags::Z, 0);
+    }
+
+    set_flag(CPU::flags::H, 0);
+    set_flag(CPU::flags::N, 0);
+
+    write(hl_, reg);
+
+    return 0;
+}
+
+uint8_t CPU::SRA_A() { SRA(&af_, true); return 0; }
+
 uint8_t CPU::SWAP_B() {}
 uint8_t CPU::SWAP_C() {}
 uint8_t CPU::SWAP_D() {}
