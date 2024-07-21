@@ -156,6 +156,8 @@ void CPU::connect_bus(Bus* bus)
 
 void CPU::cycle()
 {
+    // TODO: add logic considering interrupts and HALT mode
+
     // perform a cycle if we have the ability to (if we have the ability to - the last instruction has completed)
     if (t_cycles_delay == 0) {
         uint8_t instruction_code = read(pc_);
@@ -603,6 +605,8 @@ uint8_t CPU::JR_C_r8()
 // register flag manipulation
 uint8_t CPU::STOP_0() 
 {
+    pc_++; // stop considered to be a 2 byte instruction, so skip the next byte 
+    stop_mode = true;
 
     return 0;
 }

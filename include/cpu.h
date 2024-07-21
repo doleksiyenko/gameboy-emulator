@@ -24,6 +24,7 @@ class CPU {
         uint8_t ie_; // interrupt enable
 
         bool halt_mode = false; // indicate whether or not the CPU is halted by the HALT instruction
+        bool stop_mode = false; // indicate whether the STOP instruction was called
 
         Bus* bus_; // create a reference to the bus connecting all the hardware components together
         uint8_t read(uint16_t address);
