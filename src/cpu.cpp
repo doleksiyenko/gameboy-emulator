@@ -609,33 +609,38 @@ uint8_t CPU::DAA()
 
     uint8_t a = af_ >> 8;
 
-    // TODO: main DAA logic 
     if (!read_flag(CPU::flags::N)) {
-        // DAA adjustment if addition
-        if (a & 0xf > 9) || read_flag(CPU::flags::H) {
-            // add 0x06 to the offset
+        // N flag indicates that an addition occured
+        if (((a & 0xf) > 0x9) || read_flag(CPU::flags::H)) {
+            // adjust the units
+            a += 0x06;
         }
-        if (a > 0x99) || (read_flag(CPU::flags::C)) {
-            // add 0x60 to the offset
+        if ((a > 0x99) || (read_flag(CPU::flags::C))) {
+            // adjust the tens
+            a += 0x60;
+            set_flag(CPU::flags::C, 1); // bcd value > 0x99, set the carry
         }
     }
     else {
         // DAA adjustment if subtraction
-
+        if (read_flag(CPU::flags::H)) {
+            a -= 0x6;
+        }
+        if (read_flag(CPU::flags::C)) {
+            a -= 0x60;
+        }
     }
 
-    // set the flags
-    // if the final bcd > 0x99, then set the carry flag
+    // if we did not set carry earlier, carry should continue being 1 if it was so previously
+    // and therefore do not set to 0
+
+    set_flag(CPU::flags::Z, a == 0);
+    set_flag(CPU::flags::H, 0); 
 
 
-    if (a == 0) {
-        set_flag(CPU::flags::Z, 1);
-    }
-    else {
-        set_flag(CPU::flags::Z, 0);
-    }
-
-    set_flag(CPU::flags::H, 0); // half carry always unset
+    // set the A register with the updated BCD
+    af_ &= 0xff;
+    af_ |= static_cast<uint16_t>(a) << 8;
 
     return 0;
 }
