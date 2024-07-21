@@ -601,8 +601,12 @@ uint8_t CPU::JR_C_r8()
 }
 
 // register flag manipulation
-//TODO: 
-uint8_t CPU::STOP_0() {}
+uint8_t CPU::STOP_0() 
+{
+
+    return 0;
+}
+
 uint8_t CPU::DAA() 
 {
     /* this instruction sets the accumulator (register A) to a BCD number */
@@ -866,8 +870,13 @@ uint8_t CPU::LD_HL_m_D() { write(hl_, (de_ & 0xff00) >> 8); return 0; }
 uint8_t CPU::LD_HL_m_E() { write(hl_, (de_ & 0xff)); return 0; }
 uint8_t CPU::LD_HL_m_H() { write(hl_, (hl_ & 0xff00) >> 8); return 0; }
 uint8_t CPU::LD_HL_m_L() { write(hl_, (hl_ & 0xff)); return 0; }
-// TODO: halt intruction
-uint8_t CPU::HALT() {}
+
+uint8_t CPU::HALT() 
+{
+    halt_mode = true;
+    return 0;
+}
+
 uint8_t CPU::LD_HL_m_A() { write(hl_, (af_ & 0xff00) >> 8); return 0; }
 uint8_t CPU::LD_A_B() { LOAD_CONTENTS_INTO_REG(&af_, 1, (bc_ & 0xff00) >> 8); return 0; }
 uint8_t CPU::LD_A_C() { LOAD_CONTENTS_INTO_REG(&af_, 1, (bc_ & 0xff)); return 0; }
