@@ -603,7 +603,42 @@ uint8_t CPU::JR_C_r8()
 // register flag manipulation
 //TODO: 
 uint8_t CPU::STOP_0() {}
-uint8_t CPU::DAA() {}
+uint8_t CPU::DAA() 
+{
+    /* this instruction sets the accumulator (register A) to a BCD number */
+
+    uint8_t a = af_ >> 8;
+
+    // TODO: main DAA logic 
+    if (!read_flag(CPU::flags::N)) {
+        // DAA adjustment if addition
+        if (a & 0xf > 9) || read_flag(CPU::flags::H) {
+            // add 0x06 to the offset
+        }
+        if (a > 0x99) || (read_flag(CPU::flags::C)) {
+            // add 0x60 to the offset
+        }
+    }
+    else {
+        // DAA adjustment if subtraction
+
+    }
+
+    // set the flags
+    // if the final bcd > 0x99, then set the carry flag
+
+
+    if (a == 0) {
+        set_flag(CPU::flags::Z, 1);
+    }
+    else {
+        set_flag(CPU::flags::Z, 0);
+    }
+
+    set_flag(CPU::flags::H, 0); // half carry always unset
+
+    return 0;
+}
 
 uint8_t CPU::SCF() 
 {
