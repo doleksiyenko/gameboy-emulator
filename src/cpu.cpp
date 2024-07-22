@@ -904,7 +904,14 @@ uint8_t CPU::HALT()
 {
     halt_mode = true;
 
-    if ((ime_ == 0) && ((ie_ & if_) != 0)) {
+    // if an EI call immediately precedes this halt call, (and hence IME being 0), then call the interrupt handler (HALT bug different behaviour)
+    if (ei_delay && ime_ == 0 && ((ie_ & if_) != 0)) {
+        // handle the interrupt
+        handle_interrupts();
+        // keep halt mode ON, so that we now have to wait for another interrupt in the main CPU cycle
+    }
+    else if ((ime_ == 0) && ((ie_ & if_) != 0)) {
+        // conditions for the HALT bug, which will cause the PC to fail to increment
         halt_bug = true;
     }
 
