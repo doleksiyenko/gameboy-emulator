@@ -291,6 +291,9 @@ uint8_t CPU::read_flag(CPU::flags flag)
             return (af_ & flag) >> 7;
             break;
     }
+
+    // should never reach here
+    return 0;
 }
 
 // --------------- INSTRUCTION IMPLEMENTATIONS --------------------------
@@ -868,7 +871,7 @@ uint8_t CPU::LD_A_HLm_m()
 
 // one byte load instructions
 
-void LOAD_CONTENTS_INTO_REG(uint16_t* reg_pair, bool top, uint8_t reg2_contents) // helper function for the LD REG1, REG2 instructions
+void CPU::LOAD_CONTENTS_INTO_REG(uint16_t* reg_pair, bool top, uint8_t reg2_contents) // helper function for the LD REG1, REG2 instructions
 {
     // set register in reg_pair to reg2_contents. Top specifies which reigster in reg_pair is to be set
     if (top) {
