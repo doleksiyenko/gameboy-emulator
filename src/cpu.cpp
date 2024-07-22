@@ -155,19 +155,30 @@ void CPU::connect_bus(Bus* bus)
     bus_ = bus;
 }
 
+void CPU::call_handler(interrupts interrupt, uint8_t handler_location) // call the respective handler for interrupt
+{
+        ime_ = false; // disabled IME to prevent any further interrupts until program reenables them
+        // clear the flag in IF to acknoledge the interrupt, using xor to toggle bit
+        if_ ^= interrupt;
+
+        // save the pc on the stack
+        write(--sp_, (pc_ & 0xff00) >> 8);
+        write(--sp_, pc_ & 0xff);
+
+        // call the handler
+        pc_ = handler_location;
+}
+
 void CPU::handle_interrupts() 
 {
     /* Calls the appropriate interrupt handler based on the contents of IE and IF. Disables the IME before executing the handler. */
-    ime_ = false;
-
-    // TODO: call the interrupt handler
-
     // list of interrupt handlers sorted by their priority (following order of bits, with bit 0 having highest priority)
-    // it is possible for 
-    // if ( && ) {
-
-    // }
-
+    // it is possible for multiple bits to be set, so handle the highest priority first 
+    if ((if_ & CPU::interrupts::VBlank) && (ie_ & CPU::interrupts::VBlank)) { call_handler(CPU::interrupts::VBlank, 0x40); } 
+    else if ((if_ & CPU::interrupts::LCD) && (ie_ & CPU::interrupts::LCD)) { call_handler(CPU::interrupts::VBlank, 0x40); }
+    else if ((if_ & CPU::interrupts::Timer) && (ie_ & CPU::interrupts::Timer)) { call_handler(CPU::interrupts::VBlank, 0x40); }
+    else if ((if_ & CPU::interrupts::Serial) && (ie_ & CPU::interrupts::Serial)) { call_handler(CPU::interrupts::VBlank, 0x40); }
+    else if ((if_ & CPU::interrupts::Joypad) && (ie_ & CPU::interrupts::Joypad)) { call_handler(CPU::interrupts::VBlank, 0x40); }
 }
 
 void CPU::cycle()
