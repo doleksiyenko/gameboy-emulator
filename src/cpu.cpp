@@ -151,15 +151,23 @@ CPU::CPU()
 
 void CPU::connect_bus(Bus* bus)
 {
+    /* Connect the CPU to the 16 bit address bus. */
     bus_ = bus;
+}
+
+void CPU::handle_interrupts() 
+{
+    /* Calls the appropriate interrupt handler based on the contents of IE and IF. Disables the IME before executing the handler. */
+    ime_ = false;
+
+    // TODO: call the interrupt handler
 }
 
 void CPU::cycle()
 {
-    // TODO: add logic considering interrupts and HALT mode
+    /* Perform one cycle of the CPU */
 
     //-- INTERRUPT HANDLING --
-    // there is an interrupt pending, cancel halt mode
     if ((ie_ & if_) != 0) {
         halt_mode = false;
     }
@@ -167,6 +175,11 @@ void CPU::cycle()
     // if we're currently in HALT mode, the CPU pauses, and do not read or execute any further instructions
     if (halt_mode) {
         return;
+    }
+
+    // if there was an interrupt pending, we have now exited halt mode, and if IME is set, handle the interrupt 
+    if (ime_ == 1) {
+        handle_interrupts();
     }
 
     // -- DECODE AND EXECUTE --
@@ -913,6 +926,7 @@ uint8_t CPU::HALT()
     else if ((ime_ == 0) && ((ie_ & if_) != 0)) {
         // conditions for the HALT bug, which will cause the PC to fail to increment
         halt_bug = true;
+        halt_mode = false; // immediately end the HALT
     }
 
     return 0;
