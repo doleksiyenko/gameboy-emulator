@@ -88,6 +88,12 @@ class CPU {
 
         uint8_t t_cycles_delay; // the number of system clock ticks that an instruction requires to complete
 
+        // -- INTERRUPT HANDLING -- 
+        bool check_interrupts(); // this should return whether or not there is an interrupt pending
+        void handle_interrupts(); // handle all pending interrupts
+        bool ei_delay = false; // the effect of the instruction EI needs to be delayed by 1 instruction. This flag indicates that the EI instruction was just called, and to not handle interrupts until one instruction later
+
+
         //              ------------------ opcode functions ------------------
         // these are written in the order of instructions (i.e. instruction 0x0, 0x1, 0x2...)
         // helpful interactive reference: https://meganesu.github.io/generate-gb-opcodes/

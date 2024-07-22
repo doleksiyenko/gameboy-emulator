@@ -157,7 +157,25 @@ void CPU::connect_bus(Bus* bus)
 void CPU::cycle()
 {
     // TODO: add logic considering interrupts and HALT mode
+    //-- INTERRUPT HANDLING --
 
+    // there is an interrupt pending, cancel halt mode
+    if ((ie_ & if_) != 0) {
+        halt_mode = false;
+    }
+
+    // if we're currently in HALT mode, the CPU pauses, and do not read or execute any further instructions
+    if (halt_mode) {
+        return;
+    }
+
+    // after checking the interrupts, if the EI instruction was called, we can now turn on interrupt handling (this gives behaviour of not allowing interrupts between EI and DI)
+    if (ei_delay) {
+        ime_ = true;
+        ei_delay = false;
+    }
+
+    // -- DECODE AND EXECUTE --
     // perform a cycle if we have the ability to (if we have the ability to - the last instruction has completed)
     if (t_cycles_delay == 0) {
         uint8_t instruction_code = read(pc_);
@@ -1826,8 +1844,8 @@ uint8_t CPU::DI()
 
 uint8_t CPU::EI() 
 {
-    /* enable IME */
-    ime_ = true;
+    /* enable IME after a 1 instruction delay */
+    ei_delay = true;
     return 0;
 }
 
