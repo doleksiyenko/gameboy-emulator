@@ -157,8 +157,8 @@ void CPU::connect_bus(Bus* bus)
 void CPU::cycle()
 {
     // TODO: add logic considering interrupts and HALT mode
-    //-- INTERRUPT HANDLING --
 
+    //-- INTERRUPT HANDLING --
     // there is an interrupt pending, cancel halt mode
     if ((ie_ & if_) != 0) {
         halt_mode = false;
@@ -169,17 +169,18 @@ void CPU::cycle()
         return;
     }
 
-    // after checking the interrupts, if the EI instruction was called, we can now turn on interrupt handling (this gives behaviour of not allowing interrupts between EI and DI)
-    if (ei_delay) {
-        ime_ = true;
-        ei_delay = false;
-    }
-
     // -- DECODE AND EXECUTE --
     // perform a cycle if we have the ability to (if we have the ability to - the last instruction has completed)
     if (t_cycles_delay == 0) {
         uint8_t instruction_code = read(pc_);
-        pc_++; // immediately increment the pc after reading the instruction
+
+        // the halt bug causes the same instruction to be executed again (the pc fails to increment)
+        if (!halt_bug) {
+            pc_++; // immediately increment the pc after reading the instruction
+        }
+        else {
+            halt_bug = false;
+        }
 
         Instruction instruction;
         if (instruction_code == 0xcb) {
@@ -205,6 +206,12 @@ void CPU::cycle()
         if (t_cycles_delay > 0) {
             t_cycles_delay--;
         }
+    }
+
+    // ei is delayed by 1 instruction, so now perform its behaviour if it was called. However, if DI was called, it switches off the delay and keeps ime false
+    if (ei_delay) {
+        ime_ = true;
+        ei_delay = false;
     }
 }
 
@@ -896,6 +903,11 @@ uint8_t CPU::LD_HL_m_L() { write(hl_, (hl_ & 0xff)); return 0; }
 uint8_t CPU::HALT() 
 {
     halt_mode = true;
+
+    if ((ime_ == 0) && ((ie_ & if_) != 0)) {
+        halt_bug = true;
+    }
+
     return 0;
 }
 
@@ -1837,14 +1849,15 @@ uint8_t CPU::LD_A_a16_m()
 
 uint8_t CPU::DI() 
 {
-    /* disable IME */
+    /* disable IME and if EI was called, turn off signal to turn on IME after 1 instruction delay */
     ime_ = false;
+    ei_delay = false;
     return 0;
 }
 
 uint8_t CPU::EI() 
 {
-    /* enable IME after a 1 instruction delay */
+    /* turn on signal to enable IME after a 1 instruction delay */
     ei_delay = true;
     return 0;
 }
