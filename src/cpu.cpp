@@ -161,6 +161,13 @@ void CPU::handle_interrupts()
     ime_ = false;
 
     // TODO: call the interrupt handler
+
+    // list of interrupt handlers sorted by their priority (following order of bits, with bit 0 having highest priority)
+    // it is possible for 
+    // if ( && ) {
+
+    // }
+
 }
 
 void CPU::cycle()
@@ -174,12 +181,19 @@ void CPU::cycle()
 
     // if we're currently in HALT mode, the CPU pauses, and do not read or execute any further instructions
     if (halt_mode) {
+        // continue decrementing the cycle count even in halt mode, because it's possible that we called the interrupt handler from 
+        // the halt instruction if the preceding instruction was EI, which takes 20 t-cycles
+        if (t_cycles_delay > 0) {
+            t_cycles_delay--;
+        }
         return;
     }
 
-    // if there was an interrupt pending, we have now exited halt mode, and if IME is set, handle the interrupt 
-    if (ime_ == 1) {
+    // if there was an interrupt pending, we have now exited halt mode, and if IME is set, handle the interrupt. Also check that t_cycles_delay is 0,
+    // to check in case the last interrupt handler has finished running 
+    if ((ime_ == 1) && (t_cycles_delay == 0)) {
         handle_interrupts();
+        t_cycles_delay += 20; // takes 20 cycles to hand control to interrupt handler
     }
 
     // -- DECODE AND EXECUTE --
@@ -212,19 +226,19 @@ void CPU::cycle()
         // a member function must be called on an instance of the class, so we must explicitly say that we run the opcode_function based on this class
         uint8_t additional_cycles = (this->*instruction.opcode_function)();
 
-        // get the final amount of cycles required to perform this instruction by getting the base cycles + additional cycles
+        // get the final amount of cycles required to perform this instruction by getting the base cycles + additional cycles (for example, from conditional branches)
         t_cycles_delay += additional_cycles;
 
-        // one t cycle has passed, should never reach below zero since a new instruction should always provide more cycles, however make an explcit check
-        if (t_cycles_delay > 0) {
-            t_cycles_delay--;
+        // ei is delayed by 1 instruction, so now perform its behaviour if it was called. However, if DI was called, it switches off the delay and keeps ime false
+        if (ei_delay) {
+            ime_ = true;
+            ei_delay = false;
         }
     }
 
-    // ei is delayed by 1 instruction, so now perform its behaviour if it was called. However, if DI was called, it switches off the delay and keeps ime false
-    if (ei_delay) {
-        ime_ = true;
-        ei_delay = false;
+    // one t cycle has passed, should never reach below zero since a new instruction should always provide more cycles, however make an explicit check
+    if (t_cycles_delay > 0) {
+        t_cycles_delay--;
     }
 }
 
@@ -921,7 +935,8 @@ uint8_t CPU::HALT()
     if (ei_delay && ime_ == 0 && ((ie_ & if_) != 0)) {
         // handle the interrupt
         handle_interrupts();
-        // keep halt mode ON, so that we now have to wait for another interrupt in the main CPU cycle
+        // keep halt mode ON, so that we now have to wait for another interrupt in the main CPU cycle. 
+        return 20;
     }
     else if ((ime_ == 0) && ((ie_ & if_) != 0)) {
         // conditions for the HALT bug, which will cause the PC to fail to increment

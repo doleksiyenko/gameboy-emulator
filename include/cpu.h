@@ -89,7 +89,7 @@ class CPU {
         uint8_t t_cycles_delay; // the number of system clock ticks that an instruction requires to complete
 
         // -- INTERRUPT HANDLING -- 
-        void handle_interrupts(); // handle all pending interrupts
+        void handle_interrupts(); // handle all pending interrupts, interrupt service routine (transferring to interrupt handler) takes 20 t-cycles
         bool ei_delay = false; // the effect of the instruction EI needs to be delayed by 1 instruction. This flag indicates that the EI instruction was just called, and to not handle interrupts until one instruction later
         bool halt_bug = false; // emulate the behaviour of the halt bug, which occurs when halt is called and IME == 0, while ie & if != 0
 
