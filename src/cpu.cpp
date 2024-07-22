@@ -175,10 +175,10 @@ void CPU::handle_interrupts()
     // list of interrupt handlers sorted by their priority (following order of bits, with bit 0 having highest priority)
     // it is possible for multiple bits to be set, so handle the highest priority first 
     if ((if_ & CPU::interrupts::VBlank) && (ie_ & CPU::interrupts::VBlank)) { call_handler(CPU::interrupts::VBlank, 0x40); } 
-    else if ((if_ & CPU::interrupts::LCD) && (ie_ & CPU::interrupts::LCD)) { call_handler(CPU::interrupts::VBlank, 0x40); }
-    else if ((if_ & CPU::interrupts::Timer) && (ie_ & CPU::interrupts::Timer)) { call_handler(CPU::interrupts::VBlank, 0x40); }
-    else if ((if_ & CPU::interrupts::Serial) && (ie_ & CPU::interrupts::Serial)) { call_handler(CPU::interrupts::VBlank, 0x40); }
-    else if ((if_ & CPU::interrupts::Joypad) && (ie_ & CPU::interrupts::Joypad)) { call_handler(CPU::interrupts::VBlank, 0x40); }
+    else if ((if_ & CPU::interrupts::LCD) && (ie_ & CPU::interrupts::LCD)) { call_handler(CPU::interrupts::LCD, 0x48); }
+    else if ((if_ & CPU::interrupts::Timer) && (ie_ & CPU::interrupts::Timer)) { call_handler(CPU::interrupts::Timer, 0x50); }
+    else if ((if_ & CPU::interrupts::Serial) && (ie_ & CPU::interrupts::Serial)) { call_handler(CPU::interrupts::Serial, 0x58); }
+    else if ((if_ & CPU::interrupts::Joypad) && (ie_ & CPU::interrupts::Joypad)) { call_handler(CPU::interrupts::Joypad, 0x60); }
 }
 
 void CPU::cycle()
