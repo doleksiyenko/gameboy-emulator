@@ -36,3 +36,4 @@ build
 .cache
 roms
 .vscode
+bootrom
