@@ -10,7 +10,7 @@
 
 class GameBoy {
     public:
-        GameBoy();
+        GameBoy(std::string bootrom_file, std::string cartridge_file);
         void run();
         ~GameBoy();
     private:

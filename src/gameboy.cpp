@@ -2,15 +2,23 @@
 #include <SDL2/SDL.h>
 #include <SDL_events.h>
 
-GameBoy::GameBoy() {
+GameBoy::GameBoy(std::string bootrom_file, std::string cartridge_file) {
+    /* set up hardware components of the Game Boy */
+
     // link hardware components
     cpu_.connect_bus(&bus_);
+
+    // load in the boot rom
+    bootrom_.load_bootrom_file(bootrom_file);
+
+    // TODO: load in the cartridge
 }
 
 void GameBoy::run() {
-    // TODO: load in the cartridge
+    /* the main game loop of the Game Boy*/
 
     while (running_) {
+        cpu_.cycle();
 
         // poll for a quit event (e.g. user exits out of the emulator)
         poll_events();
