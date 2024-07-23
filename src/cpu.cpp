@@ -275,6 +275,16 @@ void CPU::set_flag(CPU::flags flag, bool val)
     }
 }
 
+uint8_t CPU::read_ie()
+{
+    return ie_;
+}
+
+void CPU::write_ie(uint8_t value)
+{
+    ie_ = value;
+}
+
 uint8_t CPU::read_flag(CPU::flags flag) 
 {
     switch (flag) {

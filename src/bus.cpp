@@ -29,6 +29,9 @@ uint8_t Bus::read(uint16_t address)
         // read from work RAM
         return ram_->read(address);
     }
+    else if (address == 0xffff) {
+        return cpu_->read_ie();
+    }
 
     return 0x0;
 }
@@ -39,8 +42,12 @@ void Bus::write(uint16_t address, uint8_t value)
         // write to VRAM
         ppu_->write(address, value);
     }
-    if (address >= 0xc000 && address <= 0xdfff) {
+    else if (address >= 0xc000 && address <= 0xdfff) {
         // write to work RAM
         ram_->write(address, value);
+    }
+    else if (address == 0xffff) {
+        // update the interrupt enable register
+        cpu_->write_ie(value);
     }
 }

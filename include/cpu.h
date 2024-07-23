@@ -12,6 +12,8 @@ class CPU {
         CPU();
         void cycle();
         void connect_bus(Bus* bus);
+        uint8_t read_ie();
+        void write_ie(uint8_t value);
     private:
         // 16 bit registers
         uint16_t pc_; // program counter
