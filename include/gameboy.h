@@ -1,6 +1,7 @@
 #ifndef GAMEBOY_H
 #define GAMEBOY_H
 
+#include "bootrom.h"
 #include "cpu.h"
 #include "ppu.h"
 #include "ram.h"
@@ -22,7 +23,8 @@ class GameBoy {
         PPU ppu_;
         Sound sound_;
         CPU cpu_;
-        Bus bus_ {&cpu_, &ram_, &ppu_}; 
+        BootROM bootrom_;
+        Bus bus_ {&cpu_, &ram_, &ppu_, &bootrom_}; 
 };
 
 #endif

@@ -19,7 +19,7 @@ Constructor: take pointers to hardware components created in the Gameboy class, 
 
 class Bus {
     public:
-        Bus(CPU* cpu, RAM* ram, PPU* ppu);
+        Bus(CPU* cpu, RAM* ram, PPU* ppu, BootROM* bootrom);
         void write(uint16_t address, uint8_t value);
         uint8_t read(uint16_t address);
     private:
