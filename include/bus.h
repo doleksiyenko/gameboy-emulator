@@ -12,6 +12,7 @@ Constructor: take pointers to hardware components created in the Gameboy class, 
 #define BUS_H
 
 #include <cstdint>
+#include "bootrom.h"
 #include "cpu.h"
 #include "ram.h"
 #include "ppu.h"
@@ -25,6 +26,7 @@ class Bus {
         CPU* cpu_; 
         RAM* ram_;
         PPU* ppu_;
+        BootROM* bootrom_;
 };
 
 #endif

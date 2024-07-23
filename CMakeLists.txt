@@ -13,6 +13,7 @@ set(SourceFiles
     src/ram.cpp
     src/cartridge.cpp
     src/bus.cpp
+    src/bootrom.cpp
     )
 
 set(HeaderFiles
@@ -23,6 +24,7 @@ set(HeaderFiles
     include/sound.h
     include/cartridge.h
     include/bus.h
+    include/bootrom.h
     )
 
 

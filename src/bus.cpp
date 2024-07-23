@@ -1,24 +1,27 @@
 #include "bus.h"
+#include "bootrom.h"
 #include <cstdint>
 
 #include <cpu.h>
 #include <ram.h>
 #include <ppu.h>
 
-Bus::Bus(CPU* cpu, RAM* ram, PPU* ppu) 
+Bus::Bus(CPU* cpu, RAM* ram, PPU* ppu, BootROM* bootrom) 
 {
     // link the bus to all of the hardware components created in the GameBoy class
     cpu_ = cpu;
     ram_ = ram;
     ppu_ = ppu;
-
-
-
+    bootrom_ = bootrom;
 }
 
 uint8_t Bus::read(uint16_t address)
 {
-    if (address >= 0x8000 && address <= 0x9fff) {
+    if (address >= 0x0000 && address < 0x0100) {
+        // read from the boot ROM (no corresponding write, since this is ROM) 
+        return bootrom_->read(address);
+    }
+    else if (address >= 0x8000 && address <= 0x9fff) {
         // read from VRAM
         return ppu_->read(address);
     }

@@ -1,7 +1,7 @@
-#ifndef CATRIDGE_H
-#define CATRIDGE_H
+#ifndef CARTRIDGE_H
+#define CARTRIDGE_H
 
-class Catridge {
+class Cartridge {
 
 };
 
