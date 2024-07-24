@@ -1,7 +1,9 @@
 #include "cartridge.h"
+#include "mbc/mbc1.h"
 #include <cstdint>
 #include <fstream>
 #include <iostream>
+#include <memory>
 
 void Cartridge::load_cartridge_from_file(std::string cartridge_file)
 {
@@ -32,13 +34,32 @@ void Cartridge::load_cartridge_from_file(std::string cartridge_file)
     }
 
     // read any required information from the cartridge header
-    mbc_ = cartridge_.at(0x0147); // mbc mode found in catridge header. 0x0147 contains the cartridge type, and indicates how the Cartridge is organized
+    mbc_header_val_ = cartridge_[0x0147]; // mbc mode found in catridge header. 0x0147 contains the cartridge type, and indicates how the Cartridge is organized
 
-    std::cout << "MBC type: " << (int)mbc_ << '\n'; 
+    // create the appropriate MBC chip for the cartridge
+    switch (mbc_header_val_) {
+        case 0x0:
+            // no mbc chip
+            break;
+        case 0x1:
+            // mbc1 chip
+            mbc_ = std::make_unique<MBC1>(cartridge_);
+            break;
+        default:
+            break;
+    }
+
+    std::cout << "MBC type: " << (int)mbc_header_val_ << '\n'; 
     std::cout << "Cartridge size (bytes): " << cartridge_.size() << std::endl;
 }
 
 uint8_t Cartridge::read(uint16_t address)
 {
-
+    // if there is no MBC, then there is no swapping of banks. We can read directly from the 32 KiB ROM
+    if (mbc_header_val_ == 0x0) {
+        return cartridge_[address];
+    }
+    if (mbc_header_val_ == 0x1) {
+        // TODO: use MBC1
+    }
 }
