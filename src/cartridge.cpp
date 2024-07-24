@@ -37,3 +37,8 @@ void Cartridge::load_cartridge_from_file(std::string cartridge_file)
     std::cout << "MBC type: " << (int)mbc_ << '\n'; 
     std::cout << "Cartridge size (bytes): " << cartridge_.size() << std::endl;
 }
+
+uint8_t Cartridge::read(uint16_t address)
+{
+
+}

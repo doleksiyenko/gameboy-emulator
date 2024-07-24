@@ -26,7 +26,7 @@ class GameBoy {
         CPU cpu_;
         BootROM bootrom_; // fixed size ROM responsible for booting the console
         Cartridge cartridge_; // game cartridge
-        Bus bus_ {&cpu_, &ram_, &ppu_, &bootrom_}; 
+        Bus bus_ {&cpu_, &ram_, &ppu_, &bootrom_, &cartridge_}; 
 };
 
 #endif

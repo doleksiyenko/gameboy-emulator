@@ -13,13 +13,14 @@ Constructor: take pointers to hardware components created in the Gameboy class, 
 
 #include <cstdint>
 #include "bootrom.h"
+#include "cartridge.h"
 #include "cpu.h"
 #include "ram.h"
 #include "ppu.h"
 
 class Bus {
     public:
-        Bus(CPU* cpu, RAM* ram, PPU* ppu, BootROM* bootrom);
+        Bus(CPU* cpu, RAM* ram, PPU* ppu, BootROM* bootrom, Cartridge* cartridge);
         void write(uint16_t address, uint8_t value);
         uint8_t read(uint16_t address);
     private:
@@ -27,6 +28,7 @@ class Bus {
         RAM* ram_;
         PPU* ppu_;
         BootROM* bootrom_;
+        Cartridge* cartridge_;
 };
 
 #endif
