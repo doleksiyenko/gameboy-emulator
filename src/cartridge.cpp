@@ -59,7 +59,8 @@ uint8_t Cartridge::read(uint16_t address)
     if (mbc_header_val_ == 0x0) {
         return cartridge_[address];
     }
-    if (mbc_header_val_ == 0x1) {
-        // TODO: use MBC1
+    else {
+        // we have an mbc, read from it
+        mbc_->read(address);
     }
 }
