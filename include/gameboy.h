@@ -2,6 +2,7 @@
 #define GAMEBOY_H
 
 #include "bootrom.h"
+#include "cartridge.h"
 #include "cpu.h"
 #include "ppu.h"
 #include "ram.h"
@@ -23,7 +24,8 @@ class GameBoy {
         PPU ppu_;
         Sound sound_;
         CPU cpu_;
-        BootROM bootrom_;
+        BootROM bootrom_; // fixed size ROM responsible for booting the console
+        Cartridge cartridge_; // game cartridge
         Bus bus_ {&cpu_, &ram_, &ppu_, &bootrom_}; 
 };
 

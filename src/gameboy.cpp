@@ -11,7 +11,8 @@ GameBoy::GameBoy(std::string bootrom_file, std::string cartridge_file) {
     // load in the boot rom
     bootrom_.load_bootrom_file(bootrom_file);
 
-    // TODO: load in the cartridge
+    // load in the cartridge
+    cartridge_.load_cartridge_from_file(cartridge_file);
 }
 
 void GameBoy::run() {
