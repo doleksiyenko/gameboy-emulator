@@ -1,16 +1,38 @@
 #include "./mbc/mbc1.h"
+#include <_types/_uint32_t.h>
 #include <cstdint>
 
 uint8_t MBC1::read(uint16_t address)
 {
     if (address >= 0x0000 && address <= 0x3fff) {
         // this is the fixed bank area (ROM bank X0)
+        if (banking_mode_ == 0) {
+            return cartridge_data_[address];
+        }
+        else {
+           return cartridge_data_[(static_cast<uint32_t>(ram_bank_upper_bit_reg) << 19) + address];
+        }
     }
     else if (address >= 0x4000 && address <= 0x7fff) {
         // this is the switchable bank area (ROM bank 01 - 7f)
+        return cartridge_data_[(static_cast<uint32_t>(ram_bank_upper_bit_reg) << 19) + (static_cast<uint32_t>(rom_bank_number_) << 14) + address];
     }
     else if (address >= 0xa000 && address <= 0xbfff) {
-        // RAM bank 00-03
+        // RAM bank 00-03. We can only read RAM values if RAM is enabled
+        if (ram_enable_) {
+            if (banking_mode_ == 0) {
+                return cartridge_data_[address];
+            }
+            else {
+                return cartridge_data_[(static_cast<uint16_t>(ram_bank_upper_bit_reg) << 13) + address];
+            }
+            // after accessing external RAM, disable it
+            ram_enable_ = false;
+        }
+        else {
+            // RAM is not enabled so return junk data
+            return 0xff;
+        }
     }
 
     return cartridge_data_[address]; 
@@ -51,16 +73,11 @@ void MBC1::write(uint16_t address, uint8_t value)
     else if (address >= 0x4000 && address <= 0x5fff) {
         /* this write instruction only performs an action if this MBC1 cart
         has 32KiB of RAM (set RAM bank) or is 1 MiB ROM or larger (additional rom_bank_number bits) */
-        if (external_ram_size_code == 0x03) {
+        if (external_ram_size_code == 0x03 || rom_size_code >= 0x05) {
             // 32 KiB RAM cartridge
-            ram_bank_number_ = value & 0x03;
-        }
-        else if (rom_size_code >= 0x05) {
-            // 1 MiB ROM cartridge or larger (=> max 8 KiB of external RAM)
-            rom_bank_number_ |= ((value & 0x03) << 5); 
+            ram_bank_upper_bit_reg = value & 0x03;
         }
     }
-
     else if (address >= 0x4000 && address <= 0x5fff) {
         /* select MBC1 banking mode */
         if (value == 0x0) {
@@ -68,6 +85,20 @@ void MBC1::write(uint16_t address, uint8_t value)
         }
         else {
             banking_mode_ = 0;
+        }
+    }
+
+    else if (address >= 0xa000 && address <= 0xbfff && ram_enable_) {
+        // RAM bank 00-03. We can only write to RAM values if RAM is enabled
+        if (ram_enable_) {
+            if (banking_mode_ == 0) {
+                cartridge_data_[address] = value;
+            }
+            else {
+                cartridge_data_[(static_cast<uint16_t>(ram_bank_upper_bit_reg) << 13) + address] = value;
+            }
+            // after accessing external RAM, disable it
+            ram_enable_ = false;
         }
     }
 }

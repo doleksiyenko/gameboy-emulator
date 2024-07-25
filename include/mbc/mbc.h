@@ -26,7 +26,7 @@ class MBC
         // possible registers required by MBCs. All registers default to 0x00 on power up
         bool ram_enable_ = false; // RAM enable needs to be activated first by writing $A to memory
         uint8_t rom_bank_number_ = 0x0; 
-        uint8_t ram_bank_number_ = 0x0; 
+        uint8_t ram_bank_upper_bit_reg = 0x0;
         uint8_t banking_mode_ = 0x0;
 
 
