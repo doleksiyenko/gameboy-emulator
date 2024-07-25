@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <string>
 
 void Cartridge::load_cartridge_from_file(std::string cartridge_file)
 {
@@ -51,6 +52,7 @@ void Cartridge::load_cartridge_from_file(std::string cartridge_file)
 
     std::cout << "MBC type: " << (int)mbc_header_val_ << '\n'; 
     std::cout << "Cartridge size (bytes): " << cartridge_.size() << std::endl;
+    std::cout << "MBC created: " << (int) mbc_->read(0x0147) << std::endl;
 }
 
 uint8_t Cartridge::read(uint16_t address)
@@ -61,6 +63,6 @@ uint8_t Cartridge::read(uint16_t address)
     }
     else {
         // we have an mbc, read from it
-        mbc_->read(address);
+        return mbc_->read(address);
     }
 }

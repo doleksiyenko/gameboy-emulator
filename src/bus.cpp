@@ -33,7 +33,7 @@ uint8_t Bus::read(uint16_t address)
     }
     else if (address >= 0xA000 && address <= 0xbfff) {
         // acccess 8 KiB of external RAM contained in the cartridge. This is a switchable bank controller by the MBC (which is in the cartridge class)
-        return cartridge_->read(address)
+        return cartridge_->read(address);
     }
     else if (address >= 0xc000 && address <= 0xdfff) {
         // read from work RAM

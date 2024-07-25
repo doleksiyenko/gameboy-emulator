@@ -14,6 +14,7 @@ set(SourceFiles
     src/cartridge.cpp
     src/bus.cpp
     src/bootrom.cpp
+    src/mbc/mbc1.cpp
     )
 
 set(HeaderFiles
@@ -25,6 +26,8 @@ set(HeaderFiles
     include/cartridge.h
     include/bus.h
     include/bootrom.h
+    include/mbc/mbc.h
+    include/mbc/mbc1.h
     )
 
 
