@@ -18,5 +18,38 @@ uint8_t MBC1::read(uint16_t address)
 
 void MBC1::write(uint16_t address, uint8_t value)
 {
-    // TODO: change the MBC registers
+    /* the write function of the MBC changes the MBC control registers */
+    if (address >= 0x0000 && address <= 0x1fff) {
+        // if the last 4 bits of value contain the value a, enable ram. Any other value disables it
+        uint8_t lower_bits = value & 0xf;
+        if (lower_bits >> 3 == 0xa || lower_bits >> 2 == 0xa || lower_bits >> 1 == 0xa || (lower_bits & 0x1) == 0xa) {
+            ram_enable_ = true;
+        }
+        else {
+            ram_enable_ = false;
+        }
+    }
+    else if (address >= 0x2000 && address <= 0x3fff) {
+        // sets the ROM bank number, which selects which ROM bank is exposed to the 4000-7fff region 
+        switch (rom_size_code) {
+            case 0x0:
+                break; // no banking
+            case 0x1:
+                rom_bank_number_ = value & 0x3; // 4 banks, use 2 bits
+                break;
+            case 0x2:
+                rom_bank_number_ = value & 0x7; // 8 banks, use 3 bits
+                break;
+            case 0x3:
+                rom_bank_number_ = value & 0xf; // 16 banks, use 4 bits
+                break;
+            case 0x4:
+                rom_bank_number_ = value & 0x1f; // 32 banks, use 5 bits
+                break;
+        }
+    }
+    else if (address >= 0x4000 && address <= 0x5fff) {
+        // RAM bank 00-03
+
+    }
 }
