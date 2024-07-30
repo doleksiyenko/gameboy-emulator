@@ -59,10 +59,19 @@ void PPU::render() {
 
 uint8_t PPU::read(uint16_t address)
 {
-    return vram_[address - 0x8000];
+    /* Read from registers, VRAM or OAM. TODO: only can read from VRAM and OAM during HBlank and VBlank periods */
+    if (address >= 0x8000 && address <= 0x9fff) {
+        return vram_[address - 0x8000];
+    }
 }
 
 void PPU::write(uint16_t address, uint8_t value)
 {
-    vram_[address - 0x8000] = value;
+    if (address >= 0x8000 && address <= 0x9fff) {
+        vram_[address - 0x8000] = value;
+    }
+    else if (address >= 0xfe00 && address <= 0xfe9f) {
+        // it is possible to write to the OAM directly, but this is only possible during HBlank and VBlank periods
+        oam_[address - 0xfe00] = value;
+    }
 }

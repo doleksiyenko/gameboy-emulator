@@ -3,6 +3,7 @@
 
 #include <SDL_render.h>
 #include <SDL_video.h>
+#include <_types/_uint8_t.h>
 #include <cstdint>
 #include <array>
 
@@ -15,7 +16,7 @@ class PPU {
     public:
         PPU();
         ~PPU();
-        uint8_t read(uint16_t address); // read a PPU register
+        uint8_t read(uint16_t address); // read a PPU register, VRAM or OAM
         void write(uint16_t address, uint8_t value); // write to the PPU registers
         void clear_screen();
         void render();
@@ -23,6 +24,8 @@ class PPU {
         SDL_Window* window_;
         SDL_Renderer* renderer_;
         SDL_Texture* texture_;
+
+        std::array<uint8_t, 160> oam_; // object attribute memory 
 
         // -- REGISTERS -- 
         // scrolling
