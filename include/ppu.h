@@ -9,17 +9,22 @@
 #define SCREEN_HEIGHT 144
 #define SCREEN_WIDTH 160
 
+class Bus; // forward declaration of class Bus
+
 class PPU {
     public:
         std::array<uint8_t, 1024 * 8> vram_; // starting address of VRAM is 0x8000
     public:
         PPU();
         ~PPU();
+
+        void connect_bus(Bus* bus);
+
         uint8_t read(uint16_t address); // read a PPU register, VRAM or OAM
         void write(uint16_t address, uint8_t value); // write to the PPU registers
         void clear_screen();
         void render(); // use SDL to draw the current texture to the screen
-        void cycle(); // go through one PPU cycle (process 1 frame)
+        bool cycle(); // go through one PPU cycle (process 1 frame)
 
         // registers
         uint8_t read_ly();
@@ -32,6 +37,8 @@ class PPU {
         SDL_Window* window_;
         SDL_Renderer* renderer_;
         SDL_Texture* texture_;
+
+        Bus* bus_; // hold a reference to the bus
 
         std::array<uint8_t, 160> oam_; // object attribute memory 
         uint16_t t_cycles_delay_ = 80; // start in mode 2, which lasts 80 "dots"
@@ -85,8 +92,8 @@ class PPU {
             void set(uint8_t new_lcdc); 
         };
     
-    lcdc lcdc_;
-    stat stat_;
+        lcdc lcdc_;
+        stat stat_;
 };
 
 #endif

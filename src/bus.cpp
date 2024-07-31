@@ -39,7 +39,12 @@ uint8_t Bus::read(uint16_t address)
         // read from work RAM
         return ram_->read(address);
     }
+    else if (address == 0xff0f) {
+        // read the interrupt flag
+        return cpu_->read_if();
+    }
     else if (address == 0xffff) {
+        // read the interrupt enable register
         return cpu_->read_ie();
     }
 
@@ -55,6 +60,10 @@ void Bus::write(uint16_t address, uint8_t value)
     else if (address >= 0xc000 && address <= 0xdfff) {
         // write to work RAM
         ram_->write(address, value);
+    }
+    else if (address == 0xff0f) {
+        // update the interrupt flag register (make a request for an interrupt)
+        cpu_->write_if(value);
     }
     else if (address == 0xffff) {
         // update the interrupt enable register

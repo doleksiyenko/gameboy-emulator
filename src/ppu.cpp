@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "ppu.h"
+#include "bus.h"
 
 PPU::PPU() 
 {
@@ -44,6 +45,10 @@ PPU::~PPU() {
     SDL_DestroyWindow(window_);
 }
 
+void PPU::connect_bus(Bus* bus) 
+{
+    bus_ = bus;
+}
 
 void PPU::clear_screen() {
     // set the screen to black
@@ -63,8 +68,18 @@ uint8_t PPU::read(uint16_t address)
     if (address >= 0x8000 && address <= 0x9fff) {
         return vram_[address - 0x8000];
     }
-    else if (address == 0xFF44) {
-        return ly_;
+    else if (address == 0xff40) {
+        return lcdc_.value_;
+    }
+    else if (address == 0xff41) {
+        return stat_.value_;
+    }
+    else if (address == 0xff44) {
+        // read only address
+        return ly_; 
+    }
+    else if (address == 0xff45) {
+        return lyc_;
     }
 
     return 0xff; // return junk value
@@ -75,21 +90,35 @@ void PPU::write(uint16_t address, uint8_t value)
     if (address >= 0x8000 && address <= 0x9fff) {
         vram_[address - 0x8000] = value;
     }
-    else if (address >= 0xfe00 && address <= 0xfe9f) {
-        // it is possible to write to the OAM directly, but this is only possible during HBlank and VBlank periods
-        oam_[address - 0xfe00] = value;
+    else if (address == 0xff40) {
+        lcdc_.set(value);
     }
+    else if (address == 0xff41) {
+        stat_.set(value);
+    }
+    else if (address == 0xff45) {
+        lyc_ = value;
+    }
+
+    // else if (address >= 0xfe00 && address <= 0xfe9f) {
+    //     // it is possible to write to the OAM directly, but this is only possible during HBlank and VBlank periods
+    //     oam_[address - 0xfe00] = value;
+    // }
 }
 
-void PPU::cycle()
+bool PPU::cycle()
 {
     /* Run through one cycle of the PPU. This processes 1 frame, and switches between the 4 possible PPU modes. Each PPU mode takes a certain number of cycles
     to complete (t-cycles, which are controlled by the master clock also counting the CPU cycles) */
-
     // check if the mode is "over", and therefore we need to switch
-    // if (t_cycles_delay_ == 0) {
-    //     ppu_mode_ = (ppu_mode_ + 1) % 4;
-    // }
+    if (t_cycles_delay_ == 0) {
+        if (stat_.set_mode((stat_.ppu_mode_ + 1) % 4))  {
+            // set mode indicated that the STAT interrupt should be executed; make the request manually
+            uint8_t interrupt_flag = bus_->read(0xff0f);
+            interrupt_flag |= (1 << 1); // update the LCD / STAT flag in IF
+            bus_->write(0xff0f, interrupt_flag); 
+        }
+    }
 
     // process what happens in each mode
     switch (stat_.ppu_mode_) {
@@ -111,6 +140,8 @@ void PPU::cycle()
     if (t_cycles_delay_ > 0) {
         t_cycles_delay_--; 
     }
+
+    return false;
 }
 
 

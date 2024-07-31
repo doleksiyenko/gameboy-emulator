@@ -285,6 +285,16 @@ void CPU::write_ie(uint8_t value)
     ie_ = value;
 }
 
+uint8_t CPU::read_if()
+{
+    return if_;
+}
+
+void CPU::write_if(uint8_t value)
+{
+    if_ = value;
+}
+
 uint8_t CPU::read_flag(CPU::flags flag) 
 {
     switch (flag) {

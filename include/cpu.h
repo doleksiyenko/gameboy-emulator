@@ -14,6 +14,9 @@ class CPU {
         void connect_bus(Bus* bus);
         uint8_t read_ie();
         void write_ie(uint8_t value);
+        uint8_t read_if();
+        void write_if(uint8_t value); // make requests for interrupts 
+
     private:
         // 16 bit registers
         uint16_t pc_; // program counter
