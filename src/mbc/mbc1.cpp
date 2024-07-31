@@ -1,5 +1,4 @@
 #include "./mbc/mbc1.h"
-#include <_types/_uint32_t.h>
 #include <cstdint>
 
 uint8_t MBC1::read(uint16_t address)

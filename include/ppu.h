@@ -50,12 +50,10 @@ class PPU {
         uint8_t ly_;
         uint8_t lyc_;
 
-
-
         // ---- STATUS AND CONTROL REGISTERS ----
 
         // stat register
-        struct stat_ 
+        struct stat 
         {
             uint8_t value_ = 2;
             uint8_t lyc_select = 0x0;
@@ -71,7 +69,7 @@ class PPU {
         };
 
         // lcdc register
-        struct lcdc_ 
+        struct lcdc 
         {
             uint8_t value_ = 0x0;
             uint8_t lcdc_enable_ = 0x0;
@@ -86,6 +84,9 @@ class PPU {
             // set READ/WRITE bits
             void set(uint8_t new_lcdc); 
         };
+    
+    lcdc lcdc_;
+    stat stat_;
 };
 
 #endif

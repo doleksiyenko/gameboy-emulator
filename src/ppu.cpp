@@ -92,7 +92,7 @@ void PPU::cycle()
     // }
 
     // process what happens in each mode
-    switch (ppu_mode_) {
+    switch (stat_.ppu_mode_) {
         case 0:
             // HBlank (variable length based on mode 3)
             break;
@@ -116,7 +116,7 @@ void PPU::cycle()
 
 
 // -- STAT REGISTER methods -- 
-void PPU::stat_::set(uint8_t new_lcdc)
+void PPU::stat::set(uint8_t new_lcdc)
 {
     /* set the read / write bits of the STAT register */
     value_ &= 7; // clear all but read only bits
@@ -127,7 +127,7 @@ void PPU::stat_::set(uint8_t new_lcdc)
     mode0_select = new_lcdc & (1 << 3);
 }
 
-bool PPU::stat_::set_lyc_equals(uint8_t ly, uint8_t lyc) 
+bool PPU::stat::set_lyc_equals(uint8_t ly, uint8_t lyc) 
 {
     if (ly == lyc) {
         lyc_equals = 1;
@@ -145,7 +145,7 @@ bool PPU::stat_::set_lyc_equals(uint8_t ly, uint8_t lyc)
 }
 
 
-bool PPU::stat_::set_mode(uint8_t mode) 
+bool PPU::stat::set_mode(uint8_t mode) 
 {
     ppu_mode_ = mode;
     value_ &= 0b01111100; // clear previous mode bits
@@ -163,7 +163,7 @@ bool PPU::stat_::set_mode(uint8_t mode)
 }
 
 // -- LCDC REGISTER methods --
-void PPU::lcdc_::set(uint8_t new_lcdc) 
+void PPU::lcdc::set(uint8_t new_lcdc) 
 {
     value_ = new_lcdc;
     lcdc_enable_ = new_lcdc & (1 << 7);
