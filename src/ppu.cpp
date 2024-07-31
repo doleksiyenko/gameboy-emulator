@@ -68,18 +68,32 @@ uint8_t PPU::read(uint16_t address)
     if (address >= 0x8000 && address <= 0x9fff) {
         return vram_[address - 0x8000];
     }
-    else if (address == 0xff40) {
-        return lcdc_.value_;
-    }
-    else if (address == 0xff41) {
-        return stat_.value_;
-    }
-    else if (address == 0xff44) {
-        // read only address
-        return ly_; 
-    }
-    else if (address == 0xff45) {
-        return lyc_;
+    else {
+        // reading a register
+        switch (address) {
+            case 0xff40:
+                return lcdc_.value_;
+            case 0xff41:
+                return stat_.value_;
+            case 0xff44:
+                return ly_;
+            case 0xff45:
+                return lyc_;
+            case 0xff42:
+                return scy_;
+            case 0xff43:
+                return scx_;
+            case 0xff4a:
+                return wy_;
+            case 0xff4b:
+                return wx_;
+            case 0xff47:
+                return bgp_;
+            case 0xff48:
+                return ogp0_;
+            case 0xff49:
+                return ogp1_;
+        }
     }
 
     return 0xff; // return junk value
@@ -90,14 +104,40 @@ void PPU::write(uint16_t address, uint8_t value)
     if (address >= 0x8000 && address <= 0x9fff) {
         vram_[address - 0x8000] = value;
     }
-    else if (address == 0xff40) {
-        lcdc_.set(value);
-    }
-    else if (address == 0xff41) {
-        stat_.set(value);
-    }
-    else if (address == 0xff45) {
-        lyc_ = value;
+    else {
+        // writing to a register
+        switch (address) {
+            case 0xff40:
+                lcdc_.set(value);
+                break;
+            case 0xff41:
+                stat_.set(value);
+                break;
+            case 0xff45:
+                lyc_ = value;
+                break;
+            case 0xff42:
+                scy_ = value;
+                break;
+            case 0xff43:
+                scx_ = value;
+                break;
+            case 0xff4a:
+                wy_ = value;
+                break;
+            case 0xff4b:
+                wx_ = value;
+                break;
+            case 0xff47:
+                bgp_ = value;
+                break;
+            case 0xff48:
+                ogp0_ = value;
+                break;
+            case 0xff49:
+                ogp1_ = value;
+                break;
+        }
     }
 
     // else if (address >= 0xfe00 && address <= 0xfe9f) {
