@@ -87,9 +87,9 @@ void PPU::cycle()
     to complete (t-cycles, which are controlled by the master clock also counting the CPU cycles) */
 
     // check if the mode is "over", and therefore we need to switch
-    if (t_cycles_delay_ == 0) {
-        ppu_mode_ = (ppu_mode_ + 1) % 4;
-    }
+    // if (t_cycles_delay_ == 0) {
+    //     ppu_mode_ = (ppu_mode_ + 1) % 4;
+    // }
 
     // process what happens in each mode
     switch (ppu_mode_) {
@@ -115,9 +115,63 @@ void PPU::cycle()
 
 
 
+// -- STAT REGISTER methods -- 
+void PPU::stat_::set(uint8_t new_lcdc)
+{
+    /* set the read / write bits of the STAT register */
+    value_ &= 7; // clear all but read only bits
+    value_ |= new_lcdc & 0b01111000; // set the read/write bits
+    lyc_select = new_lcdc & (1 << 6);
+    mode2_select = new_lcdc & (1 << 5);
+    mode1_select = new_lcdc & (1 << 4);
+    mode0_select = new_lcdc & (1 << 3);
+}
+
+bool PPU::stat_::set_lyc_equals(uint8_t ly, uint8_t lyc) 
+{
+    if (ly == lyc) {
+        lyc_equals = 1;
+        value_ |= (1 << 2); // set the LYC == LC bit
+        if (lyc_select) { // check the condition for the STAT interrupt
+            return true;        
+        } 
+    }
+    else {
+        lyc_equals = 0; 
+        value_ &= 0b01111011; // clear the LYC == LC bit
+    }
+    
+    return false;
+}
 
 
+bool PPU::stat_::set_mode(uint8_t mode) 
+{
+    ppu_mode_ = mode;
+    value_ &= 0b01111100; // clear previous mode bits
+    value_ |= mode;       // set mode bits
 
+    if ((mode != 3) &&
+        (value_ &
+        (1 << (mode +
+                3)))) { // every mode has a select apart from mode 3
+    // trigger a STAT interrupt
+    return true;
+    }
 
+    return false;
+}
 
-
+// -- LCDC REGISTER methods --
+void PPU::lcdc_::set(uint8_t new_lcdc) 
+{
+    value_ = new_lcdc;
+    lcdc_enable_ = new_lcdc & (1 << 7);
+    window_tile_map = new_lcdc & (1 << 6);
+    window_enable = new_lcdc & (1 << 5);
+    bg_window_tile_data = new_lcdc & (1 << 4);
+    bg_tile_map = new_lcdc & (1 << 3);
+    obj_size = new_lcdc & (1 << 2);
+    obj_enable = new_lcdc & (1 << 1);
+    bg_window_enable = new_lcdc & (1 << 0);
+}
