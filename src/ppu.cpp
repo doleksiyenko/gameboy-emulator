@@ -75,3 +75,44 @@ void PPU::write(uint16_t address, uint8_t value)
         oam_[address - 0xfe00] = value;
     }
 }
+
+void PPU::cycle()
+{
+    /* Run through one cycle of the PPU. This processes 1 frame, and switches between the 4 possible PPU modes. Each PPU mode takes a certain number of cycles
+    to complete (t-cycles, which are controlled by the master clock also counting the CPU cycles) */
+
+    // check if the mode is "over", and therefore we need to switch
+    if (t_cycles_delay_ == 0) {
+        ppu_mode_ = (ppu_mode_ + 1) % 4;
+    }
+
+    // process what happens in each mode
+    switch (ppu_mode_) {
+        case 0:
+            // HBlank (variable length based on mode 3)
+            break;
+        case 1:
+            // VBlank
+            break;
+        case 2:
+            // OAM scan
+            t_cycles_delay_ += 80;
+            break;
+        case 3:
+            // Drawing pixels (variable length)
+            break;
+    }
+
+    if (t_cycles_delay_ > 0) {
+        t_cycles_delay_--; 
+    }
+}
+
+
+
+
+
+
+
+
+

@@ -3,7 +3,6 @@
 
 #include <SDL_render.h>
 #include <SDL_video.h>
-#include <_types/_uint8_t.h>
 #include <cstdint>
 #include <array>
 
@@ -19,13 +18,17 @@ class PPU {
         uint8_t read(uint16_t address); // read a PPU register, VRAM or OAM
         void write(uint16_t address, uint8_t value); // write to the PPU registers
         void clear_screen();
-        void render();
+        void render(); // use SDL to draw the current texture to the screen
+        void cycle(); // go through one PPU cycle (process 1 frame)
+
     private:
         SDL_Window* window_;
         SDL_Renderer* renderer_;
         SDL_Texture* texture_;
 
         std::array<uint8_t, 160> oam_; // object attribute memory 
+        uint16_t t_cycles_delay_ = 80; // start in mode 2, which lasts 80 "dots"
+        uint8_t ppu_mode_ = 2; // start in mode 2 by default (OAM scan)
 
         // -- REGISTERS -- 
         // scrolling
