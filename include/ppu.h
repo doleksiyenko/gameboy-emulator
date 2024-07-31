@@ -50,8 +50,13 @@ class PPU {
         uint8_t ly_;
         uint8_t lyc_;
 
+
+
+        // ---- STATUS AND CONTROL REGISTERS ----
+
         // stat register
-        struct stat_ {
+        struct stat_ 
+        {
             uint8_t value_ = 2;
             uint8_t lyc_select = 0x0;
             uint8_t mode2_select = 0x0;
@@ -60,19 +65,55 @@ class PPU {
             uint8_t lyc_equals = 0x0;
             uint8_t ppu_mode_ = 2; // start in mode 2 by default (OAM scan)
 
-            void set(uint8_t new_lcdc) {
-                value_ = new_lcdc;
+            void set(uint8_t new_lcdc) 
+            {
+                /* set the read / write bits of the STAT register */
+                value_ &= 7; // clear all but read only bits
+                value_ |= new_lcdc & 0b01111000; // set the read/write bits
                 lyc_select = new_lcdc & (1 << 6);
                 mode2_select = new_lcdc & (1 << 5);
                 mode1_select = new_lcdc & (1 << 4);
                 mode0_select = new_lcdc & (1 << 3);
-                lyc_equals = new_lcdc & (1 << 2);
-                ppu_mode_ = new_lcdc & 3;
+            }
+
+            // setting the READ-only bits
+            bool set_lyc_equals(uint8_t ly, uint8_t lyc) 
+            {
+                if (ly == lyc) {
+                    lyc_equals = 1;
+                    value_ |= (1 << 2); // set the LYC == LC bit
+                    if (lyc_select) { // check the condition for the STAT interrupt
+                        return true;        
+                    } 
+                }
+                else {
+                    lyc_equals = 0; 
+                    value_ &= 0b01111011; // clear the LYC == LC bit
+                }
+                
+                return false;
+
+            }
+
+            bool set_mode(uint8_t mode) 
+            {
+                ppu_mode_ = mode;
+                value_ &= 0b01111100; // clear previous mode bits
+                value_ |= mode; // set mode bits
+
+                if ((mode != 3) && (value_ & (1 << (mode + 3)))) { // every mode has a select apart from mode 3
+                    // trigger a STAT interrupt
+                    return true;
+                }
+
+                return false;
+
             }
         };
 
         // lcdc register
-        struct lcdc_ {
+        struct lcdc_ 
+        {
             uint8_t value_ = 0x0;
             uint8_t lcdc_enable_ = 0x0;
             uint8_t window_tile_map = 0x0;
@@ -84,7 +125,8 @@ class PPU {
             uint8_t bg_window_enable = 0x0;
 
 
-            void set(uint8_t new_lcdc) {
+            void set(uint8_t new_lcdc) 
+            {
                 value_ = new_lcdc;
                 lcdc_enable_ = new_lcdc & (1 << 7);
                 window_tile_map = new_lcdc & (1 << 6);
