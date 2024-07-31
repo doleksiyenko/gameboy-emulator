@@ -63,6 +63,11 @@ uint8_t PPU::read(uint16_t address)
     if (address >= 0x8000 && address <= 0x9fff) {
         return vram_[address - 0x8000];
     }
+    else if (address == 0xFF44) {
+        return ly_;
+    }
+
+    return 0xff; // return junk value
 }
 
 void PPU::write(uint16_t address, uint8_t value)
