@@ -24,7 +24,8 @@ class PPU {
         void write(uint16_t address, uint8_t value); // write to the PPU registers
         void clear_screen();
         void render(); // use SDL to draw the current texture to the screen
-        bool cycle(); // go through one PPU cycle (process 1 frame)
+        void cycle(); // go through one PPU cycle (process 1 frame)
+        void set_mode(uint8_t mode); // set the mode and handle the resulting possible STAT interrupt
 
         // registers
         uint8_t read_ly();

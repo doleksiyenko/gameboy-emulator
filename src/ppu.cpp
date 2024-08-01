@@ -146,18 +146,53 @@ void PPU::write(uint16_t address, uint8_t value)
     // }
 }
 
-bool PPU::cycle()
+void PPU::set_mode(uint8_t mode) 
 {
-    /* Run through one cycle of the PPU. This processes 1 frame, and switches between the 4 possible PPU modes. Each PPU mode takes a certain number of cycles
-    to complete (t-cycles, which are controlled by the master clock also counting the CPU cycles) */
-    // check if the mode is "over", and therefore we need to switch
-    if (t_cycles_delay_ == 0) {
-        if (stat_.set_mode((stat_.ppu_mode_ + 1) % 4))  {
+        if (stat_.set_mode(mode)) {
             // set mode indicated that the STAT interrupt should be executed; make the request manually
             uint8_t interrupt_flag = bus_->read(0xff0f);
             interrupt_flag |= (1 << 1); // update the LCD / STAT flag in IF
             bus_->write(0xff0f, interrupt_flag); 
         }
+}
+
+
+void PPU::cycle()
+{
+    /* Run through one cycle of the PPU. This processes 1 frame, and switches between the 4 possible PPU modes. Each PPU mode takes a certain number of cycles
+    to complete (t-cycles, which are controlled by the master clock also counting the CPU cycles) */
+    // check if the mode is "over", and therefore we need to switch
+    if (t_cycles_delay_ == 0) {
+        /* TODO:  set_mode should depend on LY: since for LY < 144, we switch between mode 2, mode 3, and mode 0. Between scanlines 144 - 153, mode 0 should switch to mode 1
+        instead of switching back to mode 2 */ 
+
+        // process what happens in each mode
+        switch (stat_.ppu_mode_) {
+            case 0:
+                {
+                // HBlank (variable length based on mode 3)
+                    if (ly_ == 143) {
+                       set_mode(1); 
+                       t_cycles_delay_ += 4560; // execute for 10 scanlines
+                    }
+                    else {
+                        set_mode(2);
+                        t_cycles_delay_ += 80;
+                    }
+                    
+                } 
+                break;
+            case 1:
+                // VBlank
+                break;
+            case 2:
+                // OAM scan
+                break;
+            case 3:
+                // Drawing pixels (variable length)
+                break;
+        }
+        
     }
 
     // process what happens in each mode
