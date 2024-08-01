@@ -162,6 +162,8 @@ void PPU::cycle()
     /* Run through one cycle of the PPU. This processes 1 dot, and switches between the 4 possible PPU modes. Each PPU mode takes a certain number of cycles
     to complete (t-cycles, which are controlled by the master clock also counting the CPU cycles) */
 
+    /* TODO: implement mode 3 variable timing */
+
     // check if the mode is "over", and therefore we need to switch
     if (t_cycles_delay_ == 0) {
         switch (stat_.ppu_mode_) {
@@ -215,23 +217,7 @@ void PPU::cycle()
         
     }
 
-    // process what happens in each mode
-    switch (stat_.ppu_mode_) {
-        case 0:
-            // HBlank (variable length based on mode 3)
-            break;
-        case 1:
-            // VBlank
-            break;
-        case 2:
-            // OAM scan
-            t_cycles_delay_ += 80;
-            break;
-        case 3:
-            // Drawing pixels (variable length)
-            break;
-    }
-
+    
     if (t_cycles_delay_ > 0) {
         t_cycles_delay_--; 
     }
