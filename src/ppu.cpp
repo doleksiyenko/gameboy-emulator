@@ -159,37 +159,57 @@ void PPU::set_mode(uint8_t mode)
 
 void PPU::cycle()
 {
-    /* Run through one cycle of the PPU. This processes 1 frame, and switches between the 4 possible PPU modes. Each PPU mode takes a certain number of cycles
+    /* Run through one cycle of the PPU. This processes 1 dot, and switches between the 4 possible PPU modes. Each PPU mode takes a certain number of cycles
     to complete (t-cycles, which are controlled by the master clock also counting the CPU cycles) */
+
     // check if the mode is "over", and therefore we need to switch
     if (t_cycles_delay_ == 0) {
-        /* TODO:  set_mode should depend on LY: since for LY < 144, we switch between mode 2, mode 3, and mode 0. Between scanlines 144 - 153, mode 0 should switch to mode 1
-        instead of switching back to mode 2 */ 
-
-        // process what happens in each mode
         switch (stat_.ppu_mode_) {
             case 0:
+                // HBlank 
                 {
-                // HBlank (variable length based on mode 3)
+                    // if we reach this point, we are in mode 0, and have currently finished the scanline.
+                    // if we just finished the scanline, and are currently on scanline 143, scanlines 144 - 153 are mode 1 -> the next mode should be VBlank
                     if (ly_ == 143) {
                        set_mode(1); 
-                       t_cycles_delay_ += 4560; // execute for 10 scanlines
+                       t_cycles_delay_ += 456; // execute for 1 scanline 
                     }
                     else {
                         set_mode(2);
                         t_cycles_delay_ += 80;
                     }
-                    
+
+                    // reaching the end of mode 0 is always the indication of the next scanline
+                    ly_++;
+
                 } 
                 break;
             case 1:
                 // VBlank
+                {
+                    if (ly_ == 153) {
+                        // we just finished the last scanline, so loop back to the first scanline 
+                        set_mode(2);
+                        t_cycles_delay_ += 80;
+                        ly_ = 0;
+                    }
+                    else {
+                        // we remain in mode 1, and progress the scanline
+                        set_mode(1);
+                        t_cycles_delay_ += 456;
+                        ly_++;
+                    }
+                }
                 break;
             case 2:
                 // OAM scan
+                set_mode(3);
+                t_cycles_delay_ += 289; // MODE 3 has a variable length, for now keep it at the maximum length
                 break;
             case 3:
-                // Drawing pixels (variable length)
+                // Drawing pixels
+                set_mode(0);
+                t_cycles_delay_ += 87; // MODE 0 has a variable length, depending on MODE 3 length (based on (376 - MODE 3 Duration))
                 break;
         }
         
@@ -215,8 +235,6 @@ void PPU::cycle()
     if (t_cycles_delay_ > 0) {
         t_cycles_delay_--; 
     }
-
-    return false;
 }
 
 
