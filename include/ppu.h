@@ -30,10 +30,6 @@ class PPU {
         // registers
         uint8_t read_ly();
 
-        void lcd_enable();
-        void lcd_disable();
-
-
     private:
         SDL_Window* window_;
         SDL_Renderer* renderer_;
@@ -59,6 +55,7 @@ class PPU {
         uint8_t ly_;
         uint8_t lyc_;
 
+        bool screen_cleared_ = true; // PPU and LCD start as "off". Checks if screen is filled white, so we don't need to process it every frame if already cleared
         // ---- STATUS AND CONTROL REGISTERS ----
 
         // stat register
@@ -81,7 +78,7 @@ class PPU {
         struct lcdc 
         {
             uint8_t value_ = 0x0;
-            uint8_t lcdc_enable_ = 0x1;
+            uint8_t lcdc_enable_ = 0x0;
             uint8_t window_tile_map = 0x0;
             uint8_t window_enable = 0x0;
             uint8_t bg_window_tile_data = 0x0;

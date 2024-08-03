@@ -68,7 +68,7 @@ void PPU::render() {
     SDL_SetRenderTarget(renderer_, NULL);
     SDL_RenderCopy(renderer_, texture_, NULL, NULL);
     SDL_RenderPresent(renderer_);
-    // get ready for drawing the next frame
+    // get ready for drawing the next frame to the texture
     SDL_SetRenderTarget(renderer_, texture_);
 }
 
@@ -76,14 +76,14 @@ uint8_t PPU::read(uint16_t address)
 {
     /* Read from registers, VRAM or OAM. TODO: only can read from VRAM and OAM during HBlank and VBlank periods */
     if (address >= 0x8000 && address <= 0x9fff) {
-        // vram is not accessible during mode 3
-        if (stat_.ppu_mode_ != 3) {
+        // vram is not accessible during mode 3, but if the LCD + PPU are off, VRAM and OAM are immediately avaiable
+        if ((stat_.ppu_mode_ != 3) || lcdc_.lcdc_enable_ == 0) {
             return vram_[address - 0x8000];
         }
     }
     else if (address >= 0xfe00 && address <= 0xfe9f) {
-        // the cpu can only directly read from the OAM during HBlank or VBlank
-        if (stat_.ppu_mode_ == 0 || stat_.ppu_mode_ == 1) {
+        // the cpu can only directly read from the OAM during HBlank or VBlank or if the LCD and PPU are off
+        if (stat_.ppu_mode_ == 0 || stat_.ppu_mode_ == 1 || lcdc_.lcdc_enable_ == 0) {
             return oam_[address - 0xfe00];
         }
     }
@@ -244,6 +244,7 @@ void PPU::cycle()
 
         if (stat_.ppu_mode_ == 3) {
             // TODO: if in drawing mode, draw one pixel, retrieve the colour
+            screen_cleared_ = false;
             SDL_SetRenderDrawColor(renderer_, 0, 255, 0, SDL_ALPHA_OPAQUE);
             SDL_RenderDrawPoint(renderer_, 50, 100);
         }
@@ -253,8 +254,12 @@ void PPU::cycle()
         }
     }
     else {
-        // clear the screen to blank white
-        clear_screen();
+        // SWITCH OFF LCD: clear the screen to blank white
+        if (!screen_cleared_) {
+            SDL_SetRenderTarget(renderer_, texture_);
+            SDL_SetRenderDrawColor(renderer_, 255, 255, 255, SDL_ALPHA_OPAQUE);
+            SDL_RenderClear(renderer_);
+        }
     }
 }
 
@@ -296,10 +301,7 @@ bool PPU::stat::set_mode(uint8_t mode)
     value_ &= 0b01111100; // clear previous mode bits
     value_ |= mode;       // set mode bits
 
-    if ((mode != 3) &&
-        (value_ &
-        (1 << (mode +
-                3)))) { // every mode has a select apart from mode 3
+    if ((mode != 3) && (value_ & (1 << (mode + 3)))) { // every mode has a select apart from mode 3
     // trigger a STAT interrupt
     return true;
     }
