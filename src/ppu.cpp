@@ -36,6 +36,12 @@ PPU::PPU()
     if (!texture_) {
         std::cout << "Failed to create texture: " << SDL_GetError();
     }
+
+    // initialize the texture to white
+    SDL_SetRenderTarget(renderer_, texture_);
+    SDL_SetRenderDrawColor(renderer_, 255, 255, 255, SDL_ALPHA_OPAQUE);
+    SDL_RenderClear(renderer_);
+    SDL_SetRenderTarget(renderer_, NULL);
 }
 
 PPU::~PPU() {
@@ -52,21 +58,34 @@ void PPU::connect_bus(Bus* bus)
 
 void PPU::clear_screen() {
     // set the screen to black
+    SDL_SetRenderTarget(renderer_, NULL);
     SDL_SetRenderDrawColor(renderer_, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer_);
 }
 
 void PPU::render() {
     // copy the texture to the screen, then update the window
+    SDL_SetRenderTarget(renderer_, NULL);
     SDL_RenderCopy(renderer_, texture_, NULL, NULL);
     SDL_RenderPresent(renderer_);
+    // get ready for drawing the next frame
+    SDL_SetRenderTarget(renderer_, texture_);
 }
 
 uint8_t PPU::read(uint16_t address)
 {
     /* Read from registers, VRAM or OAM. TODO: only can read from VRAM and OAM during HBlank and VBlank periods */
     if (address >= 0x8000 && address <= 0x9fff) {
-        return vram_[address - 0x8000];
+        // vram is not accessible during mode 3
+        if (stat_.ppu_mode_ != 3) {
+            return vram_[address - 0x8000];
+        }
+    }
+    else if (address >= 0xfe00 && address <= 0xfe9f) {
+        // the cpu can only directly read from the OAM during HBlank or VBlank
+        if (stat_.ppu_mode_ == 0 || stat_.ppu_mode_ == 1) {
+            return oam_[address - 0xfe00];
+        }
     }
     else {
         // reading a register
@@ -102,7 +121,16 @@ uint8_t PPU::read(uint16_t address)
 void PPU::write(uint16_t address, uint8_t value)
 {
     if (address >= 0x8000 && address <= 0x9fff) {
-        vram_[address - 0x8000] = value;
+        // the cpu can only write to VRAM if the mode is not 3, otherwise ignore write
+        if (stat_.ppu_mode_ != 3) {
+            vram_[address - 0x8000] = value;
+        }
+    }
+    else if (address >= 0xfe00 && address <= 0xfe9f) {
+        // the cpu can only directly write to the OAM during HBlank or VBlank, otherwise ignore write
+        if (stat_.ppu_mode_ == 0 || stat_.ppu_mode_ == 1) {
+            oam_[address - 0xfe00] = value;
+        }
     }
     else {
         // writing to a register
@@ -139,11 +167,6 @@ void PPU::write(uint16_t address, uint8_t value)
                 break;
         }
     }
-
-    // else if (address >= 0xfe00 && address <= 0xfe9f) {
-    //     // it is possible to write to the OAM directly, but this is only possible during HBlank and VBlank periods
-    //     oam_[address - 0xfe00] = value;
-    // }
 }
 
 void PPU::set_mode(uint8_t mode) 
@@ -165,61 +188,73 @@ void PPU::cycle()
     /* TODO: implement mode 3 variable timing */
 
     // check if the mode is "over", and therefore we need to switch
-    if (t_cycles_delay_ == 0) {
-        switch (stat_.ppu_mode_) {
-            case 0:
-                // HBlank 
-                {
-                    // if we reach this point, we are in mode 0, and have currently finished the scanline.
-                    // if we just finished the scanline, and are currently on scanline 143, scanlines 144 - 153 are mode 1 -> the next mode should be VBlank
-                    if (ly_ == 143) {
-                       set_mode(1); 
-                       t_cycles_delay_ += 456; // execute for 1 scanline 
-                    }
-                    else {
-                        set_mode(2);
-                        t_cycles_delay_ += 80;
-                    }
+    if (lcdc_.lcdc_enable_) {
+        // only process cycles on the PPU if the LCD is enabled
+        if (t_cycles_delay_ == 0) {
+            switch (stat_.ppu_mode_) {
+                case 0:
+                    // HBlank 
+                    {
+                        // if we reach this point, we are in mode 0, and have currently finished the scanline.
+                        // if we just finished the scanline, and are currently on scanline 143, scanlines 144 - 153 are mode 1 -> the next mode should be VBlank
+                        if (ly_ == 143) {
+                        set_mode(1); 
+                        t_cycles_delay_ += 456; // execute for 1 scanline 
+                        }
+                        else {
+                            set_mode(2);
+                            t_cycles_delay_ += 80;
+                        }
 
-                    // reaching the end of mode 0 is always the indication of the next scanline
-                    ly_++;
-
-                } 
-                break;
-            case 1:
-                // VBlank
-                {
-                    if (ly_ == 153) {
-                        // we just finished the last scanline, so loop back to the first scanline 
-                        set_mode(2);
-                        t_cycles_delay_ += 80;
-                        ly_ = 0;
-                    }
-                    else {
-                        // we remain in mode 1, and progress the scanline
-                        set_mode(1);
-                        t_cycles_delay_ += 456;
+                        // reaching the end of mode 0 is always the indication of the next scanline
                         ly_++;
+
+                    } 
+                    break;
+                case 1:
+                    // VBlank
+                    {
+                        if (ly_ == 153) {
+                            // we just finished the last scanline, so loop back to the first scanline 
+                            set_mode(2);
+                            t_cycles_delay_ += 80;
+                            ly_ = 0;
+                        }
+                        else {
+                            // we remain in mode 1, and progress the scanline
+                            set_mode(1);
+                            t_cycles_delay_ += 456;
+                            ly_++;
+                        }
                     }
-                }
-                break;
-            case 2:
-                // OAM scan
-                set_mode(3);
-                t_cycles_delay_ += 289; // MODE 3 has a variable length, for now keep it at the maximum length
-                break;
-            case 3:
-                // Drawing pixels
-                set_mode(0);
-                t_cycles_delay_ += 87; // MODE 0 has a variable length, depending on MODE 3 length (based on (376 - MODE 3 Duration))
-                break;
+                    break;
+                case 2:
+                    // OAM scan
+                    set_mode(3);
+                    t_cycles_delay_ += 289; // MODE 3 has a variable length, for now keep it at the maximum length
+                    break;
+                case 3:
+                    // Drawing pixels
+                    set_mode(0);
+                    t_cycles_delay_ += 87; // MODE 0 has a variable length, depending on MODE 3 length (based on (376 - MODE 3 Duration))
+                    break;
+            }
+            
+        }
+
+        if (stat_.ppu_mode_ == 3) {
+            // TODO: if in drawing mode, draw one pixel, retrieve the colour
+            SDL_SetRenderDrawColor(renderer_, 0, 255, 0, SDL_ALPHA_OPAQUE);
+            SDL_RenderDrawPoint(renderer_, 50, 100);
         }
         
+        if (t_cycles_delay_ > 0) {
+            t_cycles_delay_--; 
+        }
     }
-
-    
-    if (t_cycles_delay_ > 0) {
-        t_cycles_delay_--; 
+    else {
+        // clear the screen to blank white
+        clear_screen();
     }
 }
 

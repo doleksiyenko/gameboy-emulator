@@ -44,6 +44,7 @@ class PPU {
         std::array<uint8_t, 160> oam_; // object attribute memory 
         uint16_t t_cycles_delay_ = 80; // start in mode 2, which lasts 80 "dots"
 
+
         // -- REGISTERS -- 
         // scrolling
         uint8_t scx_; // background viewport x
@@ -80,7 +81,7 @@ class PPU {
         struct lcdc 
         {
             uint8_t value_ = 0x0;
-            uint8_t lcdc_enable_ = 0x0;
+            uint8_t lcdc_enable_ = 0x1;
             uint8_t window_tile_map = 0x0;
             uint8_t window_enable = 0x0;
             uint8_t bg_window_tile_data = 0x0;

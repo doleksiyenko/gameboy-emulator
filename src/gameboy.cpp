@@ -30,8 +30,8 @@ void GameBoy::run() {
     std::cout << frame_length << '\n';
     
     // initial white screen
-    ppu_.clear_screen();
-    ppu_.render();
+    // ppu_.clear_screen();
+    // ppu_.render();
 
     // the first frame start time
     auto frame_start = std::chrono::high_resolution_clock::now();
