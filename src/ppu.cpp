@@ -231,12 +231,12 @@ void PPU::cycle()
                 case 2:
                     // OAM scan
                     set_mode(3);
-                    t_cycles_delay_ += 289; // MODE 3 has a variable length, for now keep it at the maximum length
+                    t_cycles_delay_ += 172; // MODE 3 has a variable length, for now keep it at the maximum length
                     break;
                 case 3:
                     // Drawing pixels
                     set_mode(0);
-                    t_cycles_delay_ += 87; // MODE 0 has a variable length, depending on MODE 3 length (based on (376 - MODE 3 Duration))
+                    t_cycles_delay_ += 204; // MODE 0 has a variable length, depending on MODE 3 length (based on (376 - MODE 3 Duration))
                     break;
             }
             
