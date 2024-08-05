@@ -193,7 +193,7 @@ void PPU::cycle()
         if (t_cycles_delay_ == 0) {
             switch (stat_.ppu_mode_) {
                 case 0:
-                    // HBlank -- do nothing for the rest of the scanline
+                    // Switch from HBlank to OAM scan or to VBlank depending on the scanline number
                     {
                         // if we reach this point, we are in mode 0, and have currently finished the scanline.
                         // if we just finished the scanline, and are currently on scanline 143, scanlines 144 - 153 are mode 1 -> the next mode should be VBlank
@@ -212,7 +212,7 @@ void PPU::cycle()
                     } 
                     break;
                 case 1:
-                    // VBlank -- do nothing until the end of the frame
+                    //  switch from VBlank to OAM scan if in the last scanline of the frame, otherwise remain in VBlank
                     {
                         if (ly_ == 153) {
                             // we just finished the last scanline, so loop back to the first scanline 
@@ -230,25 +230,18 @@ void PPU::cycle()
                     }
                     break;
                 case 2:
-                    // OAM scan
+                    // switch from OAM scan to drawing
                     set_mode(3);
                     draw_scanline();
                     t_cycles_delay_ += 172; // MODE 3 has a variable length, for now keep it at the maximum length
                     break;
                 case 3:
-                    // Drawing pixels
+                    // switch from drawing pixels to HBlank
                     set_mode(0);
                     t_cycles_delay_ += 204; // MODE 0 has a variable length, depending on MODE 3 length (based on (376 - MODE 3 Duration))
                     break;
             }
             
-        }
-
-        if (stat_.ppu_mode_ == 3) {
-            // TODO: if in drawing mode, draw one pixel, retrieve the colour
-            screen_cleared_ = false;
-            SDL_SetRenderDrawColor(renderer_, 1, 0, 0, SDL_ALPHA_OPAQUE);
-            SDL_RenderDrawPoint(renderer_, 50, 100);
         }
 
         if (t_cycles_delay_ > 0) {
@@ -275,7 +268,6 @@ void PPU::oam_search()
         uint8_t y_pos = oam_[byte0];
         // check if the current scanline (ly) is within this object's top scanline and its bottom scanline
         if (ly_ >= y_pos && ly_ <= y_pos + (8 * (1 + lcdc_.obj_size))) { // object is either 8 pixels tall or 16 pixels tall depending on LCDC bit
-            // TODO: possibly change this behaviour, and instead store sprite data
             scanline_sprites_.push_back(byte0); // for now, store the objects position in the OAM array
         }
 
@@ -287,7 +279,15 @@ void PPU::oam_search()
 
 void PPU::draw_scanline()
 {
-    /* process and draw one scanline at a time */
+    /*  Draw the scanline during mode 3 of the PPU. In a hardware accurate GameBoy emulator, this should draw one
+        pixel per cycle; this method will draw the whole scanline at once at the beginning of mode 3 */
+    screen_cleared_ = false;
+
+    // TODO: fetch background, window data, sprite data. Handle priority of sprite data with opacity based on X coordinate
+    // or OAM location
+
+    // SDL_SetRenderDrawColor(renderer_, 1, 0, 0, SDL_ALPHA_OPAQUE);
+    // SDL_RenderDrawPoint(renderer_, 50, 100);
 
 }
 
