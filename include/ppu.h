@@ -25,7 +25,6 @@ class PPU {
         void clear_screen();
         void render(); // use SDL to draw the current texture to the screen
         void cycle(); // go through one PPU cycle (process 1 frame)
-        void set_mode(uint8_t mode); // set the mode and handle the resulting possible STAT interrupt
 
         // registers
         uint8_t read_ly();
@@ -40,6 +39,8 @@ class PPU {
         std::array<uint8_t, 160> oam_; // object attribute memory 
         uint16_t t_cycles_delay_ = 80; // start in mode 2, which lasts 80 "dots"
 
+        void set_mode(uint8_t mode); // set the mode and handle the resulting possible STAT interrupt
+        void draw_scanline();
 
         // -- REGISTERS -- 
         // scrolling

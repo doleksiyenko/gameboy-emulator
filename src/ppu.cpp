@@ -245,7 +245,7 @@ void PPU::cycle()
         if (stat_.ppu_mode_ == 3) {
             // TODO: if in drawing mode, draw one pixel, retrieve the colour
             screen_cleared_ = false;
-            SDL_SetRenderDrawColor(renderer_, 0, 255, 0, SDL_ALPHA_OPAQUE);
+            SDL_SetRenderDrawColor(renderer_, 1, 0, 0, SDL_ALPHA_OPAQUE);
             SDL_RenderDrawPoint(renderer_, 50, 100);
         }
         
@@ -263,6 +263,10 @@ void PPU::cycle()
     }
 }
 
+void PPU::draw_scanline()
+{
+    /* process and draw one scanline at a time */
+}
 
 
 // -- STAT REGISTER methods -- 
