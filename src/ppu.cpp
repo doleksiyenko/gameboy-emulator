@@ -193,7 +193,7 @@ void PPU::cycle()
         if (t_cycles_delay_ == 0) {
             switch (stat_.ppu_mode_) {
                 case 0:
-                    // HBlank 
+                    // HBlank -- do nothing for the rest of the scanline
                     {
                         // if we reach this point, we are in mode 0, and have currently finished the scanline.
                         // if we just finished the scanline, and are currently on scanline 143, scanlines 144 - 153 are mode 1 -> the next mode should be VBlank
@@ -212,13 +212,14 @@ void PPU::cycle()
                     } 
                     break;
                 case 1:
-                    // VBlank
+                    // VBlank -- do nothing until the end of the frame
                     {
                         if (ly_ == 153) {
                             // we just finished the last scanline, so loop back to the first scanline 
                             set_mode(2);
                             t_cycles_delay_ += 80;
                             ly_ = 0;
+                            oam_search();
                         }
                         else {
                             // we remain in mode 1, and progress the scanline
@@ -231,6 +232,7 @@ void PPU::cycle()
                 case 2:
                     // OAM scan
                     set_mode(3);
+                    draw_scanline();
                     t_cycles_delay_ += 172; // MODE 3 has a variable length, for now keep it at the maximum length
                     break;
                 case 3:
@@ -248,7 +250,7 @@ void PPU::cycle()
             SDL_SetRenderDrawColor(renderer_, 1, 0, 0, SDL_ALPHA_OPAQUE);
             SDL_RenderDrawPoint(renderer_, 50, 100);
         }
-        
+
         if (t_cycles_delay_ > 0) {
             t_cycles_delay_--; 
         }
@@ -263,9 +265,30 @@ void PPU::cycle()
     }
 }
 
+void PPU::oam_search()
+{
+    /*  OAM search occurs during mode 2 of the PPU. During this mode, we scan through the OAM (object attribute memory)
+        and determine which objects should be displayed on the scanline */
+
+    // cycle through the OAM, only need to check the first byte of every object (4 bytes) to determine Y pos
+    for (int byte0 = 0; byte0 < 160; byte0 += 4) {
+        uint8_t y_pos = oam_[byte0];
+        // check if the current scanline (ly) is within this object's top scanline and its bottom scanline
+        if (ly_ >= y_pos && ly_ <= y_pos + (8 * (1 + lcdc_.obj_size))) { // object is either 8 pixels tall or 16 pixels tall depending on LCDC bit
+            // TODO: possibly change this behaviour, and instead store sprite data
+            scanline_sprites_.push_back(byte0); // for now, store the objects position in the OAM array
+        }
+
+        if (scanline_sprites_.size() == 10) {
+            break;
+        }
+    }
+}
+
 void PPU::draw_scanline()
 {
     /* process and draw one scanline at a time */
+
 }
 
 
