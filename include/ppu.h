@@ -3,7 +3,6 @@
 
 #include <SDL_render.h>
 #include <SDL_video.h>
-#include <_types/_uint8_t.h>
 #include <cstdint>
 #include <array>
 #include <vector>

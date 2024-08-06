@@ -286,6 +286,52 @@ void PPU::draw_scanline()
     // TODO: fetch background, window data, sprite data. Handle priority of sprite data with opacity based on X coordinate
     // or OAM location
 
+    // ----- BACKGROUND AND WINDOW ----- 
+
+    // first, we need to check if the window is enabled, and if it is, then is the current scanline part of that window?
+    // NOTE: the window is a fixed rectangle on top of the background layer (i.e. a status bar)
+    bool window_enabled = false;
+
+    if (lcdc_.bg_window_enable) {
+        if (wy_ <= ly_) { // only the top left coordinate of the window can be specified; this condition means that this scanline contains the window 
+            window_enabled = true;        
+        }
+    }
+
+    // which tile map we use depends on 1) whether we are accessing window or background tile maps, 2) lcdc bits
+    uint16_t tile_map_address;
+    if (window_enabled) {
+        // use window tile map
+        if (lcdc_.window_tile_map) {
+            tile_map_address = 0x9c00;
+        }
+        else {
+            tile_map_address = 0x9800;
+        }
+    }
+    else {
+        // use background tile map 
+        if (lcdc_.bg_tile_map) {
+            tile_map_address = 0x9c00;
+        }
+        else {
+            tile_map_address = 0x9800;
+        }
+    }
+
+    // check where we read tiles from (the current addressing mode)
+    // indexing is always done using an 8 bit integer, however depending on the addressing mode this can be signed or unsigned
+    uint16_t tile_data_address;
+    bool signed_addressing = false;
+    if (lcdc_.bg_window_tile_data) {
+        tile_data_address = 0x8000;
+    }
+    else {
+        tile_data_address = 0x8800;
+        signed_addressing = true;
+    }
+    
+
     // SDL_SetRenderDrawColor(renderer_, 1, 0, 0, SDL_ALPHA_OPAQUE);
     // SDL_RenderDrawPoint(renderer_, 50, 100);
 
