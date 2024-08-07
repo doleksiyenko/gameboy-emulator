@@ -5,7 +5,10 @@
 #include <SDL_render.h>
 #include <SDL_video.h>
 #include <cstddef>
+#include <cstdint>
 #include <iostream>
+#include <sstream>
+#include <string>
 
 #include "ppu.h"
 #include "bus.h"
@@ -49,6 +52,11 @@ PPU::~PPU() {
     SDL_DestroyTexture(texture_);
     SDL_DestroyRenderer(renderer_);
     SDL_DestroyWindow(window_);
+}
+
+void PPU::display_frame_rate(float frame_rate)
+{
+    SDL_SetWindowTitle(window_, std::to_string(frame_rate).c_str());
 }
 
 void PPU::connect_bus(Bus* bus) 
@@ -326,7 +334,7 @@ void PPU::draw_scanline()
         tile_data_address = 0x8000;
     }
     else {
-        tile_data_address = 0x8800;
+        tile_data_address = 0x9000; // 0x8800 method uses 0x9000 as base pointer, and uses signed addressing
         signed_addressing = true;
     }
     
@@ -371,13 +379,21 @@ void PPU::draw_scanline()
         // similar to finding the Y index, we need to find the x index to find a final uint8_t index into the tilemap
         uint8_t tile_map_x_index = static_cast<uint8_t>(x_coordinate / 8); // divide by 8 to bucket into one of 32 8x8 tiles in the row
 
+        tile_map_address += (tile_map_y_index + tile_map_x_index); // find the location of the 1 byte index of the tile in the tile data in VRAM
 
-
-
-
-
+        if (!signed_addressing) {
+            // if using unsigned addressing, the base pointer is at 0x8000, and use unsigned 8 bit index to index into block 0 or block 1 
+            // Each tile is 16 bytes in size. Given the tile index, we can find the location of the first byte of the tile by multiplying the index by 16 
+            tile_data_address += read(tile_map_address) * 16; 
+        }
+        else {
+            // using the 0x8800 method, uses 0x9000 as base pointer
+            tile_data_address += static_cast<int8_t>(tile_map_address) * 16;
+        }
 
     }
+
+    // Now, we have the base pointer for the 16 bytes of tile data. TODO: handle the 8 bytes
 
 
     // SDL_SetRenderDrawColor(renderer_, 1, 0, 0, SDL_ALPHA_OPAQUE);

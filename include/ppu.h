@@ -27,6 +27,8 @@ class PPU {
         void render(); // use SDL to draw the current texture to the screen
         void cycle(); // go through one PPU cycle (process 1 frame)
 
+        void display_frame_rate(float frame_rate); // show the frame rate in the title of the window
+
         // registers
         uint8_t read_ly();
 

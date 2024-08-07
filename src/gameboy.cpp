@@ -1,6 +1,7 @@
 #include "gameboy.h"
 #include <SDL2/SDL.h>
 #include <SDL_events.h>
+#include <SDL_video.h>
 #include <chrono>
 #include <iostream>
 
