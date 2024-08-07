@@ -391,10 +391,27 @@ void PPU::draw_scanline()
             tile_data_address += static_cast<int8_t>(tile_map_address) * 16;
         }
 
+        // Now, we have the base pointer for the 16 bytes of tile data. Currently, we are on a specific scanline, and therefore are dealing with a specific 
+        // y coordinate. Therefore, we need to find that specific row of tile data that we are currently dealing with
+
+        uint8_t tile_row = y_coordinate % 8; // given the y coordinate, which row of colour data in the an 8x8 tile is this?
+        tile_row *= 2; // adjust for the fact that every line of tile data contains 2 bytes (every colour row is 2 * 8 bytes of data, so the first row of colour data is row 0, 1, the second row of colour data is row 2,3, etc.) 
+
+        // read the two bytes corresponding to this row of the tile
+        // first byte specifies the least significant bit of the color ID, second byte specifies the most significant bit (for the specific x, y pixel we are currently observing)
+        uint8_t byte1 = read(tile_data_address + tile_row + 0);
+        uint8_t byte2 = read(tile_data_address + tile_row + 1);
+
+        // The final step is to get the colour - first, get the ID from the two bytes - bit 7 represents the leftmost pixel, bit 0 represents the rightmost
+        uint8_t bit_number = ((x_coordinate % 8) - 7) * (-1); // which column in the tile data is the x coordinate, and then accounting for bit 7 being the leftmost pixel
+        uint8_t msb = ((byte2 & bit_number) >> bit_number) << 1;
+        uint8_t lsb = (byte1 & bit_number) >> bit_number; 
+
+        uint8_t colourID = msb + lsb;
+
+        // match the colour ID to its actual colour using the palette 
+
     }
-
-    // Now, we have the base pointer for the 16 bytes of tile data. TODO: handle the 8 bytes
-
 
     // SDL_SetRenderDrawColor(renderer_, 1, 0, 0, SDL_ALPHA_OPAQUE);
     // SDL_RenderDrawPoint(renderer_, 50, 100);
