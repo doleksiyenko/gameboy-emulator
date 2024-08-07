@@ -469,7 +469,6 @@ void PPU::draw_scanline()
 
         SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
         SDL_RenderDrawPoint(renderer_, pixel, ly_);
-        // render();
     }
 }
 

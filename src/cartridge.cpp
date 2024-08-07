@@ -50,9 +50,11 @@ void Cartridge::load_cartridge_from_file(std::string cartridge_file)
             break;
     }
 
-    std::cout << "MBC type: " << (int)mbc_header_val_ << '\n'; 
+    std::cout << "MBC type: " << static_cast<int>(mbc_header_val_) << '\n'; 
     std::cout << "Cartridge size (bytes): " << cartridge_.size() << std::endl;
-    std::cout << "MBC created: " << (int) mbc_->read(0x0147) << std::endl;
+    if (mbc_header_val_ > 0) {
+        std::cout << "MBC created: " << static_cast<int>(mbc_->read(0x0147)) << std::endl;
+    }
 }
 
 uint8_t Cartridge::read(uint16_t address)
