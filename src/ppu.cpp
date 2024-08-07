@@ -320,9 +320,8 @@ void PPU::draw_scanline()
     }
 
     // check where we read tiles from (the current addressing mode)
-    // indexing is always done using an 8 bit integer, however depending on the addressing mode this can be signed or unsigned
     uint16_t tile_data_address;
-    bool signed_addressing = false;
+    bool signed_addressing = false; // indexing is always done using an 8 bit integer, however depending on the addressing mode this can be signed or unsigned
     if (lcdc_.bg_window_tile_data) {
         tile_data_address = 0x8000;
     }
@@ -332,9 +331,33 @@ void PPU::draw_scanline()
     }
     
 
+    /*  The next step is to index into the VRAM tile maps. The background of the Game Boy is defined by 32 x 32 tiles. Each of these tiles has 8x8 pixels. Overall, this corresponds to a larger display than our actual display.
+        The next step is to figure out which pixels actually need to be drawn to screen */ 
+    
+    // first, figure out the Y coordinate relative to either the viewport, or the position of the window (if the window is enabled)
+    int y_coordinate;
+    if (window_enabled) {
+        // if the window is enabled, find the Y position relative to the top line of the window (i.e. "window coordinates")
+        y_coordinate = ly_ - wy_;
+    }
+    else {
+        // the window is not enabled, so find Y position in "background coordinates". We know that the background begins drawing from where the viewport top left corner is defined
+        y_coordinate = scy_ + ly_;
+    }
+
+    // Now, we need to find which row of the tile map this y coordinate can be found. First, finding the integer division by 8 finds which row this pixel belongs to (e.g. pixel 6 belongs to row 0, pixel 35 belongs to row 1, etc.). 
+    // and then multiplying by 32 gives the index into the row in memory
+
+    uint8_t tile_map_y_index = static_cast<uint8_t>(y_coordinate / 8) * 32;
+
+
+    // draw each pixel along the scanline
+    for (int pixel = 0; pixel < SCREEN_WIDTH; pixel++) {
+    }
+
+
     // SDL_SetRenderDrawColor(renderer_, 1, 0, 0, SDL_ALPHA_OPAQUE);
     // SDL_RenderDrawPoint(renderer_, 50, 100);
-
 }
 
 
