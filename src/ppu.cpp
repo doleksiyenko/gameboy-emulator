@@ -338,6 +338,7 @@ void PPU::draw_scanline()
     int y_coordinate;
     if (window_enabled) {
         // if the window is enabled, find the Y position relative to the top line of the window (i.e. "window coordinates")
+        // INVARIANT: y_coordinate >= 0 since window_enabled == true if wy_ <= ly_
         y_coordinate = ly_ - wy_;
     }
     else {
@@ -352,7 +353,30 @@ void PPU::draw_scanline()
 
 
     // draw each pixel along the scanline
+    int x_coordinate;
     for (int pixel = 0; pixel < SCREEN_WIDTH; pixel++) {
+        // again, finding the x coordinate depends on whether or not the window is enabled or not: find the coordinate relative to the window or the viewport
+        if (window_enabled) {
+            // adjust the x coordinate into window space if it is within the window
+            if (pixel >= wx_ - 7) {
+                x_coordinate = pixel - (wx_ - 7);
+            }
+        }
+        else {
+            // x coordinate relative to the viewport
+            x_coordinate = scx_ + pixel;
+        }
+
+
+        // similar to finding the Y index, we need to find the x index to find a final uint8_t index into the tilemap
+        uint8_t tile_map_x_index = static_cast<uint8_t>(x_coordinate / 8); // divide by 8 to bucket into one of 32 8x8 tiles in the row
+
+
+
+
+
+
+
     }
 
 
