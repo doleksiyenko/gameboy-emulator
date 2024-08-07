@@ -44,6 +44,7 @@ class PPU {
 
         void set_mode(uint8_t mode); // set the mode and handle the resulting possible STAT interrupt
         void draw_scanline();
+        void set_colour_from_palette(int* r, int* g, int* b, uint8_t colour_ID, uint8_t palette);
         void oam_search();
 
         std::vector<int> scanline_sprites_; // up to 10 sprites that can be displayed on a scanline

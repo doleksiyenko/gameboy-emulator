@@ -285,6 +285,60 @@ void PPU::oam_search()
     }
 }
 
+void PPU::set_colour_from_palette(int* r, int* g, int* b, uint8_t colour_ID, uint8_t palette)
+{
+    /* Given a colour ID, set the r, g, b values by using the PPU's palette */
+
+    // based on the colour ID, take a look at the bits of the palette corresponding to the ID
+    uint8_t colour_value;
+
+    switch(colour_ID) {
+        case 0:
+            // look at bits 0, 1
+            colour_value = palette & 0b00000011 >> 0;
+            break;
+        case 1:
+            // look at bits 2, 3
+            colour_value = palette & 0b00001100 >> 2;
+            break;
+        case 2:
+            // look at bits 4, 5
+            colour_value = palette & 0b00110000 >> 4;
+            break;
+        case 3:
+            // look at bits 6, 7
+            colour_value = palette & 0b11000000 >> 6;
+            break;
+    }
+
+    switch (colour_value) {
+        case 0:
+            // set the colour to near-white
+            *r = 242;        
+            *g = 242;
+            *b = 242;
+            break;
+        case 1:
+            // set the colour to light gray 
+            *r = 191;        
+            *g = 191;
+            *b = 191;
+            break;
+        case 2:
+            // set the colour to dark gray 
+            *r = 115;        
+            *g = 115;
+            *b = 115;
+            break;
+        case 3:
+            // set the colour to black 
+            *r = 0;        
+            *g = 0;
+            *b = 0;
+            break;
+    }
+}
+
 void PPU::draw_scanline()
 {
     /*  Draw the scanline during mode 3 of the PPU. In a hardware accurate GameBoy emulator, this should draw one
@@ -407,14 +461,16 @@ void PPU::draw_scanline()
         uint8_t msb = ((byte2 & bit_number) >> bit_number) << 1;
         uint8_t lsb = (byte1 & bit_number) >> bit_number; 
 
-        uint8_t colourID = msb + lsb;
+        uint8_t colour_ID = msb + lsb;
 
         // match the colour ID to its actual colour using the palette 
+        int r; int g; int b;
+        set_colour_from_palette(&r, &g, &b, colour_ID, bgp_);
 
+        SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
+        SDL_RenderDrawPoint(renderer_, pixel, ly_);
+        // render();
     }
-
-    // SDL_SetRenderDrawColor(renderer_, 1, 0, 0, SDL_ALPHA_OPAQUE);
-    // SDL_RenderDrawPoint(renderer_, 50, 100);
 }
 
 
