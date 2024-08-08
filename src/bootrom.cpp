@@ -39,3 +39,13 @@ uint8_t BootROM::read(uint16_t address)
     return bootrom_[address];
 }
 
+uint8_t BootROM::read_bank()
+{
+    return bank_;
+}
+
+void BootROM::write_bank(uint8_t value)
+{
+    bank_ = value;
+}
+

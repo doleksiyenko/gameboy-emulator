@@ -23,7 +23,13 @@ uint8_t Bus::read(uint16_t address)
 {
     if (address >= 0x0000 && address < 0x0100) {
         // read from the boot ROM (no corresponding write, since this is ROM) 
-        return bootrom_->read(address);
+        if (bootrom_->read_bank()) {
+            // the bootrom is unmapped
+            return cartridge_->read(address);
+        }
+        else {
+            return bootrom_->read(address);
+        }
     }
     else if (address >= 0x0100 && address <= 0x7fff) {
         // access to the 16 KiB fixed ROM bank 00, and 16 KiB ROM bank 01, which is switchable and controlled via the MBC
@@ -70,14 +76,17 @@ void Bus::write(uint16_t address, uint8_t value)
         ram_->write(address, value);
     }
     else if (address == 0xff01) {
-        serial_->write_sb();
+        serial_->write_sb(value);
     }
     else if (address == 0xff02) {
-        serial_->write_sc();
+        serial_->write_sc(value);
     }
     else if (address == 0xff0f) {
         // update the interrupt flag register (make a request for an interrupt)
         cpu_->write_if(value);
+    }
+    else if (address == 0xff50) {
+        bootrom_->write_bank(value);
     }
     else if (address >= 0xff80 && address <= 0xfffe) {
         cpu_->write_hram(address, value);
