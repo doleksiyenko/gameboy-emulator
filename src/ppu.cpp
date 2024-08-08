@@ -21,14 +21,16 @@ PPU::PPU()
         exit(-1);
     }
 
+    int scale = 4;
     // create a window, renderer and texture
-    window_ = SDL_CreateWindow("GameBoy 1989", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    window_ = SDL_CreateWindow("GameBoy 1989", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, scale * SCREEN_WIDTH, scale * SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     if (!window_) {
         std::cout << "Failed to create window: " << SDL_GetError();
         exit(-1);
     }
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+
     renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED);
     if (!renderer_) {
         std::cout << "Failed to create renderer: " << SDL_GetError();
@@ -240,7 +242,8 @@ void PPU::cycle()
                 case 2:
                     // switch from OAM scan to drawing
                     set_mode(3);
-                    draw_scanline();
+                    // draw_scanline();
+                    // test_draw_vram();
                     t_cycles_delay_ += 172; // MODE 3 has a variable length, for now keep it at the maximum length
                     break;
                 case 3:
@@ -337,6 +340,58 @@ void PPU::set_colour_from_palette(int* r, int* g, int* b, uint8_t colour_ID, uin
             *b = 0;
             break;
     }
+}
+
+void PPU::test_draw_vram()
+{
+    // test drawing out vram by drawing out the whole tilemap
+    uint16_t tile_data_area = 0x8000;
+    int r = 0; int g = 0; int b = 0;
+
+    for (int y = 0; y <= SCREEN_HEIGHT - 8; y += 8) {
+        for (int x = 0; x <= SCREEN_WIDTH - 8; x += 8) {
+            // read the 16 bytes
+            for (int j = 0; j < 8; j++) {
+                uint8_t byte1 = vram_[tile_data_area - 0x8000];
+                uint8_t byte2 = vram_[tile_data_area - 0x8000];
+
+                // match the colour ID to its actual colour using the palette 
+                set_colour_from_palette(&r, &g, &b, ((byte1 & (1 << 7)) >> 7) + (((byte2 & (1 << 7)) >> 7) << 1), bgp_);
+                SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
+                SDL_RenderDrawPoint(renderer_, x + j, y + 0);
+
+                set_colour_from_palette(&r, &g, &b, ((byte1 & (1 << 6)) >> 6) + (((byte2 & (1 << 6)) >> 6) << 1), bgp_);
+                SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
+                SDL_RenderDrawPoint(renderer_, x + j, y + 1);
+
+                set_colour_from_palette(&r, &g, &b, ((byte1 & (1 << 5)) >> 5) + (((byte2 & (1 << 5)) >> 5) << 1), bgp_);
+                SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
+                SDL_RenderDrawPoint(renderer_, x + j, y + 2);
+
+                set_colour_from_palette(&r, &g, &b, ((byte1 & (1 << 4)) >> 4) + (((byte2 & (1 << 4)) >> 4) << 1), bgp_);
+                SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
+                SDL_RenderDrawPoint(renderer_, x + j, y + 3);
+                
+                set_colour_from_palette(&r, &g, &b, ((byte1 & (1 << 3)) >> 3) + (((byte2 & (1 << 3)) >> 3) << 1), bgp_);
+                SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
+                SDL_RenderDrawPoint(renderer_, x + j, y + 4);
+
+                set_colour_from_palette(&r, &g, &b, ((byte1 & (1 << 2)) >> 2) + (((byte2 & (1 << 2)) >> 2) << 1), bgp_);
+                SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
+                SDL_RenderDrawPoint(renderer_, x + j, y + 5);
+
+                set_colour_from_palette(&r, &g, &b, ((byte1 & (1 << 1)) >> 1) + (((byte2 & (1 << 1)) >> 1) << 1), bgp_);
+                SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
+                SDL_RenderDrawPoint(renderer_, x + j, y + 6);
+
+                set_colour_from_palette(&r, &g, &b, ((byte1 & (1 << 0)) >> 0) + (((byte2 & (1 << 0)) >> 0) << 1), bgp_);
+                SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
+                SDL_RenderDrawPoint(renderer_, x + j, y + 7);
+            }
+            tile_data_area += 16;
+        }
+    }
+    
 }
 
 void PPU::draw_scanline()
@@ -470,6 +525,15 @@ void PPU::draw_scanline()
 
         SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
         SDL_RenderDrawPoint(renderer_, pixel, ly_);
+
+        if (pixel == 10) {
+            SDL_SetRenderDrawColor(renderer_, 0, 0, 0, SDL_ALPHA_OPAQUE);
+            SDL_RenderDrawPoint(renderer_, pixel, ly_);
+        }
+        if (ly_ == 50) {
+            SDL_SetRenderDrawColor(renderer_, 0, 0, 0, SDL_ALPHA_OPAQUE);
+            SDL_RenderDrawPoint(renderer_, pixel, ly_);
+        }
     }
 }
 

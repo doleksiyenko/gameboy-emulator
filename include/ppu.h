@@ -101,6 +101,9 @@ class PPU {
     
         lcdc lcdc_;
         stat stat_;
+
+    private:
+        void test_draw_vram();
 };
 
 #endif

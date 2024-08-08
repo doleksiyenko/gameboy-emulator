@@ -6,6 +6,7 @@
 #include "cpu.h"
 #include "ppu.h"
 #include "ram.h"
+#include "serial.h"
 #include "sound.h"
 #include "bus.h"
 
@@ -19,6 +20,11 @@ class GameBoy {
     private:
         // state
         bool running_ = true; // start the system as automatically running
+
+        // registers
+
+
+
         // hardware components
         RAM ram_;        
         PPU ppu_;
@@ -26,7 +32,8 @@ class GameBoy {
         CPU cpu_;
         BootROM bootrom_; // fixed size ROM responsible for booting the console
         Cartridge cartridge_; // game cartridge
-        Bus bus_ {&cpu_, &ram_, &ppu_, &bootrom_, &cartridge_}; 
+        Serial serial_;
+        Bus bus_ {&cpu_, &ram_, &ppu_, &bootrom_, &cartridge_, &serial_}; 
 };
 
 #endif

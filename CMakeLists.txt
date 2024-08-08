@@ -12,6 +12,7 @@ set(SourceFiles
     src/ppu.cpp
     src/ram.cpp
     src/cartridge.cpp
+    src/serial.cpp
     src/bus.cpp
     src/bootrom.cpp
     src/mbc/mbc1.cpp
@@ -25,6 +26,7 @@ set(HeaderFiles
     include/sound.h
     include/cartridge.h
     include/bus.h
+    include/serial.h
     include/bootrom.h
     include/mbc/mbc.h
     include/mbc/mbc1.h
