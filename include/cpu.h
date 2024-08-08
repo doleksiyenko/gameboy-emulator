@@ -24,14 +24,14 @@ class CPU {
 
     private:
         // 16 bit registers
-        uint16_t pc_; // program counter
-        uint16_t sp_; // stack pointer
-        uint16_t af_; // accumulator + flags
-        uint16_t bc_; uint16_t de_; uint16_t hl_; // general-purpose registers (8 bit halves)
+        uint16_t pc_ = 0; // program counter
+        uint16_t sp_ = 0; // stack pointer
+        uint16_t af_ = 0; // accumulator + flags
+        uint16_t bc_ = 0; uint16_t de_ = 0; uint16_t hl_ = 0; // general-purpose registers (8 bit halves)
 
         // 8 bit registers
-        uint8_t ir_; // instruction register
-        uint8_t ie_; // interrupt enable
+        uint8_t ir_ = 0; // instruction register
+        uint8_t ie_ = 0; // interrupt enable
 
         std::array<uint8_t, 126> hram_; // high ram, quickly accessible ram
 
@@ -56,7 +56,7 @@ class CPU {
         uint8_t read_flag(flags flag);
 
         bool ime_ = 0; // interrupt master enable flag (write only). Starts disabled when game begins
-        uint8_t if_; // interrupt flag
+        uint8_t if_ = 0; // interrupt flag
 
         // --- INSTRUCTION IMPLEMENTATION HELPERS ---
         void INC_DEC_8BIT(uint16_t* reg, bool upper, bool inc); // helper function for all of the 8 bit register inc / dec operations on registers within 16 bit register combos

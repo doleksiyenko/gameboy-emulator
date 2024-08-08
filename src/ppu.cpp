@@ -242,8 +242,8 @@ void PPU::cycle()
                 case 2:
                     // switch from OAM scan to drawing
                     set_mode(3);
-                    draw_scanline();
-                    // test_draw_vram();
+                    // draw_scanline();
+                    test_draw_vram();
                     t_cycles_delay_ += 172; // MODE 3 has a variable length, for now keep it at the maximum length
                     break;
                 case 3:
@@ -345,50 +345,26 @@ void PPU::set_colour_from_palette(int* r, int* g, int* b, uint8_t colour_ID, uin
 void PPU::test_draw_vram()
 {
     // test drawing out vram by drawing out the whole tilemap
-    uint16_t tile_data_area = 0x8000;
+    uint16_t tile_data_area = 0x8010;
     int r = 0; int g = 0; int b = 0;
 
     for (int y = 0; y <= SCREEN_HEIGHT - 8; y += 8) {
         for (int x = 0; x <= SCREEN_WIDTH - 8; x += 8) {
             // read the 16 bytes
-            for (int j = 0; j < 8; j++) {
+            // match the colour ID to its actual colour using the palette 
+            for (int i = 0; i < 8; i++) {
                 uint8_t byte1 = vram_[tile_data_area - 0x8000];
-                uint8_t byte2 = vram_[tile_data_area - 0x8000];
-
-                // match the colour ID to its actual colour using the palette 
-                set_colour_from_palette(&r, &g, &b, ((byte1 & (1 << 7)) >> 7) + (((byte2 & (1 << 7)) >> 7) << 1), bgp_);
-                SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
-                SDL_RenderDrawPoint(renderer_, x + j, y + 0);
-
-                set_colour_from_palette(&r, &g, &b, ((byte1 & (1 << 6)) >> 6) + (((byte2 & (1 << 6)) >> 6) << 1), bgp_);
-                SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
-                SDL_RenderDrawPoint(renderer_, x + j, y + 1);
-
-                set_colour_from_palette(&r, &g, &b, ((byte1 & (1 << 5)) >> 5) + (((byte2 & (1 << 5)) >> 5) << 1), bgp_);
-                SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
-                SDL_RenderDrawPoint(renderer_, x + j, y + 2);
-
-                set_colour_from_palette(&r, &g, &b, ((byte1 & (1 << 4)) >> 4) + (((byte2 & (1 << 4)) >> 4) << 1), bgp_);
-                SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
-                SDL_RenderDrawPoint(renderer_, x + j, y + 3);
-                
-                set_colour_from_palette(&r, &g, &b, ((byte1 & (1 << 3)) >> 3) + (((byte2 & (1 << 3)) >> 3) << 1), bgp_);
-                SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
-                SDL_RenderDrawPoint(renderer_, x + j, y + 4);
-
-                set_colour_from_palette(&r, &g, &b, ((byte1 & (1 << 2)) >> 2) + (((byte2 & (1 << 2)) >> 2) << 1), bgp_);
-                SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
-                SDL_RenderDrawPoint(renderer_, x + j, y + 5);
-
-                set_colour_from_palette(&r, &g, &b, ((byte1 & (1 << 1)) >> 1) + (((byte2 & (1 << 1)) >> 1) << 1), bgp_);
-                SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
-                SDL_RenderDrawPoint(renderer_, x + j, y + 6);
-
-                set_colour_from_palette(&r, &g, &b, ((byte1 & (1 << 0)) >> 0) + (((byte2 & (1 << 0)) >> 0) << 1), bgp_);
-                SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
-                SDL_RenderDrawPoint(renderer_, x + j, y + 7);
+                uint8_t byte2 = vram_[(tile_data_area + 1) - 0x8000];
+                // draw the row
+                for (int j = 0; j < 8; j++) {
+                    set_colour_from_palette(&r, &g, &b, ((byte1 & (1 << (7 - j))) >> (7 - j)) + (((byte2 & (1 << (7 - j))) >> (7 - j)) << 1), bgp_);
+                    SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
+                    SDL_RenderDrawPoint(renderer_, x + j, y + i);
+                }
+                // after drawing the row, fetch the next two bytes 
+                tile_data_area += 2;
             }
-            tile_data_area += 16;
+
         }
     }
     

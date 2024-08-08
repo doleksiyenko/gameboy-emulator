@@ -51,17 +51,17 @@ class PPU {
         
         // -- REGISTERS -- 
         // scrolling
-        uint8_t scx_; // background viewport x
-        uint8_t scy_; // background viewport y
-        uint8_t wx_; // window x position
-        uint8_t wy_; // window y position
+        uint8_t scx_ = 0; // background viewport x
+        uint8_t scy_ = 0; // background viewport y
+        uint8_t wx_ = 0; // window x position
+        uint8_t wy_ = 0; // window y position
         // palettes
-        uint8_t bgp_; // background colour palette
-        uint8_t ogp0_; // object palette 0
-        uint8_t ogp1_; // object palette 1
+        uint8_t bgp_ = 0; // background colour palette
+        uint8_t ogp0_ = 0; // object palette 0
+        uint8_t ogp1_ = 0; // object palette 1
         // lcd status
-        uint8_t ly_;
-        uint8_t lyc_;
+        uint8_t ly_ = 0;
+        uint8_t lyc_ = 0;
 
         bool screen_cleared_ = true; // PPU and LCD start as "off". Checks if screen is filled white, so we don't need to process it every frame if already cleared
         // ---- STATUS AND CONTROL REGISTERS ----
