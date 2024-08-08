@@ -67,7 +67,11 @@ uint8_t Bus::read(uint16_t address)
 
 void Bus::write(uint16_t address, uint8_t value) 
 {
-    if ((address >= 0x8000 && address <= 0x9fff) || (address >= 0xff40 && address <= 0xff4b)) {
+    if (address >= 0x0000 && address <= 0x7fff) {
+        // access to MBC external RAM + MBC registers 
+        cartridge_->write(address, value);
+    }
+    else if ((address >= 0x8000 && address <= 0x9fff) || (address >= 0xff40 && address <= 0xff4b)) {
         // write to VRAM (first range) OR to LCD registers (second range)
         ppu_->write(address, value);
     }

@@ -68,3 +68,11 @@ uint8_t Cartridge::read(uint16_t address)
         return mbc_->read(address);
     }
 }
+
+void Cartridge::write(uint16_t address, uint8_t value)
+{
+    /* Write to the MBC registers or external RAM */
+    if (mbc_header_val_ > 0x0) {
+        mbc_->write(address, value);
+    }
+}

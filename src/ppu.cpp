@@ -242,7 +242,7 @@ void PPU::cycle()
                 case 2:
                     // switch from OAM scan to drawing
                     set_mode(3);
-                    // draw_scanline();
+                    draw_scanline();
                     // test_draw_vram();
                     t_cycles_delay_ += 172; // MODE 3 has a variable length, for now keep it at the maximum length
                     break;
@@ -525,15 +525,6 @@ void PPU::draw_scanline()
 
         SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
         SDL_RenderDrawPoint(renderer_, pixel, ly_);
-
-        if (pixel == 10) {
-            SDL_SetRenderDrawColor(renderer_, 0, 0, 0, SDL_ALPHA_OPAQUE);
-            SDL_RenderDrawPoint(renderer_, pixel, ly_);
-        }
-        if (ly_ == 50) {
-            SDL_SetRenderDrawColor(renderer_, 0, 0, 0, SDL_ALPHA_OPAQUE);
-            SDL_RenderDrawPoint(renderer_, pixel, ly_);
-        }
     }
 }
 

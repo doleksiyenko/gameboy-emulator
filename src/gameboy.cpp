@@ -41,7 +41,7 @@ void GameBoy::run() {
         // can run a maximum of 70224 cycles in a frame (yields 4.194304 MHz)
         if (master_clock_cycles < 70224) {
             cpu_.cycle();
-            ppu_.cycle();
+            // ppu_.cycle();
             master_clock_cycles++;
         }
         else if (master_clock_cycles == 70224) {
