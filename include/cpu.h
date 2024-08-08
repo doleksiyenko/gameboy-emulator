@@ -1,6 +1,7 @@
 #ifndef CPU_H
 #define CPU_H
 
+#include <array>
 #include <vector>
 #include <cstdint>
 
@@ -12,10 +13,14 @@ class CPU {
         CPU();
         void cycle();
         void connect_bus(Bus* bus);
+
+        // read/write registers + hram 
         uint8_t read_ie();
         void write_ie(uint8_t value);
         uint8_t read_if();
         void write_if(uint8_t value); // make requests for interrupts 
+        uint8_t read_hram(uint16_t address);
+        void write_hram(uint16_t address, uint8_t value);
 
     private:
         // 16 bit registers
@@ -27,6 +32,8 @@ class CPU {
         // 8 bit registers
         uint8_t ir_; // instruction register
         uint8_t ie_; // interrupt enable
+
+        std::array<uint8_t, 126> hram_; // high ram, quickly accessible ram
 
         bool halt_mode = false; // indicate whether or not the CPU is halted by the HALT instruction
         bool stop_mode = false; // indicate whether the STOP instruction was called
@@ -91,7 +98,7 @@ class CPU {
         std::vector<Instruction> opcode_lookup;
         std::vector<Instruction> cb_opcode_lookup;
 
-        uint8_t t_cycles_delay; // the number of system clock ticks that an instruction requires to complete
+        uint8_t t_cycles_delay = 0; // the number of system clock ticks that an instruction requires to complete
 
         // -- INTERRUPT HANDLING -- 
         enum interrupts {

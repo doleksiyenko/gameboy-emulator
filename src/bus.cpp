@@ -31,7 +31,7 @@ uint8_t Bus::read(uint16_t address)
         // read from VRAM (first range), OR read LCD registers (second range)
         return ppu_->read(address);
     }
-    else if (address >= 0xA000 && address <= 0xbfff) {
+    else if (address >= 0xa000 && address <= 0xbfff) {
         // acccess 8 KiB of external RAM contained in the cartridge. This is a switchable bank controller by the MBC (which is in the cartridge class)
         return cartridge_->read(address);
     }
@@ -42,6 +42,9 @@ uint8_t Bus::read(uint16_t address)
     else if (address == 0xff0f) {
         // read the interrupt flag
         return cpu_->read_if();
+    }
+    else if (address >= 0xff80 && address <= 0xfffe) {
+        return cpu_->read_hram(address);
     }
     else if (address == 0xffff) {
         // read the interrupt enable register
@@ -64,6 +67,9 @@ void Bus::write(uint16_t address, uint8_t value)
     else if (address == 0xff0f) {
         // update the interrupt flag register (make a request for an interrupt)
         cpu_->write_if(value);
+    }
+    else if (address >= 0xff80 && address <= 0xfffe) {
+        cpu_->write_hram(address, value);
     }
     else if (address == 0xffff) {
         // update the interrupt enable register

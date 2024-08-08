@@ -285,9 +285,21 @@ void CPU::write_ie(uint8_t value)
     ie_ = value;
 }
 
+
 uint8_t CPU::read_if()
 {
     return if_;
+}
+
+uint8_t CPU::read_hram(uint16_t address)
+{
+    return hram_[address - 0xff80];
+}
+
+
+void CPU::write_hram(uint16_t address, uint8_t value)
+{
+    hram_[address - 0xff80] = value;
 }
 
 void CPU::write_if(uint8_t value)
@@ -1309,7 +1321,7 @@ void CPU::PUSH(uint16_t* reg)
 {
     /* push memory onto stack from register <reg> */
     uint8_t upper = (*reg & 0xff00) >> 8;
-    uint8_t lower = (*reg * 0x00ff);
+    uint8_t lower = (*reg & 0x00ff);
 
     write(sp_ - 1, upper);
     write(sp_ - 2, lower);
