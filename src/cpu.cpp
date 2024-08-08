@@ -1908,7 +1908,7 @@ uint8_t CPU::LD_a16_m_A()
     uint8_t lower = read(pc_++);
     uint16_t upper = read(pc_++); 
 
-    write(upper + lower, (af_ & 0xff00) >> 8);
+    write((upper << 8) + lower, (af_ & 0xff00) >> 8);
 
     return 0;
 }
