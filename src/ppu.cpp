@@ -433,16 +433,17 @@ void PPU::draw_scanline()
         // similar to finding the Y index, we need to find the x index to find a final uint8_t index into the tilemap
         uint8_t tile_map_x_index = static_cast<uint8_t>(x_coordinate / 8); // divide by 8 to bucket into one of 32 8x8 tiles in the row
 
-        tile_map_address += (tile_map_y_index + tile_map_x_index); // find the location of the 1 byte index of the tile in the tile data in VRAM
+        uint16_t tile_index = tile_map_address + (tile_map_y_index + tile_map_x_index); // find the location of the 1 byte index of the tile in the tile data in VRAM
 
+        uint16_t tile_data_location;
         if (!signed_addressing) {
             // if using unsigned addressing, the base pointer is at 0x8000, and use unsigned 8 bit index to index into block 0 or block 1 
             // Each tile is 16 bytes in size. Given the tile index, we can find the location of the first byte of the tile by multiplying the index by 16 
-            tile_data_address += read(tile_map_address) * 16; 
+            tile_data_location = tile_data_address + vram_[tile_index - 0x8000] * 16; 
         }
         else {
             // using the 0x8800 method, uses 0x9000 as base pointer
-            tile_data_address += static_cast<int8_t>(tile_map_address) * 16;
+            tile_data_location = tile_data_address + static_cast<int8_t>(vram_[tile_index - 0x8000]) * 16;
         }
 
         // Now, we have the base pointer for the 16 bytes of tile data. Currently, we are on a specific scanline, and therefore are dealing with a specific 
@@ -453,13 +454,13 @@ void PPU::draw_scanline()
 
         // read the two bytes corresponding to this row of the tile
         // first byte specifies the least significant bit of the color ID, second byte specifies the most significant bit (for the specific x, y pixel we are currently observing)
-        uint8_t byte1 = read(tile_data_address + tile_row + 0);
-        uint8_t byte2 = read(tile_data_address + tile_row + 1);
+        uint8_t byte1 = vram_[(tile_data_location + tile_row + 0) - 0x8000];
+        uint8_t byte2 = vram_[(tile_data_location + tile_row + 1) - 0x8000];
 
         // The final step is to get the colour - first, get the ID from the two bytes - bit 7 represents the leftmost pixel, bit 0 represents the rightmost
         uint8_t bit_number = ((x_coordinate % 8) - 7) * (-1); // which column in the tile data is the x coordinate, and then accounting for bit 7 being the leftmost pixel
-        uint8_t msb = ((byte2 & bit_number) >> bit_number) << 1;
-        uint8_t lsb = (byte1 & bit_number) >> bit_number; 
+        uint8_t msb = ((byte2 & (1 << bit_number)) >> bit_number) << 1;
+        uint8_t lsb = (byte1 & (1 << bit_number)) >> bit_number; 
 
         uint8_t colour_ID = msb + lsb;
 
