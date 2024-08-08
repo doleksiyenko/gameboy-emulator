@@ -295,19 +295,19 @@ void PPU::set_colour_from_palette(int* r, int* g, int* b, uint8_t colour_ID, uin
     switch(colour_ID) {
         case 0:
             // look at bits 0, 1
-            colour_value = palette & 0b00000011 >> 0;
+            colour_value = (palette & 0b00000011) >> 0;
             break;
         case 1:
             // look at bits 2, 3
-            colour_value = palette & 0b00001100 >> 2;
+            colour_value = (palette & 0b00001100) >> 2;
             break;
         case 2:
             // look at bits 4, 5
-            colour_value = palette & 0b00110000 >> 4;
+            colour_value = (palette & 0b00110000) >> 4;
             break;
         case 3:
             // look at bits 6, 7
-            colour_value = palette & 0b11000000 >> 6;
+            colour_value = (palette & 0b11000000) >> 6;
             break;
     }
 
