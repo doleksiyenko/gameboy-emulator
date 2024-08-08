@@ -354,7 +354,7 @@ void PPU::draw_scanline()
     // NOTE: the window is a fixed rectangle on top of the background layer (i.e. a status bar)
     bool window_enabled = false;
 
-    if (lcdc_.bg_window_enable) {
+    if (lcdc_.window_enable) {
         if (wy_ <= ly_) { // only the top left coordinate of the window can be specified; this condition means that this scanline contains the window 
             window_enabled = true;        
         }
@@ -522,12 +522,12 @@ bool PPU::stat::set_mode(uint8_t mode)
 void PPU::lcdc::set(uint8_t new_lcdc) 
 {
     value_ = new_lcdc;
-    lcdc_enable_ = new_lcdc & (1 << 7);
-    window_tile_map = new_lcdc & (1 << 6);
-    window_enable = new_lcdc & (1 << 5);
-    bg_window_tile_data = new_lcdc & (1 << 4);
-    bg_tile_map = new_lcdc & (1 << 3);
-    obj_size = new_lcdc & (1 << 2);
-    obj_enable = new_lcdc & (1 << 1);
-    bg_window_enable = new_lcdc & (1 << 0);
+    lcdc_enable_ = (new_lcdc & (1 << 7)) >> 7;
+    window_tile_map = (new_lcdc & (1 << 6)) >> 6;
+    window_enable = (new_lcdc & (1 << 5)) >> 5;
+    bg_window_tile_data = (new_lcdc & (1 << 4)) >> 4;
+    bg_tile_map = (new_lcdc & (1 << 3)) >> 3;
+    obj_size = (new_lcdc & (1 << 2)) >> 2;
+    obj_enable = (new_lcdc & (1 << 1)) >> 1;
+    enable_priority = (new_lcdc & (1 << 0)) >> 0;
 }

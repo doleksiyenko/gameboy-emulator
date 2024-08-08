@@ -93,7 +93,7 @@ class PPU {
             uint8_t bg_tile_map = 0x0;
             uint8_t obj_size = 0x0;
             uint8_t obj_enable = 0x0;
-            uint8_t bg_window_enable = 0x0;
+            uint8_t enable_priority = 0x0;
 
             // set READ/WRITE bits
             void set(uint8_t new_lcdc); 
