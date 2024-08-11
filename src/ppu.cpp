@@ -242,8 +242,8 @@ void PPU::cycle()
                 case 2:
                     // switch from OAM scan to drawing
                     set_mode(3);
-                    // draw_scanline();
-                    test_draw_vram();
+                    // test_draw_vram();
+                    draw_scanline();
                     t_cycles_delay_ += 172; // MODE 3 has a variable length, for now keep it at the maximum length
                     break;
                 case 3:
@@ -344,8 +344,9 @@ void PPU::set_colour_from_palette(int* r, int* g, int* b, uint8_t colour_ID, uin
 
 void PPU::test_draw_vram()
 {
-    // test drawing out vram by drawing out the whole tilemap
-    uint16_t tile_data_area = 0x8010;
+    /* Test function. Draw out the whole tilemap in the first section (for drawing Nintendo logo tiles) */
+
+    uint16_t tile_data_area = 0x8000;
     int r = 0; int g = 0; int b = 0;
 
     for (int y = 0; y <= SCREEN_HEIGHT - 8; y += 8) {
@@ -364,7 +365,6 @@ void PPU::test_draw_vram()
                 // after drawing the row, fetch the next two bytes 
                 tile_data_area += 2;
             }
-
         }
     }
     
@@ -442,7 +442,7 @@ void PPU::draw_scanline()
     // Now, we need to find which row of the tile map this y coordinate can be found. First, finding the integer division by 8 finds which row this pixel belongs to (e.g. pixel 6 belongs to row 0, pixel 35 belongs to row 1, etc.). 
     // and then multiplying by 32 gives the index into the row in memory
 
-    uint8_t tile_map_y_index = static_cast<uint8_t>(y_coordinate / 8) * 32;
+    uint16_t tile_map_y_index = static_cast<uint8_t>(y_coordinate / 8) * 32;
 
 
     // draw each pixel along the scanline
