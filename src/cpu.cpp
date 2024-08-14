@@ -990,7 +990,7 @@ uint8_t CPU::LD_E_E() { LOAD_CONTENTS_INTO_REG(&de_, 0, (de_ & 0xff)); return 0;
 uint8_t CPU::LD_E_H() { LOAD_CONTENTS_INTO_REG(&de_, 0, (hl_ & 0xff00) >> 8); return 0; }
 uint8_t CPU::LD_E_L() { LOAD_CONTENTS_INTO_REG(&de_, 0, (hl_ & 0xff)); return 0; }
 uint8_t CPU::LD_E_HL_m() { LOAD_CONTENTS_INTO_REG(&de_, 0, read(hl_)); return 0; }
-uint8_t CPU::LD_E_A() { LOAD_CONTENTS_INTO_REG(&hl_, 0, (af_ & 0xff00) >> 8); return 0; }
+uint8_t CPU::LD_E_A() { LOAD_CONTENTS_INTO_REG(&de_, 0, (af_ & 0xff00) >> 8); return 0; }
 uint8_t CPU::LD_H_B() { LOAD_CONTENTS_INTO_REG(&hl_, 1, (bc_ & 0xff00) >> 8); return 0; }
 uint8_t CPU::LD_H_C() { LOAD_CONTENTS_INTO_REG(&hl_, 1, (bc_ & 0xff)); return 0; }
 uint8_t CPU::LD_H_D() { LOAD_CONTENTS_INTO_REG(&hl_, 1, (de_ & 0xff00) >> 8); return 0; }
