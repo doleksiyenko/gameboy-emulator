@@ -54,7 +54,7 @@ void GameBoy::run() {
             ppu_.clear_screen();
             ppu_.render();
 
-            std::cout << "Complete time: " << std::chrono::high_resolution_clock::now() - frame_start << '\n';
+            // std::cout << "Complete time: " << std::chrono::high_resolution_clock::now() - frame_start << '\n';
             master_clock_cycles++;
         }
         else {
@@ -62,7 +62,7 @@ void GameBoy::run() {
             poll_events();
             if (std::chrono::high_resolution_clock::now() - frame_start >= frame_length) {
                 // the frame is now official over, can start prossessing again
-                std::cout << "Frame Complete: " << std::chrono::high_resolution_clock::now() - frame_start << '\n';
+                // std::cout << "Frame Complete: " << std::chrono::high_resolution_clock::now() - frame_start << '\n';
                 master_clock_cycles = 0;
                 frame_start = std::chrono::high_resolution_clock::now();
             }

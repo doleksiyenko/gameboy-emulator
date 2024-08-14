@@ -1,6 +1,7 @@
 #include <cpu.h>
 #include <bus.h>
 #include <cstdint>
+#include <iomanip>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -146,8 +147,42 @@ CPU::CPU()
       {&CPU::SET_7_B, 8}, {&CPU::SET_7_C, 8}, {&CPU::SET_7_D, 8},    {&CPU::SET_7_E, 8},
       {&CPU::SET_7_H, 8}, {&CPU::SET_7_L, 8}, {&CPU::SET_7_HL_m, 16}, {&CPU::SET_7_A, 8}
       };
+
+      // create a log file
+
 }
 
+
+CPU::~CPU()
+{
+    log_file.close();
+}
+
+void CPU::cpu_log_()
+{
+    int a = (af_ & 0xff00) >> 8;
+    int f = (af_ & 0xff);
+    int b = (bc_ & 0xff00) >> 8;
+    int c = (bc_ & 0xff);
+    int d = (de_ & 0xff00) >> 8;
+    int e = (de_ & 0xff);
+    int h = (de_ & 0xff00) >> 8;
+    int l = (de_ & 0xff);
+    log_file << "A:" << std::setfill('0') << std::setw(2) << std::hex << a ;
+    log_file << " F:" << std::setfill('0') << std::setw(2) << std::hex << f ;
+    log_file << " B:" << std::setfill('0') << std::setw(2)<< std::hex << b ;
+    log_file << " C:"<< std::setfill('0') << std::setw(2) << std::hex << c ;
+    log_file << " D:" << std::setfill('0') << std::setw(2)<< std::hex << d ;
+    log_file << " E:" << std::setfill('0') << std::setw(2)<< std::hex << e ;
+    log_file << " H:" << std::setfill('0') << std::setw(2)<< std::hex << h ;
+    log_file << " L:" << std::setfill('0') << std::setw(2)<< std::hex << l ;
+    log_file << " SP:" << std::setfill('0') << std::setw(4) << std::hex << sp_ ;
+    log_file << " PC:" << std::setfill('0') << std::setw(4) << std::hex << pc_;
+    log_file << " PCMEM:" << std::setfill('0') << std::setw(2) << std::hex << (int)read(pc_) << ",";
+    log_file << std::setfill('0') << std::setw(2) << std::hex << (int)read(pc_ + 1) << ",";
+    log_file << std::setfill('0') << std::setw(2) << std::hex << (int)read(pc_ + 2) << ",";
+    log_file << std::setfill('0') << std::setw(2) << std::hex << (int)read(pc_ + 3) << "\n";
+}
 
 void CPU::connect_bus(Bus* bus)
 {
@@ -236,6 +271,10 @@ void CPU::cycle()
         // perform the instruction. if this is an instruction such as a CALL or RET or JP that requires extra cycles based on execuction, return this value
         // a member function must be called on an instance of the class, so we must explicitly say that we run the opcode_function based on this class
         uint8_t additional_cycles = (this->*instruction.opcode_function)();
+
+        if (log) {
+            cpu_log_();
+        }
 
         // get the final amount of cycles required to perform this instruction by getting the base cycles + additional cycles (for example, from conditional branches)
         t_cycles_delay += additional_cycles;
