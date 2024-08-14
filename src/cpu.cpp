@@ -611,6 +611,10 @@ uint8_t CPU::RLCA()
     // rotate the register, then set 0 bit to bit rotated out
     a <<= 1;
     a |= top_bit; // set the last bit to the top bit
+
+    set_flag(CPU::flags::Z, 0);
+    set_flag(CPU::flags::N, 0);
+    set_flag(CPU::flags::H, 0);
     set_flag(CPU::flags::C, top_bit);
 
     // finally, set the modified a to the a register
@@ -629,6 +633,10 @@ uint8_t CPU::RRCA()
     // rotate the register, then set 0 bit to bit rotated out
     a >>= 1;
     a |= (bottom_bit << 7); // set the top bit to the previous bottom bit
+
+    set_flag(CPU::flags::Z, 0);
+    set_flag(CPU::flags::N, 0);
+    set_flag(CPU::flags::H, 0);
     set_flag(CPU::flags::C, bottom_bit);
 
     // finally, set the modified a to the a register
@@ -642,12 +650,18 @@ uint8_t CPU::RLA()
 {
     // rotate the contents of register A to the left, through the carry flag
     uint8_t a = (af_ & 0xff00) >> 8;
+    uint8_t top_bit = (a >> 7);
 
     // rotate the register, then set 0 bit to bit rotated out
     a <<= 1;
 
     // set bit 0 to the carry bit
     a |= read_flag(CPU::flags::C);
+
+    set_flag(CPU::flags::Z, 0);
+    set_flag(CPU::flags::N, 0);
+    set_flag(CPU::flags::H, 0);
+    set_flag(CPU::flags::C, top_bit);
 
     // finally, set the modified a to the a register
     af_ &= 0xff; // clear the a register
@@ -660,11 +674,17 @@ uint8_t CPU::RRA()
 {
     // rotate the contents of register A to the right, through the carry flag
     uint8_t a = (af_ & 0xff00) >> 8;
+    uint8_t bottom_bit = a & 1;
 
     // rotate the register, then set 0 bit to bit rotated out
     a >>= 1;
     a |= (read_flag(CPU::flags::C) << 7); // set the top bit to the carry bit
 
+    set_flag(CPU::flags::Z, 0);
+    set_flag(CPU::flags::N, 0);
+    set_flag(CPU::flags::H, 0);
+
+    set_flag(CPU::flags::C, bottom_bit);
     // finally, set the modified a to the a register
     af_ &= 0xff; // clear the a register
     af_ |= (a << 8); // set the a register
