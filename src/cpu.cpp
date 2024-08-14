@@ -166,8 +166,8 @@ void CPU::cpu_log_()
     int c = (bc_ & 0xff);
     int d = (de_ & 0xff00) >> 8;
     int e = (de_ & 0xff);
-    int h = (de_ & 0xff00) >> 8;
-    int l = (de_ & 0xff);
+    int h = (hl_ & 0xff00) >> 8;
+    int l = (hl_ & 0xff);
     log_file << "A:" << std::setfill('0') << std::setw(2) << std::hex << a ;
     log_file << " F:" << std::setfill('0') << std::setw(2) << std::hex << f ;
     log_file << " B:" << std::setfill('0') << std::setw(2)<< std::hex << b ;
@@ -245,6 +245,11 @@ void CPU::cycle()
     // -- DECODE AND EXECUTE --
     // perform a cycle if we have the ability to (if we have the ability to - the last instruction has completed)
     if (t_cycles_delay == 0) {
+
+        if (log) {
+            cpu_log_();
+        }
+
         uint8_t instruction_code = read(pc_);
 
         // the halt bug causes the same instruction to be executed again (the pc fails to increment)
@@ -272,9 +277,6 @@ void CPU::cycle()
         // a member function must be called on an instance of the class, so we must explicitly say that we run the opcode_function based on this class
         uint8_t additional_cycles = (this->*instruction.opcode_function)();
 
-        if (log) {
-            cpu_log_();
-        }
 
         // get the final amount of cycles required to perform this instruction by getting the base cycles + additional cycles (for example, from conditional branches)
         t_cycles_delay += additional_cycles;
@@ -466,7 +468,7 @@ void CPU::INC_DEC_8BIT(uint16_t* reg, bool upper, bool inc)
         // the register is the top 8 bits of the 16 bit register combo
         if (inc) {
             reg_modified = ((*reg & 0xff00) >> 8) + 1; 
-            ((((*reg & 0x0f00) >> 8) + 1) > 0x0f00) ? set_flag(CPU::flags::H, 1) : set_flag(CPU::flags::H, 0); // if the lower 4 bits of B  causes carry, set H
+            ((((*reg & 0x0f00) >> 8) + 1) > 0xf) ? set_flag(CPU::flags::H, 1) : set_flag(CPU::flags::H, 0); // if the lower 4 bits of B  causes carry, set H
         }
         else {
             reg_modified = ((*reg & 0xff00) >> 8) - 1; 
