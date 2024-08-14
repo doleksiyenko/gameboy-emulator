@@ -1711,7 +1711,7 @@ uint8_t CPU::CALL_NZ_a16()
 
     if (read_flag(CPU::flags::Z) == 0) {
         // write the current PC (the next instruction) to the stack
-        write(--sp_, (pc_ & 0xff) >> 8);
+        write(--sp_, (pc_ & 0xff00) >> 8);
         write(--sp_, (pc_ & 0x00ff));
 
         // jump to where the instruction specified
@@ -1732,7 +1732,7 @@ uint8_t CPU::CALL_Z_a16()
 
     if (read_flag(CPU::flags::Z) == 1) {
         // write the current PC (the next instruction) to the stack
-        write(--sp_, (pc_ & 0xff) >> 8);
+        write(--sp_, (pc_ & 0xff00) >> 8);
         write(--sp_, (pc_ & 0x00ff));
 
         // jump to where the instruction specified
@@ -1752,7 +1752,7 @@ uint8_t CPU::CALL_a16()
     uint16_t upper = read(pc_++);
 
     // write the current PC (the next instruction) to the stack
-    write(--sp_, (pc_ & 0xff) >> 8);
+    write(--sp_, (pc_ & 0xff00) >> 8);
     write(--sp_, (pc_ & 0x00ff));
 
     // jump to where the instruction specified
@@ -1769,7 +1769,7 @@ uint8_t CPU::CALL_NC_a16()
 
     if (read_flag(CPU::flags::C) == 0) {
         // write the current PC (the next instruction) to the stack
-        write(--sp_, (pc_ & 0xff) >> 8);
+        write(--sp_, (pc_ & 0xff00) >> 8);
         write(--sp_, (pc_ & 0x00ff));
 
         // jump to where the instruction specified
@@ -1790,7 +1790,7 @@ uint8_t CPU::CALL_C_a16()
 
     if (read_flag(CPU::flags::C) == 1) {
         // write the current PC (the next instruction) to the stack
-        write(--sp_, (pc_ & 0xff) >> 8);
+        write(--sp_, (pc_ & 0xff00) >> 8);
         write(--sp_, (pc_ & 0x00ff));
 
         // jump to where the instruction specified
