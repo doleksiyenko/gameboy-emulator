@@ -1340,7 +1340,7 @@ void CPU::CP(uint8_t reg_contents)
 
     set_flag(CPU::flags::N, 1);
 
-    if ((a & 0xf) - (reg_contents & 0xf)) {
+    if ((a & 0xf) - (reg_contents & 0xf) < 0) {
         set_flag(CPU::flags::H, 1);
     }
     else {
