@@ -1330,9 +1330,8 @@ uint8_t CPU::OR_A() { OR((af_ & 0xff00) >> 8); return 0; }
 void CPU::CP(uint8_t reg_contents) 
 {
     uint8_t a = static_cast<uint8_t>((af_ & 0xff00) >> 8);
-    uint8_t diff = a - reg_contents;
 
-    if (diff == 0) {
+    if (a - reg_contents == 0) {
         set_flag(CPU::flags::Z, 1);
     }
     else {
@@ -1348,7 +1347,7 @@ void CPU::CP(uint8_t reg_contents)
         set_flag(CPU::flags::H, 0);
     }
 
-    if (diff < 0) {
+    if (a - reg_contents < 0) {
         set_flag(CPU::flags::C, 1);
     }
     else {
