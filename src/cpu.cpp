@@ -1369,7 +1369,7 @@ void CPU::POP(uint16_t* reg)
 {
     /* pop memory from stack, and store it inside register */
 
-    // clear the c register, then load the first byte into c
+    // read from sp, and store into the lower portion of the register 
     *reg &= 0xff00;
     *reg |= read(sp_++);
 
@@ -1384,16 +1384,24 @@ void CPU::PUSH(uint16_t* reg)
     uint8_t upper = (*reg & 0xff00) >> 8;
     uint8_t lower = (*reg & 0x00ff);
 
-    write(sp_ - 1, upper);
-    write(sp_ - 2, lower);
-    
-    sp_ -= 2;
+    write(--sp_, upper);
+    write(--sp_, lower);
 }
 
 uint8_t CPU::POP_BC() { POP(&bc_); return 0; }
 uint8_t CPU::POP_DE() { POP(&de_); return 0; }
 uint8_t CPU::POP_HL() { POP(&hl_); return 0; }
-uint8_t CPU::POP_AF() { POP(&af_); return 0; }
+uint8_t CPU::POP_AF() 
+{ 
+    // clear the f register
+    af_ &= 0xff00;
+    af_ |= (read(sp_++) & 0xf0);
+
+    // clear the a register, then load the next byte into a
+    af_ &= 0x00ff;
+    af_ |= static_cast<uint16_t>(read(sp_++)) << 8;
+    return 0; 
+}
 uint8_t CPU::PUSH_BC() { PUSH(&bc_); return 0; }
 uint8_t CPU::PUSH_DE() { PUSH(&de_); return 0; }
 uint8_t CPU::PUSH_HL() { PUSH(&hl_); return 0; }
