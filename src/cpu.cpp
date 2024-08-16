@@ -778,23 +778,24 @@ uint8_t CPU::DAA()
 
     if (!read_flag(CPU::flags::N)) {
         // N flag indicates that an addition occured
-        if (((a & 0xf) > 0x9) || read_flag(CPU::flags::H)) {
-            // adjust the units
-            a += 0x06;
-        }
         if ((a > 0x99) || (read_flag(CPU::flags::C))) {
             // adjust the tens
             a += 0x60;
             set_flag(CPU::flags::C, 1); // bcd value > 0x99, set the carry
         }
+
+        if (((a & 0xf) > 0x9) || read_flag(CPU::flags::H)) {
+            // adjust the units
+            a += 0x06;
+        }
     }
     else {
         // DAA adjustment if subtraction
-        if (read_flag(CPU::flags::H)) {
-            a -= 0x6;
-        }
         if (read_flag(CPU::flags::C)) {
             a -= 0x60;
+        }
+        if (read_flag(CPU::flags::H)) {
+            a -= 0x6;
         }
     }
 
