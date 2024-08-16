@@ -1156,7 +1156,7 @@ void CPU::SUB(uint8_t reg_contents)
 {
     uint8_t result = ((af_ & 0xff00) >> 8) - reg_contents;
 
-    if (result < 0xff) {
+    if (((af_ & 0xff00) >> 8) - reg_contents < 0) {
         set_flag(CPU::flags::C, 1);
     }
     else {
