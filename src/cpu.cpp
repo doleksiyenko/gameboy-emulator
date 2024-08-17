@@ -1893,6 +1893,8 @@ uint8_t CPU::ADD_SP_r8()
         }
     }
 
+    set_flag(CPU::flags::N, 0);
+    set_flag(CPU::flags::Z, 0);
     sp_ += signed_immediate;
 
     return 0;
@@ -1957,6 +1959,9 @@ uint8_t CPU::LD_HL_SP_r8()
             set_flag(CPU::flags::H, 0);
         }
     }
+
+    set_flag(CPU::flags::N, 0);
+    set_flag(CPU::flags::Z, 0);
 
     // load the value in the hl register
     hl_ = sp_ + signed_immediate;
