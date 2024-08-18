@@ -106,8 +106,8 @@ uint8_t PPU::read(uint16_t address)
                 return stat_.value_;
             case 0xff44:
                 // for CPU-DEBUG
-                return 0x90;
-                // return ly_;
+                // return 0x0;
+                return ly_;
             case 0xff45:
                 return lyc_;
             case 0xff42:
@@ -450,7 +450,7 @@ void PPU::draw_scanline()
     }
     else {
         // the window is not enabled, so find Y position in "background coordinates". We know that the background begins drawing from where the viewport top left corner is defined
-        y_coordinate = scy_ + ly_;
+        y_coordinate = (scy_ + ly_) % 256;
     }
 
     // Now, we need to find which row of the tile map this y coordinate can be found. First, finding the integer division by 8 finds which row this pixel belongs to (e.g. pixel 6 belongs to row 0, pixel 35 belongs to row 1, etc.). 
@@ -471,7 +471,7 @@ void PPU::draw_scanline()
         }
         else {
             // x coordinate relative to the viewport
-            x_coordinate = scx_ + pixel;
+            x_coordinate = (scx_ + pixel) % 256;
         }
 
 

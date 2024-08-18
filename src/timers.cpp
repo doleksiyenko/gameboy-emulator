@@ -50,7 +50,7 @@ void Timers::increment_cycle_counter()
 
 void Timers::increment_tima()
 {
-    if (tima_ + 1 > 0xff) {
+    if (tima_ == 0xff) {
         // request timer interrupt
         uint8_t interrupt_flag = bus_->read(0xff0f);
         interrupt_flag |= (1 << 2); // update the timer flag IF
