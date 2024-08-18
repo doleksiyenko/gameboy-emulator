@@ -2739,7 +2739,7 @@ uint8_t CPU::RES_0_HL_m()
 
 }
 
-uint8_t CPU::RES_0_A() { bc_ &= ~(1 << 8); return 0; }
+uint8_t CPU::RES_0_A() { af_ &= ~(1 << 8); return 0; }
 
 uint8_t CPU::RES_1_B() { bc_ &= ~(1 << 9); return 0; }
 uint8_t CPU::RES_1_C() { bc_ &= ~(1 << 1); return 0; }
@@ -2884,7 +2884,7 @@ uint8_t CPU::SET_0_HL_m()
 
 }
 
-uint8_t CPU::SET_0_A() { bc_ |= (1 << 8); return 0; }
+uint8_t CPU::SET_0_A() { af_ |= (1 << 8); return 0; }
 
 uint8_t CPU::SET_1_B() { bc_ |= (1 << 9); return 0; }
 uint8_t CPU::SET_1_C() { bc_ |= (1 << 1); return 0; }
