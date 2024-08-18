@@ -2,7 +2,6 @@
 #define TIMERS_H
 
 #include <cstdint>
-#include "bus.h"
 
 class Bus;
 
@@ -10,13 +9,15 @@ class Timers
 {
     public:
         void increment_cycle_counter();
-        void increment_tima();
         void connect_bus(Bus* bus);
 
+        void write(uint16_t address, uint8_t value);
         void write_div(); // writing any value to this register resets it to 0
+        void increment_tima();
         void write_tma(uint8_t value);
         void write_tac(uint8_t value);
 
+        uint8_t read(uint16_t address);
         uint8_t read_div();
         uint8_t read_tima();
         uint8_t read_tma();

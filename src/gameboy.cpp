@@ -11,6 +11,7 @@ GameBoy::GameBoy(std::string bootrom_file, std::string cartridge_file) {
     // link hardware components
     cpu_.connect_bus(&bus_);
     ppu_.connect_bus(&bus_);
+    timers_.connect_bus(&bus_);
 
     // load in the boot rom
     bootrom_.load_bootrom_file(bootrom_file);

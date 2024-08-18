@@ -2,13 +2,14 @@
 #include "bootrom.h"
 #include "cartridge.h"
 #include "serial.h"
+#include "timers.h"
 #include <cstdint>
 
 #include <cpu.h>
 #include <ram.h>
 #include <ppu.h>
 
-Bus::Bus(CPU* cpu, RAM* ram, PPU* ppu, BootROM* bootrom, Cartridge* cartridge, Serial* serial) 
+Bus::Bus(CPU* cpu, RAM* ram, PPU* ppu, BootROM* bootrom, Cartridge* cartridge, Serial* serial, Timers* timers) 
 {
     // link the bus to all of the hardware components created in the GameBoy class
     cpu_ = cpu;
@@ -17,6 +18,7 @@ Bus::Bus(CPU* cpu, RAM* ram, PPU* ppu, BootROM* bootrom, Cartridge* cartridge, S
     bootrom_ = bootrom;
     cartridge_ = cartridge;
     serial_ = serial;
+    timers_ = timers;
 }
 
 uint8_t Bus::read(uint16_t address)
@@ -49,6 +51,9 @@ uint8_t Bus::read(uint16_t address)
     }
     else if (address == 0xff01) {
         return serial_->read_sb();
+    }
+    else if (address >= 0xff04 && address <= 0xff07) {
+        return timers_->read(address);
     }
     else if (address == 0xff0f) {
         // read the interrupt flag
@@ -84,6 +89,9 @@ void Bus::write(uint16_t address, uint8_t value)
     }
     else if (address == 0xff02) {
         serial_->write_sc(value);
+    }
+    else if (address >= 0xff04 && address <= 0xff07) {
+        timers_->write(address, value);
     }
     else if (address == 0xff0f) {
         // update the interrupt flag register (make a request for an interrupt)
