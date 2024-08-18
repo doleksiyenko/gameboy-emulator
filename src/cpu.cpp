@@ -1946,14 +1946,15 @@ uint8_t CPU::LD_HL_SP_r8()
     }
     else {
         // negative, so treat as subtraction when checking for carry flag and half-carry flag
-        if ((sp_ & 0xff) + (signed_immediate & 0xff) < 0x0) { 
+        uint8_t sp_updated = sp_ + signed_immediate;
+        if ((sp_updated & 0xff) <= (sp_ & 0xff)) { 
             set_flag(CPU::flags::C, 1);
         }
         else {
             set_flag(CPU::flags::C, 0);
         }
 
-        if ((sp_ & 0xf) + (signed_immediate & 0xf) < 0x0) {
+        if ((sp_updated & 0xf) <= (sp_ & 0xf)) {
             set_flag(CPU::flags::H, 1);
         }
         else {
