@@ -202,6 +202,8 @@ void CPU::call_handler(interrupts interrupt, uint8_t handler_location) // call t
 
         // call the handler
         pc_ = handler_location;
+
+        t_cycles_delay += 20;  // switching control to handler takes 20 cycles
 }
 
 void CPU::handle_interrupts() 
@@ -239,7 +241,6 @@ void CPU::cycle()
     // to check in case the last interrupt handler has finished running 
     if ((ime_ == 1) && (t_cycles_delay == 0)) {
         handle_interrupts();
-        t_cycles_delay += 20; // takes 20 cycles to hand control to interrupt handler
     }
 
     // -- DECODE AND EXECUTE --
