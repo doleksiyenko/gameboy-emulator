@@ -2577,7 +2577,7 @@ void CPU::SRL(uint16_t* reg_pair, bool upper) // shift register to the right
     /* shift a register to the right and then set appropriate flags */
     if (upper) {
         uint8_t reg = *reg_pair >> 8;
-        set_flag(CPU::flags::C, reg & 1); // check if the bit shifted out (previous MSB) is 1
+        set_flag(CPU::flags::C, reg & 1); // check if the bit shifted out (previous LSB) is 1
 
         reg = (reg >> 1);
 
@@ -2627,9 +2627,9 @@ uint8_t CPU::SRL_L() { SRL(&hl_, false); return 0; }
 uint8_t CPU::SRL_HL_m() 
 { 
     uint8_t reg = read(hl_);
-    set_flag(CPU::flags::C, reg & 0x80); // check if the bit shifted out (and now the LSB) is 1
+    set_flag(CPU::flags::C, reg & 1); // check if the bit shifted out (and now the LSB) is 1
 
-    reg = (reg << 1);
+    reg = (reg >> 1);
 
     if (reg == 0) {
         set_flag(CPU::flags::Z, 1);
