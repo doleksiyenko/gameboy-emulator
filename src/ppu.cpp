@@ -203,6 +203,14 @@ void PPU::cycle()
     if (lcdc_.lcdc_enable_) {
         // only process cycles on the PPU if the LCD is enabled
         if (t_cycles_delay_ == 0) {
+
+            // constantly update the LY == LYC flag, and check if a stat interrupt needs to be requested
+            if (stat_.set_lyc_equals(ly_, lyc_)) {
+                uint8_t interrupt_flag = bus_->read(0xff0f);
+                interrupt_flag |= (1 << 1); // update the LCD / STAT flag in IF
+                bus_->write(0xff0f, interrupt_flag); 
+            }
+
             switch (stat_.ppu_mode_) {
                 case 0:
                     // Switch from HBlank to OAM scan or to VBlank depending on the scanline number
@@ -210,8 +218,12 @@ void PPU::cycle()
                         // if we reach this point, we are in mode 0, and have currently finished the scanline.
                         // if we just finished the scanline, and are currently on scanline 143, scanlines 144 - 153 are mode 1 -> the next mode should be VBlank
                         if (ly_ == 143) {
-                        set_mode(1); 
-                        t_cycles_delay_ += 456; // execute for 1 scanline 
+                            set_mode(1); 
+                            t_cycles_delay_ += 456; // execute for 1 scanline 
+                            // create a VBlank interrupt request 
+                            uint8_t interrupt_flag = bus_->read(0xff0f);
+                            interrupt_flag |= (1 << 0); // update the timer flag IF
+                            bus_->write(0xff0f, interrupt_flag); 
                         }
                         else {
                             set_mode(2);
@@ -545,7 +557,7 @@ bool PPU::stat::set_mode(uint8_t mode)
 
     if ((mode != 3) && (value_ & (1 << (mode + 3)))) { // every mode has a select apart from mode 3
     // trigger a STAT interrupt
-    return true;
+        return true;
     }
 
     return false;

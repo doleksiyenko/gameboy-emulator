@@ -52,7 +52,9 @@ void Timers::increment_tima()
 {
     if (tima_ + 1 > 0xff) {
         // request timer interrupt
-        bus_->write(0xff0f, 4);
+        uint8_t interrupt_flag = bus_->read(0xff0f);
+        interrupt_flag |= (1 << 2); // update the timer flag IF
+        bus_->write(0xff0f, interrupt_flag); 
         tima_ = tma_;
     }
     else {
