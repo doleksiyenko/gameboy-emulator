@@ -9,6 +9,7 @@
 #include "serial.h"
 #include "sound.h"
 #include "bus.h"
+#include "timers.h"
 
 class GameBoy {
     public:
@@ -29,7 +30,8 @@ class GameBoy {
         BootROM bootrom_; // fixed size ROM responsible for booting the console
         Cartridge cartridge_; // game cartridge
         Serial serial_;
-        Bus bus_ {&cpu_, &ram_, &ppu_, &bootrom_, &cartridge_, &serial_}; 
+        Timers timers_;
+        Bus bus_ {&cpu_, &ram_, &ppu_, &bootrom_, &cartridge_, &serial_, &timers_}; 
 };
 
 #endif

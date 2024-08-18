@@ -42,6 +42,7 @@ void GameBoy::run() {
         if (master_clock_cycles < 70224) {
             cpu_.cycle();
             ppu_.cycle();
+            timers_.increment_cycle_counter();
             master_clock_cycles++;
         }
         else if (master_clock_cycles == 70224) {
