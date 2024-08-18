@@ -1878,6 +1878,7 @@ uint8_t CPU::ADD_SP_r8()
     }
     else {
         // negative, so treat as subtraction when checking for carry flag and half-carry flag
+        // for reference: https://stackoverflow.com/questions/38166573/why-is-the-carry-flag-set-during-a-subtraction-when-zero-is-the-minuend
         uint8_t sp_updated = sp_ + signed_immediate;
         if (((sp_updated & 0xff) <= (sp_ & 0xff))) { 
             set_flag(CPU::flags::C, 1);
@@ -1946,6 +1947,7 @@ uint8_t CPU::LD_HL_SP_r8()
     }
     else {
         // negative, so treat as subtraction when checking for carry flag and half-carry flag
+        // for reference: https://stackoverflow.com/questions/38166573/why-is-the-carry-flag-set-during-a-subtraction-when-zero-is-the-minuend
         uint8_t sp_updated = sp_ + signed_immediate;
         if ((sp_updated & 0xff) <= (sp_ & 0xff)) { 
             set_flag(CPU::flags::C, 1);
@@ -2343,9 +2345,9 @@ void CPU::SLA(uint16_t* reg_pair, bool upper) // shift register to the left
     /* shift a register to the left and then set appropriate flags */
     if (upper) {
         uint8_t reg = *reg_pair >> 8;
-        set_flag(CPU::flags::C, reg & 0x80); // check if the bit shifted out (previous MSB) is 1
+        set_flag(CPU::flags::C, reg & 0x80); // copy the value of bit 7 to the carry flag 
 
-        reg = (reg << 1);
+        reg <<= 1;
 
         if (reg == 0) {
             set_flag(CPU::flags::Z, 1);
@@ -2363,9 +2365,9 @@ void CPU::SLA(uint16_t* reg_pair, bool upper) // shift register to the left
     }
     else {
         uint8_t reg = *reg_pair & 0xff;
-        set_flag(CPU::flags::C, reg & 0x80); // check if the bit shifted out (previous MSB) is 1
+        set_flag(CPU::flags::C, reg & 0x80); // copy the value of bit 7 to the carry flag 
 
-        reg = (reg << 1); 
+        reg <<= 1;
 
         if (reg == 0) {
             set_flag(CPU::flags::Z, 1);
@@ -2396,7 +2398,7 @@ uint8_t CPU::SLA_HL_m()
     uint8_t reg = read(hl_);
     set_flag(CPU::flags::C, reg & 0x80); // check if the bit shifted out (and now the LSB) is 1
 
-    reg = (reg << 1);
+    reg <<= 1;
 
     if (reg == 0) {
         set_flag(CPU::flags::Z, 1);
@@ -2421,9 +2423,9 @@ void CPU::SRA(uint16_t* reg_pair, bool upper) // shift register to the right
     /* shift a register to the right and then set appropriate flags */
     if (upper) {
         uint8_t reg = *reg_pair >> 8;
-        set_flag(CPU::flags::C, reg & 1); // check if the bit shifted out (previous MSB) is 1
+        set_flag(CPU::flags::C, reg & 1); // set the carry flag to bit 0 (shifted out) 
 
-        reg = (reg << 1) | (reg & 1); // arithmetic shift (keep the lsb)
+        reg = (reg >> 1) | (reg & 0x80); // arithmetic shift (keep the msb)
 
         if (reg == 0) {
             set_flag(CPU::flags::Z, 1);
@@ -2441,9 +2443,9 @@ void CPU::SRA(uint16_t* reg_pair, bool upper) // shift register to the right
     }
     else {
         uint8_t reg = *reg_pair & 0xff;
-        set_flag(CPU::flags::C, reg & 1); // check if the bit shifted out (previous MSB) is 1
+        set_flag(CPU::flags::C, reg & 1); // set the carry flag to bit 0 (shifted out) 
 
-        reg = (reg << 1) | (reg & 1); // arithmetic shift (keep the lsb)
+        reg = (reg >> 1) | (reg & 0x80); // arithmetic shift (keep the msb)
 
         if (reg == 0) {
             set_flag(CPU::flags::Z, 1);
@@ -2471,9 +2473,9 @@ uint8_t CPU::SRA_L() { SRA(&hl_, false); return 0; }
 uint8_t CPU::SRA_HL_m() 
 { 
     uint8_t reg = read(hl_);
-    set_flag(CPU::flags::C, reg & 0x80); // check if the bit shifted out (and now the LSB) is 1
+    set_flag(CPU::flags::C, reg & 1); // set the carry flag to bit 0 (shifted out) 
 
-    reg = (reg << 1) | (reg & 1); // arithmetic shift (keep the lsb)
+    reg = (reg >> 1) | (reg & 0x80); // arithmetic shift (keep the msb)
 
     if (reg == 0) {
         set_flag(CPU::flags::Z, 1);
