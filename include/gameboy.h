@@ -21,11 +21,7 @@ class GameBoy {
         // state
         bool running_ = true; // start the system as automatically running
 
-        // registers
-
-
-
-        // hardware components
+       // hardware components
         RAM ram_;        
         PPU ppu_;
         Sound sound_;
