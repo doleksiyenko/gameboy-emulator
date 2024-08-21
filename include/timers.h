@@ -34,6 +34,7 @@ class Timers
         uint8_t tac_ = 0x0;
 
         uint8_t prev_cycle_AND_result = 0;
+        uint8_t tima_overflow_count = 0;
 };
 
 #endif

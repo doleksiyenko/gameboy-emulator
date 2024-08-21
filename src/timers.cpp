@@ -75,15 +75,25 @@ void Timers::increment_cycle_counter()
 
 void Timers::increment_tima()
 {
-    if (tima_ == 0xff) {
-        // request timer interrupt
-        uint8_t interrupt_flag = bus_->read(0xff0f);
-        interrupt_flag |= (1 << 2); // update the timer flag IF
-        bus_->write(0xff0f, interrupt_flag); 
-        tima_ = tma_;
+    if (tima_overflow_count == 0) {
+        if (tima_ == 0xff) {
+            // request timer interrupt
+            tima_overflow_count = 4;
+            tima_ = 0; // tima remains 0 until reset to tma after 4 cycles
+        }
+        else {
+            tima_++;
+        }
     }
-    else {
-        tima_++;
+
+    if (tima_overflow_count > 0) {
+        tima_overflow_count--;
+        if (tima_overflow_count == 0) {
+            uint8_t interrupt_flag = bus_->read(0xff0f);
+            interrupt_flag |= (1 << 2); // update the timer flag IF
+            bus_->write(0xff0f, interrupt_flag); 
+            tima_ = tma_;
+        }
     }
 }
 
