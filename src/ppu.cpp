@@ -106,7 +106,7 @@ uint8_t PPU::read(uint16_t address)
                 return stat_.value_;
             case 0xff44:
                 // for CPU-DEBUG
-                // return 0x0;
+                // return 0x90;
                 return ly_;
             case 0xff45:
                 return lyc_;

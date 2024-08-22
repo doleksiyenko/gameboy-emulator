@@ -148,8 +148,6 @@ CPU::CPU()
       {&CPU::SET_7_H, 8}, {&CPU::SET_7_L, 8}, {&CPU::SET_7_HL_m, 16}, {&CPU::SET_7_A, 8}
       };
 
-      // create a log file
-
 }
 
 

@@ -49,6 +49,9 @@ uint8_t Bus::read(uint16_t address)
         // read from work RAM
         return ram_->read(address);
     }
+    else if (address == 0xff00) {
+        return 0xf;
+    }
     else if (address == 0xff01) {
         return serial_->read_sb();
     }
@@ -67,7 +70,7 @@ uint8_t Bus::read(uint16_t address)
         return cpu_->read_ie();
     }
 
-    return 0x0;
+    return 0xff;
 }
 
 void Bus::write(uint16_t address, uint8_t value) 

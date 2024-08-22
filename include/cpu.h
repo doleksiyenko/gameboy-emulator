@@ -26,14 +26,14 @@ class CPU {
 
     private:
         // GIVE STARTING VALUES FOR CPU-DEBUG
-        bool log = true;
+        bool log = false;
         std::ofstream log_file {"cpu_log.txt"};
         void cpu_log_(); // log the current state of the cpu registers
         // 16 bit registers
-        uint16_t pc_ = 0x100; // program counter
-        uint16_t sp_ = 0xfffe; // stack pointer
-        uint16_t af_ = 0x01b0; // accumulator + flags
-        uint16_t bc_ = 0x0013; uint16_t de_ = 0x00d8; uint16_t hl_ = 0x014d; // general-purpose registers (8 bit halves)
+        uint16_t pc_ = 0x0; // program counter
+        uint16_t sp_ = 0x0; // stack pointer
+        uint16_t af_ = 0x0; // accumulator + flags
+        uint16_t bc_ = 0x0; uint16_t de_ = 0x0; uint16_t hl_ = 0x0; // general-purpose registers (8 bit halves)
 
         // 8 bit registers
         uint8_t ir_ = 0; // instruction register
