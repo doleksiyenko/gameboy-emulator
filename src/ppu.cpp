@@ -280,6 +280,8 @@ void PPU::cycle()
             SDL_SetRenderDrawColor(renderer_, 255, 255, 255, SDL_ALPHA_OPAQUE);
             SDL_RenderClear(renderer_);
         }
+        ly_ = 0;
+        set_mode(0);
     }
 }
 
