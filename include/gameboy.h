@@ -31,7 +31,8 @@ class GameBoy {
         Cartridge cartridge_; // game cartridge
         Serial serial_;
         Timers timers_;
-        Bus bus_ {&cpu_, &ram_, &ppu_, &bootrom_, &cartridge_, &serial_, &timers_}; 
+        uint8_t joypad_ = 0;
+        Bus bus_ {&cpu_, &ram_, &ppu_, &bootrom_, &cartridge_, &serial_, &timers_, &joypad_}; 
 };
 
 #endif

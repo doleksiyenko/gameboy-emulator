@@ -22,7 +22,7 @@ Constructor: take pointers to hardware components created in the Gameboy class, 
 
 class Bus {
     public:
-        Bus(CPU* cpu, RAM* ram, PPU* ppu, BootROM* bootrom, Cartridge* cartridge, Serial* serial, Timers* timers);
+        Bus(CPU* cpu, RAM* ram, PPU* ppu, BootROM* bootrom, Cartridge* cartridge, Serial* serial, Timers* timers, uint8_t* joypad);
         void write(uint16_t address, uint8_t value);
         uint8_t read(uint16_t address);
     private:
@@ -33,6 +33,7 @@ class Bus {
         Cartridge* cartridge_;
         Serial* serial_;
         Timers* timers_;
+        uint8_t* joypad_;
 };
 
 #endif

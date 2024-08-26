@@ -79,6 +79,10 @@ void GameBoy::poll_events() {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
+            case SDL_KEYDOWN:
+                // modify the lower 4 bits of the joypad register
+
+                break;
             case SDL_QUIT:
                 running_ = false;
                 break;

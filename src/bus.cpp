@@ -3,13 +3,15 @@
 #include "cartridge.h"
 #include "serial.h"
 #include "timers.h"
+#include <SDL_events.h>
 #include <cstdint>
+#include <SDL.h>
 
 #include <cpu.h>
 #include <ram.h>
 #include <ppu.h>
 
-Bus::Bus(CPU* cpu, RAM* ram, PPU* ppu, BootROM* bootrom, Cartridge* cartridge, Serial* serial, Timers* timers) 
+Bus::Bus(CPU* cpu, RAM* ram, PPU* ppu, BootROM* bootrom, Cartridge* cartridge, Serial* serial, Timers* timers, uint8_t* joypad) 
 {
     // link the bus to all of the hardware components created in the GameBoy class
     cpu_ = cpu;
@@ -19,6 +21,7 @@ Bus::Bus(CPU* cpu, RAM* ram, PPU* ppu, BootROM* bootrom, Cartridge* cartridge, S
     cartridge_ = cartridge;
     serial_ = serial;
     timers_ = timers;
+    joypad_ = joypad;
 }
 
 uint8_t Bus::read(uint16_t address)
@@ -50,6 +53,7 @@ uint8_t Bus::read(uint16_t address)
         return ram_->read(address);
     }
     else if (address == 0xff00) {
+        // joypad input. read from the lower 4 bits of the register depending on the current set upper 4 bits of the register
         return 0xf;
     }
     else if (address == 0xff01) {
@@ -86,6 +90,10 @@ void Bus::write(uint16_t address, uint8_t value)
     else if (address >= 0xc000 && address <= 0xdfff) {
         // write to work RAM
         ram_->write(address, value);
+    }
+    else if (address == 0xff00) {
+        // write to the upper 4 bits of the joypad register 
+        
     }
     else if (address == 0xff01) {
         serial_->write_sb(value);
