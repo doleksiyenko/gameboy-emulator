@@ -17,6 +17,7 @@ set(SourceFiles
     src/bootrom.cpp
     src/mbc/mbc1.cpp
     src/timers.cpp
+    src/joypad.cpp
     )
 
 set(HeaderFiles
@@ -32,6 +33,7 @@ set(HeaderFiles
     include/mbc/mbc.h
     include/mbc/mbc1.h
     include/timers.h
+    include/joypad.h
     )
 
 

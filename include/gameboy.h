@@ -4,6 +4,7 @@
 #include "bootrom.h"
 #include "cartridge.h"
 #include "cpu.h"
+#include "joypad.h"
 #include "ppu.h"
 #include "ram.h"
 #include "serial.h"
@@ -23,6 +24,7 @@ class GameBoy {
         bool running_ = true; // start the system as automatically running
 
        // hardware components
+       
         RAM ram_;        
         PPU ppu_;
         Sound sound_;
@@ -31,7 +33,7 @@ class GameBoy {
         Cartridge cartridge_; // game cartridge
         Serial serial_;
         Timers timers_;
-        uint8_t joypad_ = 0;
+        Joypad joypad_;
         Bus bus_ {&cpu_, &ram_, &ppu_, &bootrom_, &cartridge_, &serial_, &timers_, &joypad_}; 
 };
 

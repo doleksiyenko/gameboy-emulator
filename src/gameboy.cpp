@@ -1,6 +1,8 @@
 #include "gameboy.h"
+#include "joypad.h"
 #include <SDL2/SDL.h>
 #include <SDL_events.h>
+#include <SDL_keycode.h>
 #include <SDL_video.h>
 #include <chrono>
 #include <iostream>
@@ -81,8 +83,26 @@ void GameBoy::poll_events() {
         switch (event.type) {
             case SDL_KEYDOWN:
                 // modify the lower 4 bits of the joypad register
-
+                switch (event.key.keysym.sym) {
+                    // only modify the directional keys if the dpad is enabled
+                    case SDLK_RIGHT:
+                        joypad_.set_dpad(0b1110);
+                        break;
+                    case SDLK_LEFT:
+                        joypad_.set_dpad(0b1101);
+                        break;
+                    case SDLK_UP:
+                        joypad_.set_dpad(0b1011);
+                        break;
+                    case SDLK_DOWN:
+                        joypad_.set_dpad(0b0111);
+                        break;
+                    
+                }
                 break;
+            case SDL_KEYUP:
+                joypad_.set_dpad(0xf);
+                joypad_.set_buttons(0xf);
             case SDL_QUIT:
                 running_ = false;
                 break;

@@ -1,6 +1,7 @@
 #include "bus.h"
 #include "bootrom.h"
 #include "cartridge.h"
+#include "joypad.h"
 #include "serial.h"
 #include "timers.h"
 #include <SDL_events.h>
@@ -11,7 +12,7 @@
 #include <ram.h>
 #include <ppu.h>
 
-Bus::Bus(CPU* cpu, RAM* ram, PPU* ppu, BootROM* bootrom, Cartridge* cartridge, Serial* serial, Timers* timers, uint8_t* joypad) 
+Bus::Bus(CPU* cpu, RAM* ram, PPU* ppu, BootROM* bootrom, Cartridge* cartridge, Serial* serial, Timers* timers, Joypad* joypad) 
 {
     // link the bus to all of the hardware components created in the GameBoy class
     cpu_ = cpu;
@@ -54,7 +55,20 @@ uint8_t Bus::read(uint16_t address)
     }
     else if (address == 0xff00) {
         // joypad input. read from the lower 4 bits of the register depending on the current set upper 4 bits of the register
-        return 0xf;
+        switch (joypad_->get_selection()) {
+            case 0x10:
+                // select buttons
+                return joypad_->get_buttons();
+                break;
+            case 0x20:
+                // select dpad
+                return joypad_->get_dpad();
+                break;
+            case 0x30:
+                // no selection 
+                return 0xf;
+                break;
+        }
     }
     else if (address == 0xff01) {
         return serial_->read_sb();
