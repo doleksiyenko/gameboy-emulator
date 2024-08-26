@@ -107,7 +107,7 @@ void Bus::write(uint16_t address, uint8_t value)
     }
     else if (address == 0xff00) {
         // write to the upper 4 bits of the joypad register 
-        
+        joypad_->set_selection(value); 
     }
     else if (address == 0xff01) {
         serial_->write_sb(value);

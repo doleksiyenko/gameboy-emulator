@@ -97,12 +97,28 @@ void GameBoy::poll_events() {
                     case SDLK_DOWN:
                         joypad_.set_dpad(0b0111);
                         break;
-                    
+                    case SDLK_a:
+                        std::cout << "a" << "\n";
+                        joypad_.set_buttons(0b1110);
+                        break;
+                    case SDLK_s:
+                        std::cout << "b" << "\n";
+                        joypad_.set_buttons(0b1101);
+                        break;
+                    case SDLK_x:
+                        std::cout << "select" << "\n";
+                        joypad_.set_buttons(0b1011);
+                        break;
+                    case SDLK_z:
+                        std::cout << "start" << "\n";
+                        joypad_.set_buttons(0b0111);
+                        break;
                 }
                 break;
             case SDL_KEYUP:
                 joypad_.set_dpad(0xf);
                 joypad_.set_buttons(0xf);
+                break;
             case SDL_QUIT:
                 running_ = false;
                 break;
