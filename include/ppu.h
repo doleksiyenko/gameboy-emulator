@@ -44,6 +44,8 @@ class PPU {
 
         void set_mode(uint8_t mode); // set the mode and handle the resulting possible STAT interrupt
         void draw_scanline();
+        void draw_bg_window();
+        void draw_sprites();
         void set_colour_from_palette(int* r, int* g, int* b, uint8_t colour_ID, uint8_t palette);
         void oam_search();
 

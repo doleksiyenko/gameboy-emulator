@@ -386,15 +386,8 @@ void PPU::test_draw_vram()
     
 }
 
-void PPU::draw_scanline()
+void PPU::draw_bg_window()
 {
-    /*  Draw the scanline during mode 3 of the PPU. In a hardware accurate GameBoy emulator, this should draw one
-        pixel per cycle; this method will draw the whole scanline at once at the beginning of mode 3 */
-    screen_cleared_ = false;
-
-    // TODO: fetch background, window data, sprite data. Handle priority of sprite data with opacity based on X coordinate
-    // or OAM location
-
     // ----- BACKGROUND AND WINDOW ----- 
 
     // first, we need to check if the window is enabled, and if it is, then is the current scanline part of that window?
@@ -460,7 +453,6 @@ void PPU::draw_scanline()
 
     uint16_t tile_map_y_index = static_cast<uint8_t>(y_coordinate / 8) * 32;
 
-
     // draw each pixel along the scanline
     int x_coordinate;
     for (int pixel = 0; pixel < SCREEN_WIDTH; pixel++) {
@@ -518,6 +510,21 @@ void PPU::draw_scanline()
         SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
         SDL_RenderDrawPoint(renderer_, pixel, ly_);
     }
+}
+
+void PPU::draw_sprites()
+{
+    // TODO : draw_sprites
+}
+
+void PPU::draw_scanline()
+{
+    /*  Draw the scanline during mode 3 of the PPU. In a hardware accurate GameBoy emulator, this should draw one
+        pixel per cycle; this method will draw the whole scanline at once at the beginning of mode 3 */
+    screen_cleared_ = false;
+
+    draw_bg_window();
+    draw_sprites(); 
 }
 
 
