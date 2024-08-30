@@ -127,9 +127,9 @@ uint8_t PPU::read(uint16_t address)
             case 0xff47:
                 return bgp_;
             case 0xff48:
-                return ogp0_;
+                return obp0_;
             case 0xff49:
-                return ogp1_;
+                return obp1_;
             case 0xff46:
                 return dma_source_;
         }
@@ -180,10 +180,10 @@ void PPU::write(uint16_t address, uint8_t value)
                 bgp_ = value;
                 break;
             case 0xff48:
-                ogp0_ = value;
+                obp0_ = value;
                 break;
             case 0xff49:
-                ogp1_ = value;
+                obp1_ = value;
                 break;
             case 0xff4a:
                 wy_ = value;
@@ -302,38 +302,6 @@ void PPU::cycle()
     }
 }
 
-void PPU::oam_dma_transfer(uint8_t value)
-{
-    /*  When requested, perform a transfer from ROM or RAM to OAM. <value> specifies the 
-        transfer source address divided by 0x100 */
-
-    uint16_t source_address = value << 8; // multiply by 0x100 to retrieve the original source address
-    for (int i = 0; i < 160 ; i++) { // write to 160 possible OAM locations
-        oam_[i] = bus_->read(source_address + i);
-    }
-    ;
-
-}
-
-void PPU::oam_scan()
-{
-    /*  OAM search occurs during mode 2 of the PPU. During this mode, we scan through the OAM (object attribute memory)
-        and determine which objects should be displayed on the scanline */
-
-   scanline_sprites_.clear(); // first, clear any objects from previous scanlines 
-
-    // cycle through the OAM, only need to check the first byte of every object (4 bytes) to determine Y pos
-    for (int byte0 = 0; byte0 < 160; byte0 += 4) {
-        uint8_t y_pos = oam_[byte0] - 16;
-        // check if the current scanline (ly) is within this object's top scanline and its bottom scanline
-        if (ly_ >= y_pos && ly_ <= y_pos + (8 * (1 + lcdc_.obj_size))) { // object is either 8 pixels tall or 16 pixels tall depending on LCDC bit
-            scanline_sprites_.push_back(byte0); // store the objects position in the OAM array
-        }
-        if (scanline_sprites_.size() == 10) {
-            break;
-        }
-    }
-}
 
 void PPU::set_colour_from_palette(int* r, int* g, int* b, uint8_t colour_ID, uint8_t palette)
 {
@@ -417,6 +385,36 @@ void PPU::test_draw_vram()
     
 }
 
+void PPU::oam_dma_transfer(uint8_t value)
+{
+   /*  When requested, perform a transfer from ROM or RAM to OAM. <value> specifies the 
+        transfer source address divided by 0x100 */
+
+    uint16_t source_address = value << 8; // multiply by 0x100 to retrieve the original source address
+    for (int i = 0; i < 160 ; i++) { // write to 160 possible OAM locations
+        oam_[i] = bus_->read(source_address + i);
+    }
+}
+
+void PPU::oam_scan()
+{
+    /*  OAM search occurs during mode 2 of the PPU. During this mode, we scan through the OAM (object attribute memory)
+        and determine which objects should be displayed on the scanline */
+
+   scanline_sprites_.clear(); // first, clear any objects from previous scanlines 
+
+    // cycle through the OAM, only need to check the first byte of every object (4 bytes) to determine Y pos
+    for (int byte0 = 0; byte0 < 160; byte0 += 4) {
+        uint8_t y_pos = oam_[byte0] - 16;
+        // check if the current scanline (ly) is within this object's top scanline and its bottom scanline
+        if (ly_ >= y_pos && ly_ <= y_pos + (8 * (1 + lcdc_.obj_size))) { // object is either 8 pixels tall or 16 pixels tall depending on LCDC bit
+            scanline_sprites_.push_back(byte0); // store the objects position in the OAM array
+        }
+        if (scanline_sprites_.size() == 10) {
+            break;
+        }
+    }
+}
 void PPU::draw_bg_window()
 {
     /*
@@ -553,15 +551,59 @@ void PPU::draw_sprites()
     This method is called by the draw_scanline method. It deals with drawing the sprites. 
     */
 
+    // TODO : y and x flipping
+
     for (int sprite_loc : scanline_sprites_) {
-        uint8_t y_pos = oam_[sprite_loc + 0]; 
-        uint8_t x_pos = oam_[sprite_loc + 1]; 
+        uint8_t y_pos = oam_[sprite_loc + 0] - 16; 
+        uint8_t x_pos = oam_[sprite_loc + 1] - 8; 
         uint8_t tile_index = oam_[sprite_loc + 2];
         uint8_t attributes = oam_[sprite_loc + 3];
-    }
 
-    // TODO: draw sprites
-    
+        uint8_t x_flip = attributes & 0b1000;
+        uint8_t y_flip = attributes & 0b10000;
+        uint8_t priority = attributes & 0b100000;
+        uint8_t palette = (attributes & 0b100) >> 2;
+        
+        // since we already checked in the OAM scan, we know that this sprite intersects with this
+        // scanline. However, we need to find which line of the 8x8 or 8x16 sprite we are rendering
+
+        uint8_t sprite_line = (ly_ - y_pos); 
+        sprite_line *= 2; // a lot of this logic follows the bg and window rendering: each tile has 2 bytes of information per row
+
+        uint16_t tile_address = 0x8000 + (tile_index * 16) + sprite_line; // only unsigned addressing for sprites
+        // read the two bytes corresponding to this row of the tile
+        // first byte specifies the least significant bit of the color ID, second byte specifies the most significant bit (for the specific x, y pixel we are currently observing)
+        uint8_t byte1 = vram_[tile_address + 0];
+        uint8_t byte2 = vram_[tile_address + 1];
+
+        // draw 8 pixels across
+        for (int bit_number = 7; bit_number >= 0; bit_number--) {
+            uint8_t msb = ((byte2 & (1 << bit_number)) >> bit_number) << 1;
+            uint8_t lsb = (byte1 & (1 << bit_number)) >> bit_number; 
+            uint8_t colour_ID = msb + lsb;
+
+            if (colour_ID != 0) {
+                // in sprite palettes, ignore the lower 2 bits (transparent)
+
+                // match the colour ID to its actual colour using the palette 
+                int r; int g; int b;
+                if (palette) {
+                    set_colour_from_palette(&r, &g, &b, colour_ID, obp1_);
+                }
+                else {
+                    set_colour_from_palette(&r, &g, &b, colour_ID, obp0_);
+                }
+
+                SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
+
+                uint8_t x_pixel = x_pos + (7 - bit_number); // 7th bit is leftmost pixel
+
+                if (x_pixel >= 0 || x_pixel <= SCREEN_WIDTH) {
+                    SDL_RenderDrawPoint(renderer_, x_pixel, ly_);
+                }
+            }
+        }
+    }
 }
 
 void PPU::draw_scanline()

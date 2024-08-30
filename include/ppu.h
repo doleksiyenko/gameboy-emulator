@@ -61,8 +61,8 @@ class PPU {
         uint8_t wy_ = 0; // window y position
         // palettes
         uint8_t bgp_ = 0; // background colour palette
-        uint8_t ogp0_ = 0; // object palette 0
-        uint8_t ogp1_ = 0; // object palette 1
+        uint8_t obp0_ = 0; // object palette 0
+        uint8_t obp1_ = 0; // object palette 1
         // lcd status
         uint8_t ly_ = 0;
         uint8_t lyc_ = 0;
