@@ -3,6 +3,7 @@
 #include <SDL_hints.h>
 #include <SDL_pixels.h>
 #include <SDL_render.h>
+#include <SDL_surface.h>
 #include <SDL_video.h>
 #include <cstddef>
 #include <cstdint>
@@ -279,6 +280,7 @@ void PPU::cycle()
             SDL_SetRenderTarget(renderer_, texture_);
             SDL_SetRenderDrawColor(renderer_, 255, 255, 255, SDL_ALPHA_OPAQUE);
             SDL_RenderClear(renderer_);
+            screen_cleared_ = true;
         }
         ly_ = 0;
         set_mode(0);

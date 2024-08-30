@@ -50,23 +50,25 @@ void GameBoy::run() {
         }
         else if (master_clock_cycles == 70224) {
             // number of cycles to complete frame, so render
+            std::cout << "Processing done: " << std::chrono::high_resolution_clock::now() - frame_start << '\n';
 
             // poll for a quit event (e.g. user exits out of the emulator)
             poll_events();
 
             // render the texture to the screen
             ppu_.clear_screen();
+            std::cout << "Clearing done: " << std::chrono::high_resolution_clock::now() - frame_start << '\n';
             ppu_.render();
 
-            // std::cout << "Complete time: " << std::chrono::high_resolution_clock::now() - frame_start << '\n';
+            std::cout << "Rendering done: " << std::chrono::high_resolution_clock::now() - frame_start << '\n';
             master_clock_cycles++;
         }
         else {
-            // waste time until frame length is up (TODO: for now we poll for events, to check if quit, but this will probably change when we need joypad input)
+            // waste time until frame length is up
             poll_events();
             if (std::chrono::high_resolution_clock::now() - frame_start >= frame_length) {
                 // the frame is now official over, can start prossessing again
-                // std::cout << "Frame Complete: " << std::chrono::high_resolution_clock::now() - frame_start << '\n';
+                std::cout << "Frame Complete: " << std::chrono::high_resolution_clock::now() - frame_start << '\n';
                 master_clock_cycles = 0;
                 frame_start = std::chrono::high_resolution_clock::now();
             }
