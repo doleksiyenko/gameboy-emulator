@@ -242,6 +242,7 @@ void PPU::cycle()
                         }
                         else {
                             set_mode(2);
+                            oam_scan();
                             t_cycles_delay_ += 80;
                         }
 
@@ -308,9 +309,9 @@ void PPU::oam_dma_transfer(uint8_t value)
 
     uint16_t source_address = value << 8; // multiply by 0x100 to retrieve the original source address
     for (int i = 0; i < 160 ; i++) { // write to 160 possible OAM locations
-        write(0xfe00 + i, bus_->read(source_address + i));
+        oam_[i] = bus_->read(source_address + i);
     }
-
+    ;
 
 }
 
