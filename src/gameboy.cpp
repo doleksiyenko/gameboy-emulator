@@ -20,6 +20,14 @@ GameBoy::GameBoy(std::string bootrom_file, std::string cartridge_file) {
 
     // load in the cartridge
     cartridge_.load_cartridge_from_file(cartridge_file);
+
+    std::cout << "\nControls\n";
+    std::cout << "--------" << "\n";
+    std::cout << "A: A" << "\n";
+    std::cout << "B: S" << "\n";
+    std::cout << "SELECT: Z" << "\n";
+    std::cout << "START: X" << "\n";
+    std::cout << "D-PAD: ARROWS" << "\n";
 }
 
 void GameBoy::run() {
@@ -31,7 +39,7 @@ void GameBoy::run() {
     const std::chrono::duration<double> frame_length(70224.0 / 4194304.0);
     unsigned int master_clock_cycles = 0; // keep track of the elapsed cpu cycles
 
-    std::cout << frame_length << '\n';
+    // std::cout << frame_length << '\n';
     
     // initial white screen
     // ppu_.clear_screen();
@@ -50,17 +58,17 @@ void GameBoy::run() {
         }
         else if (master_clock_cycles == 70224) {
             // number of cycles to complete frame, so render
-            std::cout << "Processing done: " << std::chrono::high_resolution_clock::now() - frame_start << '\n';
+            // std::cout << "Processing done: " << std::chrono::high_resolution_clock::now() - frame_start << '\n';
 
             // poll for a quit event (e.g. user exits out of the emulator)
             poll_events();
 
             // render the texture to the screen
             ppu_.clear_screen();
-            std::cout << "Clearing done: " << std::chrono::high_resolution_clock::now() - frame_start << '\n';
+            // std::cout << "Clearing done: " << std::chrono::high_resolution_clock::now() - frame_start << '\n';
             ppu_.render();
 
-            std::cout << "Rendering done: " << std::chrono::high_resolution_clock::now() - frame_start << '\n';
+            // std::cout << "Rendering done: " << std::chrono::high_resolution_clock::now() - frame_start << '\n';
             master_clock_cycles++;
         }
         else {
@@ -68,7 +76,7 @@ void GameBoy::run() {
             poll_events();
             if (std::chrono::high_resolution_clock::now() - frame_start >= frame_length) {
                 // the frame is now official over, can start prossessing again
-                std::cout << "Frame Complete: " << std::chrono::high_resolution_clock::now() - frame_start << '\n';
+                // std::cout << "Frame Complete: " << std::chrono::high_resolution_clock::now() - frame_start << '\n';
                 master_clock_cycles = 0;
                 frame_start = std::chrono::high_resolution_clock::now();
             }
@@ -107,11 +115,11 @@ void GameBoy::poll_events() {
                         std::cout << "b" << "\n";
                         joypad_.set_buttons(0b1101);
                         break;
-                    case SDLK_x:
+                    case SDLK_z:
                         std::cout << "select" << "\n";
                         joypad_.set_buttons(0b1011);
                         break;
-                    case SDLK_z:
+                    case SDLK_x:
                         std::cout << "start" << "\n";
                         joypad_.set_buttons(0b0111);
                         break;
