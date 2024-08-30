@@ -96,15 +96,19 @@ void GameBoy::poll_events() {
                 switch (event.key.keysym.sym) {
                     // only modify the directional keys if the dpad is enabled
                     case SDLK_RIGHT:
+                        std::cout << "RIGHT" << "\n";
                         joypad_.set_dpad(0b1110);
                         break;
                     case SDLK_LEFT:
+                        std::cout << "LEFT" << "\n";
                         joypad_.set_dpad(0b1101);
                         break;
                     case SDLK_UP:
+                        std::cout << "UP" << "\n";
                         joypad_.set_dpad(0b1011);
                         break;
                     case SDLK_DOWN:
+                        std::cout << "DOWN" << "\n";
                         joypad_.set_dpad(0b0111);
                         break;
                     case SDLK_a:

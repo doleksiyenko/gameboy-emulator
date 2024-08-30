@@ -41,8 +41,8 @@ uint8_t Bus::read(uint16_t address)
         // access to the 16 KiB fixed ROM bank 00, and 16 KiB ROM bank 01, which is switchable and controlled via the MBC
         return cartridge_->read(address);
     }
-    else if ((address >= 0x8000 && address <= 0x9fff) || (address >= 0xff40 && address <= 0xff4b)) {
-        // read from VRAM (first range), OR read LCD registers (second range)
+    else if ((address >= 0x8000 && address <= 0x9fff) || (address >= 0xff40 && address <= 0xff4b) || (address >= 0xfe00 && address <= 0xfe9f)) {
+        // read from VRAM (first range), OR read LCD registers (second range) OR from the OAM (third range)
         return ppu_->read(address);
     }
     else if (address >= 0xa000 && address <= 0xbfff) {
@@ -97,8 +97,8 @@ void Bus::write(uint16_t address, uint8_t value)
         // access to MBC external RAM + MBC registers 
         cartridge_->write(address, value);
     }
-    else if ((address >= 0x8000 && address <= 0x9fff) || (address >= 0xff40 && address <= 0xff4b)) {
-        // write to VRAM (first range) OR to LCD registers (second range)
+    else if ((address >= 0x8000 && address <= 0x9fff) || (address >= 0xff40 && address <= 0xff4b) || (address >= 0xfe00 && address <= 0xfe9f)) {
+        // write to VRAM (first range) OR to LCD registers (second range) OR to OAM (third range)
         ppu_->write(address, value);
     }
     else if (address >= 0xc000 && address <= 0xdfff) {

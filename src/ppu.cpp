@@ -10,6 +10,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <type_traits>
 
 #include "ppu.h"
 #include "bus.h"
@@ -48,6 +49,10 @@ PPU::PPU()
     SDL_SetRenderDrawColor(renderer_, 255, 255, 255, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer_);
     SDL_SetRenderTarget(renderer_, NULL);
+
+
+    // start the OAM with 0s
+    oam_.fill(0);
 }
 
 PPU::~PPU() {
@@ -125,6 +130,8 @@ uint8_t PPU::read(uint16_t address)
                 return ogp0_;
             case 0xff49:
                 return ogp1_;
+            case 0xff46:
+                return dma_source_;
         }
     }
 
@@ -154,20 +161,20 @@ void PPU::write(uint16_t address, uint8_t value)
             case 0xff41:
                 stat_.set(value);
                 break;
-            case 0xff45:
-                lyc_ = value;
-                break;
             case 0xff42:
                 scy_ = value;
                 break;
             case 0xff43:
                 scx_ = value;
                 break;
-            case 0xff4a:
-                wy_ = value;
+            case 0xff45:
+                lyc_ = value;
                 break;
-            case 0xff4b:
-                wx_ = value;
+            case 0xff46:
+                dma_source_ = value;
+                // TODO: the OAM DMA transfer will happen instantaneously. However, in reality,
+                // this should take 160 M cycles, and CPU access, PPU access should be restricted
+                oam_dma_transfer(value);
                 break;
             case 0xff47:
                 bgp_ = value;
@@ -178,9 +185,16 @@ void PPU::write(uint16_t address, uint8_t value)
             case 0xff49:
                 ogp1_ = value;
                 break;
+            case 0xff4a:
+                wy_ = value;
+                break;
+            case 0xff4b:
+                wx_ = value;
+                break;
         }
     }
 }
+
 
 void PPU::set_mode(uint8_t mode) 
 {
@@ -244,7 +258,7 @@ void PPU::cycle()
                             set_mode(2);
                             t_cycles_delay_ += 80;
                             ly_ = 0;
-                            oam_search();
+                            oam_scan();
                         }
                         else {
                             // we remain in mode 1, and progress the scanline
@@ -287,19 +301,33 @@ void PPU::cycle()
     }
 }
 
-void PPU::oam_search()
+void PPU::oam_dma_transfer(uint8_t value)
+{
+    /*  When requested, perform a transfer from ROM or RAM to OAM. <value> specifies the 
+        transfer source address divided by 0x100 */
+
+    uint16_t source_address = value << 8; // multiply by 0x100 to retrieve the original source address
+    for (int i = 0; i < 160 ; i++) { // write to 160 possible OAM locations
+        write(0xfe00 + i, bus_->read(source_address + i));
+    }
+
+
+}
+
+void PPU::oam_scan()
 {
     /*  OAM search occurs during mode 2 of the PPU. During this mode, we scan through the OAM (object attribute memory)
         and determine which objects should be displayed on the scanline */
 
+   scanline_sprites_.clear(); // first, clear any objects from previous scanlines 
+
     // cycle through the OAM, only need to check the first byte of every object (4 bytes) to determine Y pos
     for (int byte0 = 0; byte0 < 160; byte0 += 4) {
-        uint8_t y_pos = oam_[byte0];
+        uint8_t y_pos = oam_[byte0] - 16;
         // check if the current scanline (ly) is within this object's top scanline and its bottom scanline
         if (ly_ >= y_pos && ly_ <= y_pos + (8 * (1 + lcdc_.obj_size))) { // object is either 8 pixels tall or 16 pixels tall depending on LCDC bit
-            scanline_sprites_.push_back(byte0); // for now, store the objects position in the OAM array
+            scanline_sprites_.push_back(byte0); // store the objects position in the OAM array
         }
-
         if (scanline_sprites_.size() == 10) {
             break;
         }
@@ -390,6 +418,10 @@ void PPU::test_draw_vram()
 
 void PPU::draw_bg_window()
 {
+    /*
+    This method is called by the draw_scanline method. It deals with drawing the background and window tiles. 
+    */
+
     // ----- BACKGROUND AND WINDOW ----- 
 
     // first, we need to check if the window is enabled, and if it is, then is the current scanline part of that window?
@@ -516,7 +548,19 @@ void PPU::draw_bg_window()
 
 void PPU::draw_sprites()
 {
-    // TODO : draw_sprites
+    /*
+    This method is called by the draw_scanline method. It deals with drawing the sprites. 
+    */
+
+    for (int sprite_loc : scanline_sprites_) {
+        uint8_t y_pos = oam_[sprite_loc + 0]; 
+        uint8_t x_pos = oam_[sprite_loc + 1]; 
+        uint8_t tile_index = oam_[sprite_loc + 2];
+        uint8_t attributes = oam_[sprite_loc + 3];
+    }
+
+    // TODO: draw sprites
+    
 }
 
 void PPU::draw_scanline()

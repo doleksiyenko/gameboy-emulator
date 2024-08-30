@@ -3,6 +3,7 @@
 
 #include <SDL_render.h>
 #include <SDL_video.h>
+#include <_types/_uint8_t.h>
 #include <cstdint>
 #include <array>
 #include <vector>
@@ -13,8 +14,9 @@
 class Bus; // forward declaration of class Bus
 
 class PPU {
-    public:
+    private:
         std::array<uint8_t, 1024 * 8> vram_; // starting address of VRAM is 0x8000
+        std::array<uint8_t, 160> oam_; // object attributes
     public:
         PPU();
         ~PPU();
@@ -39,7 +41,6 @@ class PPU {
 
         Bus* bus_; // hold a reference to the bus
 
-        std::array<uint8_t, 160> oam_; // object attribute memory 
         uint16_t t_cycles_delay_ = 80; // start in mode 2, which lasts 80 "dots"
 
         void set_mode(uint8_t mode); // set the mode and handle the resulting possible STAT interrupt
@@ -47,8 +48,9 @@ class PPU {
         void draw_bg_window();
         void draw_sprites();
         void set_colour_from_palette(int* r, int* g, int* b, uint8_t colour_ID, uint8_t palette);
-        void oam_search();
 
+        void oam_scan(); // during mode 2, perform the oam_scan, which finds up to 10 sprites to display
+        void oam_dma_transfer(uint8_t value); // when requested perform an OAM DMA transfer
         std::vector<int> scanline_sprites_; // up to 10 sprites that can be displayed on a scanline
         
         // -- REGISTERS -- 
@@ -64,6 +66,8 @@ class PPU {
         // lcd status
         uint8_t ly_ = 0;
         uint8_t lyc_ = 0;
+
+        uint8_t dma_source_ = 0;
 
         bool screen_cleared_ = true; // PPU and LCD start as "off". Checks if screen is filled white, so we don't need to process it every frame if already cleared
         // ---- STATUS AND CONTROL REGISTERS ----
