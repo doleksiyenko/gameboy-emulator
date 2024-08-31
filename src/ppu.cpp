@@ -550,6 +550,7 @@ void PPU::draw_sprites()
     This method is called by the draw_scanline method. It deals with drawing the sprites. 
     */
 
+    // TODO: background priority and oam priority
     // TODO : y and x flipping
 
     for (int sprite_loc : scanline_sprites_) {
@@ -558,16 +559,20 @@ void PPU::draw_sprites()
         uint8_t tile_index = oam_[sprite_loc + 2];
         uint8_t attributes = oam_[sprite_loc + 3];
 
-        uint8_t x_flip = attributes & 0b1000;
-        uint8_t y_flip = attributes & 0b10000;
-        uint8_t priority = attributes & 0b100000;
+        uint8_t x_flip = (attributes & 0b1000) >> 3;
+        uint8_t y_flip = (attributes & 0b10000) >> 4;
+        uint8_t priority = (attributes & 0b100000) >> 5;
         uint8_t palette = (attributes & 0b100) >> 2;
         
-        uint8_t obj_size = lcdc_.obj_size;
         // since we already checked in the OAM scan, we know that this sprite intersects with this
         // scanline. However, we need to find which line of the 8x8 or 8x16 sprite we are rendering
 
-        uint8_t sprite_line = (ly_ - y_pos); 
+        int8_t sprite_line = (ly_ - y_pos); 
+
+        if (y_flip) {
+            sprite_line -= (8 + (1 * lcdc_.obj_size));
+            sprite_line *= -1;
+        }
         sprite_line *= 2; // a lot of this logic follows the bg and window rendering: each tile has 2 bytes of information per row
 
         uint16_t tile_address = (tile_index * 16) + sprite_line; // only unsigned addressing for sprites
@@ -578,8 +583,13 @@ void PPU::draw_sprites()
 
         // draw 8 pixels across
         for (int bit_number = 7; bit_number >= 0; bit_number--) {
-            uint8_t msb = ((byte2 & (1 << bit_number)) >> bit_number) << 1;
-            uint8_t lsb = (byte1 & (1 << bit_number)) >> bit_number; 
+            int colour_bit = bit_number;
+            if (x_flip) {
+                colour_bit = (bit_number - 7) * -1;
+            }
+
+            uint8_t msb = ((byte2 & (1 << colour_bit)) >> colour_bit) << 1;
+            uint8_t lsb = (byte1 & (1 << colour_bit)) >> colour_bit; 
             uint8_t colour_ID = msb + lsb;
 
             // in sprite palettes, ignore the lower 2 bits (transparent)
