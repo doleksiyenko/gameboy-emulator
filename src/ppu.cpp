@@ -239,16 +239,15 @@ void PPU::cycle()
                             uint8_t interrupt_flag = bus_->read(0xff0f);
                             interrupt_flag |= (1 << 0); // update the timer flag IF
                             bus_->write(0xff0f, interrupt_flag); 
+                            // reaching the end of mode 0 is always the indication of the next scanline
+                            ly_++;
                         }
                         else {
                             set_mode(2);
+                            ly_++;
                             oam_scan();
                             t_cycles_delay_ += 80;
                         }
-
-                        // reaching the end of mode 0 is always the indication of the next scanline
-                        ly_++;
-
                     } 
                     break;
                 case 1:
@@ -390,7 +389,7 @@ void PPU::oam_dma_transfer(uint8_t value)
    /*  When requested, perform a transfer from ROM or RAM to OAM. <value> specifies the 
         transfer source address divided by 0x100 */
 
-    uint16_t source_address = value << 8; // multiply by 0x100 to retrieve the original source address
+    uint16_t source_address = value * 0x100; // multiply by 0x100 to retrieve the original source address
     for (int i = 0; i < 160 ; i++) { // write to 160 possible OAM locations
         oam_[i] = bus_->read(source_address + i);
     }
@@ -564,13 +563,14 @@ void PPU::draw_sprites()
         uint8_t priority = attributes & 0b100000;
         uint8_t palette = (attributes & 0b100) >> 2;
         
+        uint8_t obj_size = lcdc_.obj_size;
         // since we already checked in the OAM scan, we know that this sprite intersects with this
         // scanline. However, we need to find which line of the 8x8 or 8x16 sprite we are rendering
 
         uint8_t sprite_line = (ly_ - y_pos); 
         sprite_line *= 2; // a lot of this logic follows the bg and window rendering: each tile has 2 bytes of information per row
 
-        uint16_t tile_address = 0x8000 + (tile_index * 16) + sprite_line; // only unsigned addressing for sprites
+        uint16_t tile_address = (tile_index * 16) + sprite_line; // only unsigned addressing for sprites
         // read the two bytes corresponding to this row of the tile
         // first byte specifies the least significant bit of the color ID, second byte specifies the most significant bit (for the specific x, y pixel we are currently observing)
         uint8_t byte1 = vram_[tile_address + 0];
@@ -582,9 +582,8 @@ void PPU::draw_sprites()
             uint8_t lsb = (byte1 & (1 << bit_number)) >> bit_number; 
             uint8_t colour_ID = msb + lsb;
 
+            // in sprite palettes, ignore the lower 2 bits (transparent)
             if (colour_ID != 0) {
-                // in sprite palettes, ignore the lower 2 bits (transparent)
-
                 // match the colour ID to its actual colour using the palette 
                 int r; int g; int b;
                 if (palette) {
