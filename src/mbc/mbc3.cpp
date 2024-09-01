@@ -70,21 +70,13 @@ void MBC3::write(uint16_t address, uint8_t value)
         }
     }
     else if (address >= 0x4000 && address <= 0x5fff) {
-        /* this write instruction only performs an action if this MBC1 cart
-        has 32KiB of RAM (set RAM bank) or is 1 MiB ROM or larger (additional rom_bank_number bits) */
+        /* this selects the correct RAM bank number for MBC3 */
         if (external_ram_size_code == 0x03 || rom_size_code >= 0x05) {
             // 32 KiB RAM cartridge
             ram_bank_upper_bit_reg = value & 0x03;
         }
     }
-    else if (address >= 0x4000 && address <= 0x5fff) {
-        /* select MBC1 banking mode */
-        if (value == 0x0) {
-            banking_mode_ = 1;
-        }
-        else {
-            banking_mode_ = 0;
-        }
+    else if (address >= 0x6000 && address <= 0x7fff) {
     }
 
     else if (address >= 0xa000 && address <= 0xbfff && ram_enable_) {

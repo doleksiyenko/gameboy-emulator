@@ -77,7 +77,7 @@ void MBC1::write(uint16_t address, uint8_t value)
             ram_bank_upper_bit_reg = value & 0x03;
         }
     }
-    else if (address >= 0x4000 && address <= 0x5fff) {
+    else if (address >= 0x6000 && address <= 0x7fff) {
         /* select MBC1 banking mode */
         if (value == 0x0) {
             banking_mode_ = 1;
