@@ -17,6 +17,9 @@ class MBC
         virtual uint8_t read(uint16_t address) { return 0xff; }; 
         virtual void write(uint16_t address, uint8_t value) {};  // write to different MBC registers
 
+        uint8_t get_external_ram_size_code() { return external_ram_size_code; };
+        uint8_t get_rom_size_code() { return rom_size_code; };
+
     protected:
         // cartridge metadata
         uint8_t external_ram_size_code;

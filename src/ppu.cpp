@@ -550,8 +550,7 @@ void PPU::draw_sprites()
     This method is called by the draw_scanline method. It deals with drawing the sprites. 
     */
 
-    // TODO: background priority and oam priority
-    // TODO : y and x flipping
+    // TODO: background priority and oam priority (drawing priorty with samw x coord, using priority flag for background / window over sprite)
 
     for (int sprite_loc : scanline_sprites_) {
         uint8_t y_pos = oam_[sprite_loc + 0] - 16; 

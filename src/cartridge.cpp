@@ -1,5 +1,6 @@
 #include "cartridge.h"
 #include "mbc/mbc1.h"
+#include "mbc/mbc3.h"
 #include <cstdint>
 #include <fstream>
 #include <iostream>
@@ -46,14 +47,19 @@ void Cartridge::load_cartridge_from_file(std::string cartridge_file)
             // mbc1 chip
             mbc_ = std::make_unique<MBC1>(cartridge_);
             break;
+        case 0x13:
+            mbc_ = std::make_unique<MBC3>(cartridge_);
         default:
             break;
     }
 
-    std::cout << "MBC type: " << static_cast<int>(mbc_header_val_) << '\n'; 
-    std::cout << "Cartridge size (bytes): " << cartridge_.size() << std::endl;
-    if (mbc_header_val_ > 0) {
-        std::cout << "MBC created: " << static_cast<int>(mbc_->read(0x0147)) << std::endl;
+    std::cout << "Cartridge Type: " << mbc_code_to_name_.at(mbc_header_val_) << '\n'; 
+    if (mbc_header_val_ == 0) {
+        std::cout << "Cartridge size (bytes): " << cartridge_.size() << std::endl;
+    }
+    else {
+        std::cout << "ROM size: " << rom_code_to_name_.at(mbc_->get_rom_size_code()) << '\n';
+        std::cout << "RAM size: " << ram_code_to_name_.at(mbc_->get_external_ram_size_code()) << '\n';
     }
 }
 
