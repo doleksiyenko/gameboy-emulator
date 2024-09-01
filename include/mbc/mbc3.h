@@ -12,6 +12,10 @@ class MBC3 : public MBC
         uint8_t read(uint16_t address) override; // Read the byte at the address in the cartridge based on the behaviour of MBC1
         void write(uint16_t address, uint8_t value) override; // write to the MBC registers
     private:
+        void latch_clock();
+    private:
+        bool rtc_rw_enable_ = false;
+        uint8_t latch_clock_data_ = 0;
         uint8_t rtc_s = 0;
         uint8_t rtc_m = 0;
         uint8_t rtc_h = 0;

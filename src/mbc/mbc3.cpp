@@ -1,36 +1,48 @@
 #include "./mbc/mbc3.h"
 #include <cstdint>
+#include <iostream>
 
 uint8_t MBC3::read(uint16_t address)
 {
     if (address >= 0x0000 && address <= 0x3fff) {
-        // this is the fixed bank area (ROM bank X0)
-        if (banking_mode_ == 0) {
-            return cartridge_data_[address];
-        }
-        else {
-           return cartridge_data_[(static_cast<uint32_t>(ram_bank_upper_bit_reg) << 19) + address];
-        }
+        // this is the fixed bank area (ROM bank 00)
+        return cartridge_data_[address];
     }
     else if (address >= 0x4000 && address <= 0x7fff) {
         // this is the switchable bank area (ROM bank 01 - 7f)
-        return cartridge_data_[(static_cast<uint32_t>(ram_bank_upper_bit_reg) << 19) + (static_cast<uint32_t>(rom_bank_number_) << 14) + address];
+        uint offset = address - 0x4000;
+        uint rom_address = 0x4000 * rom_bank_number_;
+        return cartridge_data_[offset + rom_address];
     }
     else if (address >= 0xa000 && address <= 0xbfff) {
         // RAM bank 00-03. We can only read RAM values if RAM is enabled
-        if (ram_enable_) {
-            if (banking_mode_ == 0) {
-                return cartridge_data_[address];
+        if (ram_bank_reg_ <= 0x3) {
+            if (ram_enable_) {
+                // TODO: RAM read
             }
             else {
-                return cartridge_data_[(static_cast<uint16_t>(ram_bank_upper_bit_reg) << 13) + address];
+                // RAM is not enabled so return junk data
+                return 0xff;
             }
-            // after accessing external RAM, disable it
-            ram_enable_ = false;
         }
-        else {
-            // RAM is not enabled so return junk data
-            return 0xff;
+        else if (ram_bank_reg_ >= 0x8 && ram_bank_reg_ <= 0xc) {
+            if (rtc_rw_enable_) {
+                switch (ram_bank_reg_) {
+                    case 0x8:
+                        return rtc_s;
+                    case 0x9:
+                        return rtc_m;
+                    case 0xa:
+                        return rtc_h;
+                    case 0xb:
+                        return rtc_dl;
+                    case 0xc:
+                        return rtc_dh;
+                }
+            }
+            else {
+                return 0xff;
+            }
         }
     }
 
@@ -43,11 +55,13 @@ void MBC3::write(uint16_t address, uint8_t value)
     if (address >= 0x0000 && address <= 0x1fff) {
         // if the last 4 bits of value contain the value a, enable ram. Any other value disables it
         uint8_t lower_bits = value & 0xf;
-        if (lower_bits >> 3 == 0xa || lower_bits >> 2 == 0xa || lower_bits >> 1 == 0xa || (lower_bits & 0x1) == 0xa) {
+        if (lower_bits == 0xa) {
             ram_enable_ = true;
+            rtc_rw_enable_= true;
         }
         else {
             ram_enable_ = false;
+            rtc_rw_enable_ = false;
         }
     }
     else if (address >= 0x2000 && address <= 0x3fff) {
@@ -67,29 +81,69 @@ void MBC3::write(uint16_t address, uint8_t value)
             case 0x4:
                 rom_bank_number_ = value & 0x1f; // 32 banks, use 5 bits
                 break;
+            case 0x5:
+                rom_bank_number_ = value & 0x3f; // 64 banks, use 6 bits
+                break;
+            case 0x6:
+                rom_bank_number_ = value & 0x7f; // 128 banks, use 7 bits
+                break;
+        }
+        if (rom_bank_number_ == 0) {
+            rom_bank_number_++;
         }
     }
     else if (address >= 0x4000 && address <= 0x5fff) {
-        /* this selects the correct RAM bank number for MBC3 */
-        if (external_ram_size_code == 0x03 || rom_size_code >= 0x05) {
-            // 32 KiB RAM cartridge
-            ram_bank_upper_bit_reg = value & 0x03;
+        /* select the correct RAM bank number from 00 - 03 for MBC3 */
+        if (value <= 0x3) {
+            if (external_ram_size_code == 0x03) {
+                // 32 KiB RAM cartridge
+                ram_bank_reg_ = value & 0x03;
+            }
+        }
+        else if (value >= 0x08 && value <= 0x0c) {
+            ram_bank_reg_ = value;
         }
     }
     else if (address >= 0x6000 && address <= 0x7fff) {
+        if (latch_clock_data_ == 0 && value == 1) {
+            latch_clock();
+        }
+        latch_clock_data_ = value;
     }
 
     else if (address >= 0xa000 && address <= 0xbfff && ram_enable_) {
         // RAM bank 00-03. We can only write to RAM values if RAM is enabled
-        if (ram_enable_) {
-            if (banking_mode_ == 0) {
-                cartridge_data_[address] = value;
+        if (ram_bank_reg_ <= 0x3) {
+            if (ram_enable_) {
+                // TODO: ram write
             }
-            else {
-                cartridge_data_[(static_cast<uint16_t>(ram_bank_upper_bit_reg) << 13) + address] = value;
+        }
+        else if (ram_bank_reg_ >= 0x8 && ram_bank_reg_ <= 0xc) {
+            if (rtc_rw_enable_) {
+                switch (ram_bank_reg_) {
+                    case 0x8:
+                        rtc_s = value;
+                        break;
+                    case 0x9:
+                        rtc_m = value;
+                        break;
+                    case 0xa:
+                        rtc_h = value;
+                        break;
+                    case 0xb:
+                        rtc_dl = value;
+                        break;
+                    case 0xc:
+                        rtc_dh = value;
+                        break;
+                }
             }
-            // after accessing external RAM, disable it
-            ram_enable_ = false;
         }
     }
+}
+
+
+void MBC3::latch_clock()
+{
+    // TODO: implement timer feature
 }
