@@ -1,6 +1,8 @@
 #include "./mbc/mbc3.h"
 #include <cstdint>
 #include <iostream>
+#include <vector>
+
 
 uint8_t MBC3::read(uint16_t address)
 {
@@ -18,7 +20,9 @@ uint8_t MBC3::read(uint16_t address)
         // RAM bank 00-03. We can only read RAM values if RAM is enabled
         if (ram_bank_reg_ <= 0x3) {
             if (ram_enable_) {
-                // TODO: RAM read
+                uint offset = address - 0xa000;
+                uint ram_address = offset + (0x2000 * ram_bank_reg_);
+                return external_ram.at(ram_address);
             }
             else {
                 // RAM is not enabled so return junk data
@@ -111,11 +115,13 @@ void MBC3::write(uint16_t address, uint8_t value)
         latch_clock_data_ = value;
     }
 
-    else if (address >= 0xa000 && address <= 0xbfff && ram_enable_) {
+    else if (address >= 0xa000 && address <= 0xbfff) {
         // RAM bank 00-03. We can only write to RAM values if RAM is enabled
         if (ram_bank_reg_ <= 0x3) {
             if (ram_enable_) {
-                // TODO: ram write
+                uint offset = address - 0xa000;
+                uint ram_address = offset + (0x2000 * ram_bank_reg_);
+                external_ram[ram_address] = value;
             }
         }
         else if (ram_bank_reg_ >= 0x8 && ram_bank_reg_ <= 0xc) {

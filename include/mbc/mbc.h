@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <vector>
 #include <iostream>
+#include <unordered_map>
 
 class MBC
 {
@@ -33,6 +34,15 @@ class MBC
         uint8_t banking_mode_ = 0x0;
 
 
+        std::unordered_map<uint8_t, uint> ram_code_to_size_ =
+        {
+            {0x0, 0},
+            {0x1, 0},
+            {0x2, 8192},
+            {0x3, 32768},
+            {0x4, 131072},
+            {0x5, 65536},
+        };
 };
 
 #endif
