@@ -101,6 +101,10 @@ void Bus::write(uint16_t address, uint8_t value)
         // write to VRAM (first range) OR to LCD registers (second range) OR to OAM (third range)
         ppu_->write(address, value);
     }
+    else if (address >= 0xa000 && address <= 0xbfff) {
+        // write to current 8 KiB bank of external RAM contained in the cartridge. 
+        cartridge_->write(address, value);
+    }
     else if (address >= 0xc000 && address <= 0xdfff) {
         // write to work RAM
         ram_->write(address, value);
