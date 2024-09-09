@@ -39,6 +39,8 @@ class PPU {
         SDL_Renderer* renderer_;
         SDL_Texture* texture_;
 
+        std::array<uint8_t, SCREEN_WIDTH * SCREEN_HEIGHT> frame_background_colour;
+
         Bus* bus_; // hold a reference to the bus
 
         uint16_t t_cycles_delay_ = 80; // start in mode 2, which lasts 80 "dots"

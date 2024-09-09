@@ -53,6 +53,7 @@ PPU::PPU()
 
     // start the OAM with 0s
     oam_.fill(0);
+    frame_background_colour.fill(0);
 }
 
 PPU::~PPU() {
@@ -538,7 +539,7 @@ void PPU::draw_bg_window()
         // match the colour ID to its actual colour using the palette 
         int r; int g; int b;
         set_colour_from_palette(&r, &g, &b, colour_ID, bgp_);
-
+        frame_background_colour.at(ly_ * SCREEN_WIDTH + pixel) = r; // one channel is enough to tell us the colour
         SDL_SetRenderDrawColor(renderer_, r, g, b, SDL_ALPHA_OPAQUE);
         SDL_RenderDrawPoint(renderer_, pixel, ly_);
     }
@@ -550,9 +551,9 @@ void PPU::draw_sprites()
     This method is called by the draw_scanline method. It deals with drawing the sprites. 
     */
 
-    // TODO: background priority and oam priority (drawing priorty with samw x coord, using priority flag for background / window over sprite)
-
-    for (int sprite_loc : scanline_sprites_) {
+    // TODO: background priority
+    for (int i = scanline_sprites_.size() - 1; i >= 0; i--) { // go backwards since objects that occur in OAM first have higher priority
+        int sprite_loc = scanline_sprites_[i];
         uint8_t y_pos = oam_[sprite_loc + 0] - 16; 
         uint8_t x_pos = oam_[sprite_loc + 1] - 8; 
         uint8_t tile_index = oam_[sprite_loc + 2];
@@ -606,7 +607,10 @@ void PPU::draw_sprites()
 
                 uint8_t x_pixel = x_pos + (7 - bit_number); // 7th bit is leftmost pixel
 
-                if (x_pixel >= 0 || x_pixel <= SCREEN_WIDTH) {
+                if ((x_pixel >= 0 && x_pixel <= SCREEN_WIDTH) && (ly_ >= 0 && ly_ <= SCREEN_HEIGHT)) {
+                    if (!priority && frame_background_colour.at(ly_ * SCREEN_WIDTH + x_pixel) != 242) {
+                        continue;
+                    }
                     SDL_RenderDrawPoint(renderer_, x_pixel, ly_);
                 }
             }
