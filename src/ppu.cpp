@@ -552,17 +552,18 @@ void PPU::draw_sprites()
     */
 
     // TODO: background priority
-    for (int i = scanline_sprites_.size() - 1; i >= 0; i--) { // go backwards since objects that occur in OAM first have higher priority
-        int sprite_loc = scanline_sprites_[i];
+    // for (int i = scanline_sprites_.size() - 1; i >= 0; i--) { // go backwards since objects that occur in OAM first have higher priority
+    for (int sprite_loc : scanline_sprites_) {
+        // int sprite_loc = scanline_sprites_[i];
         uint8_t y_pos = oam_[sprite_loc + 0] - 16; 
         uint8_t x_pos = oam_[sprite_loc + 1] - 8; 
         uint8_t tile_index = oam_[sprite_loc + 2];
         uint8_t attributes = oam_[sprite_loc + 3];
 
-        uint8_t x_flip = (attributes & 0b1000) >> 3;
-        uint8_t y_flip = (attributes & 0b10000) >> 4;
-        uint8_t priority = (attributes & 0b100000) >> 5;
-        uint8_t palette = (attributes & 0b100) >> 2;
+        uint8_t x_flip = (attributes & 0b100000) >> 5;
+        uint8_t y_flip = (attributes & 0b1000000) >> 6;
+        uint8_t priority = (attributes & 0b10000000) >> 7;
+        uint8_t palette = (attributes & 0b10000) >> 4;
         
         // since we already checked in the OAM scan, we know that this sprite intersects with this
         // scanline. However, we need to find which line of the 8x8 or 8x16 sprite we are rendering
@@ -608,7 +609,7 @@ void PPU::draw_sprites()
                 uint8_t x_pixel = x_pos + (7 - bit_number); // 7th bit is leftmost pixel
 
                 if ((x_pixel >= 0 && x_pixel <= SCREEN_WIDTH) && (ly_ >= 0 && ly_ <= SCREEN_HEIGHT)) {
-                    if (!priority && frame_background_colour.at(ly_ * SCREEN_WIDTH + x_pixel) != 242) {
+                    if (priority && frame_background_colour.at(ly_ * SCREEN_WIDTH + x_pixel) != 242) {
                         continue;
                     }
                     SDL_RenderDrawPoint(renderer_, x_pixel, ly_);
